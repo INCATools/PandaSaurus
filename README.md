@@ -1,5 +1,7 @@
 # UG_dataframe_tools
 
+STATUS: DRAFT
+
 Supporting simple queries over ontology annotations in dataframes, using UberGraph queries.
 
 The aim for now is to keep this as a very simple independent Python lib avoiding any complex dependencies
