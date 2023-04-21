@@ -33,6 +33,7 @@ def get_curie_validation_query(seed_list: List[str]) -> str:
 
 def get_obsolete_term_query(seed_list: List[str]) -> str:
     # TODO Add missing implementation
+    # We probably won't need get_replaced_by_query, we can get the suggestions with the same query
     pass
 
 

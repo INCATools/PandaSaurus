@@ -16,7 +16,6 @@ class CurieValidator:
 
     @staticmethod
     def validate_curie_prefixes(curie_list: List[str]) -> bool:
-        # curie list or curie prefix list?
         # Is there anyway to validate prefixes via Ubergraph or are we going to validate them via a config file?
         run_curie_prefix_query(curie_list)
         # TODO Add missing implementation

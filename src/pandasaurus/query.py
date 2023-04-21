@@ -19,25 +19,25 @@ class Query:
         # Not sure about this
         self.enriched_df = pd.DataFrame()
 
-    def simple_slim_enrichment(self):
+    def simple_enrichment(self):
         logging.info(self.seed_list)
         df = pd.DataFrame()
         # TODO Add missing implementation
         self.enriched_df = df
 
-    def minimal_slim_enrichment(self):
+    def minimal_slim_enrichment(self, slim_name: str):
         logging.info(self.seed_list)
         df = pd.DataFrame()
         # TODO Add missing implementation
         self.enriched_df = df
 
-    def full_slim_enrichment(self):
+    def full_slim_enrichment(self, slim_name: str):
         logging.info(self.seed_list)
         df = pd.DataFrame()
         # TODO Add missing implementation
         self.enriched_df = df
 
-    def contextual_slim_enrichment(self):
+    def contextual_slim_enrichment(self, context: List[str]):
         logging.info(self.seed_list)
         df = pd.DataFrame()
         # TODO Add missing implementation

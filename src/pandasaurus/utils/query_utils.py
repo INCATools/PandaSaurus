@@ -63,7 +63,9 @@ def run_replaced_by_query(curie_list: List[str]):
     pass
 
 
-def run_slim_list_query():
+def run_slim_list_query(ontology: str):
+    sparql.setQuery(get_slim_list_query(ontology))
+    # TODO Add missing implementation
     pass
 
 
