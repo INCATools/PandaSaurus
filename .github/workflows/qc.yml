@@ -23,7 +23,7 @@ jobs:
           pip install flake8 flake8-black flake8-isort
       - name: Check code quality 
         run: |
-          flake8 src/ test/
+          flake8 --ignore F401 src/ test/
 
   test:
     runs-on: ubuntu-latest

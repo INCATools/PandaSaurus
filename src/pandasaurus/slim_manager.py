@@ -1,9 +1,8 @@
-from .resources.slim import Slim
 from typing import Dict, List
-from utils.query_utils import (
-    run_slim_list_query,
-    run_slim_details_query
-)
+
+from utils.query_utils import run_slim_details_query, run_slim_list_query
+
+from .resources.slim import Slim
 
 
 class SlimManager:

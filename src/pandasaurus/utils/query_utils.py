@@ -1,18 +1,20 @@
-from ..config import default_config
 from typing import List
-from SPARQLWrapper import SPARQLWrapper, JSON
+
 from sparql_queries import (
-    get_simple_enrichment_query,
-    get_minimal_enrichment_query,
-    get_full_enrichment_query,
     get_contextual_enrichment_query,
     get_curie_prefix_validation_query,
     get_curie_validation_query,
+    get_full_enrichment_query,
+    get_minimal_enrichment_query,
     get_obsolete_term_query,
     get_replaced_by_query,
+    get_simple_enrichment_query,
+    get_slim_details_query,
     get_slim_list_query,
-    get_slim_details_query
 )
+from SPARQLWrapper import JSON, SPARQLWrapper
+
+from ..config import default_config
 
 # SPARQLWrapper init
 sparql = SPARQLWrapper(default_config["UBERGRAPH_ENDPOINT"])

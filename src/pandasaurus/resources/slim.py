@@ -1,10 +1,10 @@
-from .term import Term
 from typing import List
+
+from .term import Term
 
 
 class Slim:
-    """Represents upper level slims
-    """
+    """Represents upper level slims"""
 
     def __init__(self, name: str, description: str, term_list: List[Term]):
         self.name = name

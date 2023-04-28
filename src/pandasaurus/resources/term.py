@@ -1,6 +1,5 @@
 class Term:
-    """Represents ontology terms
-    """
+    """Represents ontology terms"""
 
     def __init__(self, label: str, iri: str):
         self.label = label

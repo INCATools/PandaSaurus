@@ -1,9 +1,10 @@
 from typing import List
+
 from utils.query_utils import (
-    run_curie_prefix_query,
     run_curie_list_query,
+    run_curie_prefix_query,
     run_obsolete_term_query,
-    run_replaced_by_query
+    run_replaced_by_query,
 )
 
 

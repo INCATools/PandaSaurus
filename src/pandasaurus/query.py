@@ -1,11 +1,12 @@
 import logging
-import pandas as pd
 from typing import List
+
+import pandas as pd
 from utils.query_utils import (
-    retrieve_simple_slim_triples,
-    retrieve_minimal_slim_triples,
+    retrieve_contextual_slim_triples,
     retrieve_full_slim_triples,
-    retrieve_contextual_slim_triples
+    retrieve_minimal_slim_triples,
+    retrieve_simple_slim_triples,
 )
 
 
@@ -51,14 +52,14 @@ class Query:
 
     def full_slim_enrichment(self, slim_list: List[str]) -> pd.DataFrame:
         """Returns full slim enrichment; S(s) = S(i); S(o) = S(i) + all classes in some specified slims, where class
-        in slim = class tagged with some specified ‘subset’ axiom, with transitive query of redundant graph such as
-        owl:subClassOf*
+         in slim = class tagged with some specified ‘subset’ axiom, with transitive query of redundant graph such as
+         owl:subClassOf*
 
-       Args:
-            slim_list (List[str]): Slim list
+        Args:
+             slim_list (List[str]): Slim list
 
-        Returns:
-            pd.Dataframe: Enriched df
+         Returns:
+             pd.Dataframe: Enriched df
 
         """
         logging.info(self.seed_list)
