@@ -12,4 +12,3 @@ def test_find_obsolete_terms():
 
 def test_find_obsolete_term_replacement():
     pass
-
