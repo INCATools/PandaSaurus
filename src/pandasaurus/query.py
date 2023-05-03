@@ -11,19 +11,37 @@ from utils.query_utils import (
 
 
 class Query:
-    """Query class is responsible for returning the non-redundant graph for s subClassOf o as a simple Pandas dataframe
-    with given 2 seeds of classes, S(s) and S(o) from an initial seed, S(i)
+    """Query class is responsible for generating a Pandas dataframe that enriches the seed list with synonyms and
+    all inferred subClassOf relationships between terms in the seed. It also allows queries over the dataframe.
+
+    Attributes:
+        enriched_df (str): Dataframe that is enriched with synonyms and inferred relationships between terms in
+        the seed. It will be used in further filtered queries.
+
     """
 
-    def __init__(self, seed_list: List[str]):
+    def __init__(self, seed_list: List[str], enrichment_property_list: List[str] = []):
+        """A Query object is initialised by passing a list of seed terms (where each term is a CURIE string,
+        e.g. CL:0000001; all OBO standard curies are recognised). It generates a Pandas dataframe that enriches the
+        seed list with synonyms and all inferred subClassOf relationships; by default, and it supports other
+        relationships; between terms in the seed. Additional methods allow enrichment with terms outside the seed
+        from slims or specified by a semantic context.
+
+        Args:
+            seed_list (str): A list of seed terms where each term is a CURIE string
+            enrichment_property_list (List[str]): Property list to extend enrichment queries.
+
+        """
         self.seed_list = seed_list
+        self.enrichment_property_list = enrichment_property_list
         self.enriched_df: pd.DataFrame = pd.DataFrame()
 
     def simple_enrichment(self) -> pd.DataFrame:
-        """Returns simple enrichment; S(s) = S(i); S(o) = S(i)
+        """Returns a Dataframe that is enriched with synonyms and inferred relationships between terms in the seed.
+        Subject and object terms are members of the seed terms.
 
         Returns:
-             pd.Dataframe: Enriched df
+             pd.Dataframe: Enriched Dataframe
 
         """
         logging.info(self.seed_list)
@@ -33,15 +51,15 @@ class Query:
         return self.enriched_df
 
     def minimal_slim_enrichment(self, slim_list: List[str]) -> pd.DataFrame:
-        """Returns minimal enrichment; S(s) = S(i); S(o) = S(i) + all classes in some specified slims, where class
-        in slim = class tagged with some specified ‘subset’ axiom
-
+        """Returns a Dataframe that is enriched with synonyms and inferred relationships between terms in the seed list
+        and in an extended seed list. The extended seed list consists of terms from the seed list and terms from
+        given slim lists, classes tagged with some specified ‘subset’ axiom.
 
         Args:
-            slim_list (List[str]): Slim list
+            slim_list (List[str]): Slim list that consists of classes tagged with some specified ‘subset’ axiom
 
         Returns:
-            pd.Dataframe: Enriched df
+            pd.Dataframe: Enriched Dataframe
 
         """
         logging.info(self.seed_list)
@@ -51,15 +69,16 @@ class Query:
         return self.enriched_df
 
     def full_slim_enrichment(self, slim_list: List[str]) -> pd.DataFrame:
-        """Returns full slim enrichment; S(s) = S(i); S(o) = S(i) + all classes in some specified slims, where class
-         in slim = class tagged with some specified ‘subset’ axiom, with transitive query of redundant graph such as
-         owl:subClassOf*
+        """Returns a Dataframe that is enriched with synonyms and inferred relationships between terms in the seed list
+        and in an extended seed list. The extended seed list consists of terms from the seed list and terms from
+        given slim lists, classes tagged with some specified ‘subset’ axiom, with inferred terms via transitive
+        subClassOf queries.
 
         Args:
-             slim_list (List[str]): Slim list
+             slim_list (List[str]): Slim list that consists of classes tagged with some specified ‘subset’ axiom
 
          Returns:
-             pd.Dataframe: Enriched df
+             pd.Dataframe: Enriched Dataframe
 
         """
         logging.info(self.seed_list)
@@ -69,15 +88,16 @@ class Query:
         return self.enriched_df
 
     def contextual_slim_enrichment(self, context: List[str]) -> pd.DataFrame:
-        """Returns contextual slim enrichment; S(s) = S(i); S(o) = S(i) + all classes satisfied by some set of
-        existential restrictions in the ubergraph redundant graph (e.g. part_of 'Kidney')
+        """Returns a Dataframe that is enriched with synonyms and inferred relationships between terms in the seed list
+        and in an extended seed list. The extended seed list consists of terms from the seed list and all terms
+        satisfied by some set of existential restrictions in the ubergraph (e.g. part_of 'Kidney').
 
         Args:
             context: Organ/tissue/multicellular anatomical structure list to determine the redundant graph via
             existential restrictions
 
         Returns:
-            pd.Dataframe: Enriched df
+            pd.Dataframe: Enriched Dataframe
 
         """
         logging.info(self.seed_list)
@@ -95,7 +115,7 @@ class Query:
             query_term (str): Object label or synonym
 
         Returns:
-            pd.Dataframe: Filtered dataframe
+            pd.Dataframe: Filtered Dataframe
 
         """
         df = self.enriched_df
