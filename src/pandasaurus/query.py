@@ -11,7 +11,7 @@ from utils.query_utils import (
 
 
 class Query:
-    """Query class is responsible for generating a Pandas dataframe that enriches the seed list with synonyms and
+    """Query class is responsible for generating a pandas DataFrame that enriches the seed list with synonyms and
     all inferred subClassOf relationships between terms in the seed. It also allows queries over the dataframe.
 
     Attributes:
