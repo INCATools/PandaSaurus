@@ -22,7 +22,7 @@ class Query:
 
     def __init__(self, seed_list: List[str], enrichment_property_list: List[str] = []):
         """A Query object is initialised by passing a list of seed terms (where each term is a CURIE string,
-        e.g. CL:0000001; all OBO standard curies are recognised). It generates a Pandas dataframe that enriches the
+        e.g. CL:0000001; all OBO standard CURIESs are recognised). It generates a pandas DataFrame that enriches the
         seed list with synonyms and all inferred subClassOf relationships; by default, and it supports other
         relationships; between terms in the seed. Additional methods allow enrichment with terms outside the seed
         from slims or specified by a semantic context.
