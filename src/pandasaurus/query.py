@@ -41,7 +41,7 @@ class Query:
         Subject and object terms are members of the seed terms.
 
         Returns:
-             pd.Dataframe: Enriched Dataframe
+             pd.Dataframe: Enriched DataFrame
 
         """
         logging.info(self.seed_list)
