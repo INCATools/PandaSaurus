@@ -97,7 +97,7 @@ class Query:
             existential restrictions
 
         Returns:
-            pd.Dataframe: Enriched Dataframe
+            pd.Dataframe: Enriched DataFrame
 
         """
         logging.info(self.seed_list)
