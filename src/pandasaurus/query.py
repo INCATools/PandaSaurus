@@ -12,7 +12,7 @@ from utils.query_utils import (
 
 class Query:
     """Query class is responsible for generating a pandas DataFrame that enriches the seed list with synonyms and
-    all inferred subClassOf relationships between terms in the seed. It also allows queries over the dataframe.
+    all inferred subClassOf relationships between terms in the seed. It also allows queries over the DataFrame.
 
     Attributes:
         enriched_df (str): Dataframe that is enriched with synonyms and inferred relationships between terms in
