@@ -59,7 +59,7 @@ class Query:
             slim_list (List[str]): Slim list that consists of classes tagged with some specified ‘subset’ axiom
 
         Returns:
-            pd.Dataframe: Enriched Dataframe
+            pd.Dataframe: Enriched DataFrame
 
         """
         logging.info(self.seed_list)
