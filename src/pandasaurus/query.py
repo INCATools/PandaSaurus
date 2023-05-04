@@ -29,7 +29,7 @@ class Query:
 
         Args:
             seed_list (str): A list of seed terms where each term is a CURIE string
-            enrichment_property_list (List[str]): Property list to extend enrichment queries.
+            enrichment_property_list (List[str]): Property list to extend enrichment queries
 
         """
         self.seed_list = seed_list
