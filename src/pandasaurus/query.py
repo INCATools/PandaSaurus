@@ -115,7 +115,7 @@ class Query:
             query_term (str): Object label or synonym
 
         Returns:
-            pd.Dataframe: Filtered Dataframe
+            pd.Dataframe: Filtered DataFrame
 
         """
         df = self.enriched_df
