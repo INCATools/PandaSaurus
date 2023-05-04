@@ -37,7 +37,7 @@ class Query:
         self.enriched_df: pd.DataFrame = pd.DataFrame()
 
     def simple_enrichment(self) -> pd.DataFrame:
-        """Returns a Dataframe that is enriched with synonyms and inferred relationships between terms in the seed.
+        """Returns a DataFrame that is enriched with synonyms and inferred relationships between terms in the seed.
         Subject and object terms are members of the seed terms.
 
         Returns:
