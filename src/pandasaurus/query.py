@@ -90,7 +90,7 @@ class Query:
     def contextual_slim_enrichment(self, context: List[str]) -> pd.DataFrame:
         """Returns a DataFrame that is enriched with synonyms and inferred relationships between terms in the seed list
         and in an extended seed list. The extended seed list consists of terms from the seed list and all terms
-        satisfied by some set of existential restrictions in the ubergraph (e.g. part_of 'Kidney').
+        satisfied by some set of existential restrictions in the ubergraph (e.g. part_of some 'kidney').
 
         Args:
             context: Organ/tissue/multicellular anatomical structure list to determine the redundant graph via
