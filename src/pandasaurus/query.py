@@ -1,5 +1,5 @@
 import logging
-from typing import List
+from typing import List, Optional
 
 import pandas as pd
 from utils.query_utils import (
@@ -15,12 +15,12 @@ class Query:
     all inferred subClassOf relationships between terms in the seed. It also allows queries over the DataFrame.
 
     Attributes:
-        enriched_df (str): DataFrame that is enriched with synonyms and inferred relationships between terms in
+        enriched_df: DataFrame that is enriched with synonyms and inferred relationships between terms in
         the seed. It will be used in further filtered queries.
 
     """
 
-    def __init__(self, seed_list: List[str], enrichment_property_list: List[str] = []):
+    def __init__(self, seed_list: List[str], enrichment_property_list: Optional[List[str]] = None):
         """A Query object is initialised by passing a list of seed terms (where each term is a CURIE string,
         e.g. CL:0000001; all OBO standard CURIESs are recognised). It generates a pandas DataFrame that enriches the
         seed list with synonyms and all inferred subClassOf relationships by default, and it supports other
@@ -28,8 +28,8 @@ class Query:
         from slims or specified by a semantic context.
 
         Args:
-            seed_list (str): A list of seed terms where each term is a CURIE string
-            enrichment_property_list (List[str]): Property list to extend enrichment queries
+            seed_list: A list of seed terms where each term is a CURIE string
+            enrichment_property_list: Property list to extend enrichment queries. Defaults to None
 
         """
         self.seed_list = seed_list
@@ -41,7 +41,7 @@ class Query:
         Subject and object terms are members of the seed terms.
 
         Returns:
-             pd.Dataframe: Enriched DataFrame
+             Enriched DataFrame
 
         """
         logging.info(self.seed_list)
@@ -56,10 +56,10 @@ class Query:
         given slim lists, classes tagged with some specified ‘subset’ axiom.
 
         Args:
-            slim_list (List[str]): Slim list that consists of classes tagged with some specified ‘subset’ axiom
+            slim_list: Slim list that consists of classes tagged with some specified ‘subset’ axiom
 
         Returns:
-            pd.Dataframe: Enriched DataFrame
+            Enriched DataFrame
 
         """
         logging.info(self.seed_list)
@@ -75,10 +75,10 @@ class Query:
         subClassOf queries.
 
         Args:
-             slim_list (List[str]): Slim list that consists of classes tagged with some specified ‘subset’ axiom
+             slim_list: Slim list that consists of classes tagged with some specified ‘subset’ axiom
 
          Returns:
-             pd.Dataframe: Enriched DataFrame
+             Enriched DataFrame
 
         """
         logging.info(self.seed_list)
@@ -97,7 +97,7 @@ class Query:
             existential restrictions
 
         Returns:
-            pd.Dataframe: Enriched DataFrame
+            Enriched DataFrame
 
         """
         logging.info(self.seed_list)
@@ -111,11 +111,11 @@ class Query:
         synonym via query of name_lookup
 
         Args:
-            column_name (str): Column name
-            query_term (str): Object label or synonym
+            column_name: Column name
+            query_term: Object label or synonym
 
         Returns:
-            pd.Dataframe: Filtered DataFrame
+            Filtered DataFrame
 
         """
         df = self.enriched_df

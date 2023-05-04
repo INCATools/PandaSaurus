@@ -21,19 +21,19 @@ class Slim:
         return self.name
 
     def get_description(self) -> str:
-        """
+        """Returns slim description
 
         Returns:
-            str: Slim description
+            Slim description
 
         """
         return self.description
 
     def get_term_list(self) -> List[Term]:
-        """
+        """Returns term list
 
         Returns:
-            List[Term]: Term list
+            Term list
 
         """
         return self.term_list

@@ -17,10 +17,10 @@ class SlimManager:
         """Returns name and definition of available slims in given ontology
 
         Args:
-            ontology (str): Ontology name
+            ontology: Ontology name
 
         Returns:
-            List[List[str]]: Slim names and definitions list
+            Slim names and definitions list
 
         """
         slim_list: Dict[str, Slim] = dict()
@@ -33,10 +33,10 @@ class SlimManager:
         """Lists names and IDs of all terms in slim.
 
         Args:
-            slim_name (str): Slim name
+            slim_name: Slim name
 
         Returns:
-            List[List[str]]: Term names and IDs of the slim
+            Term names and IDs of the slim
 
         """
         slim: Slim = self.slim_list.get(slim_name)
