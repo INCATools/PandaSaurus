@@ -15,7 +15,7 @@ class Query:
     all inferred subClassOf relationships between terms in the seed. It also allows queries over the DataFrame.
 
     Attributes:
-        enriched_df (str): Dataframe that is enriched with synonyms and inferred relationships between terms in
+        enriched_df (str): DataFrame that is enriched with synonyms and inferred relationships between terms in
         the seed. It will be used in further filtered queries.
 
     """
