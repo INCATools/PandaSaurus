@@ -69,7 +69,7 @@ class Query:
         return self.enriched_df
 
     def full_slim_enrichment(self, slim_list: List[str]) -> pd.DataFrame:
-        """Returns a Dataframe that is enriched with synonyms and inferred relationships between terms in the seed list
+        """Returns a DataFrame that is enriched with synonyms and inferred relationships between terms in the seed list
         and in an extended seed list. The extended seed list consists of terms from the seed list and terms from
         given slim lists, classes tagged with some specified ‘subset’ axiom, with inferred terms via transitive
         subClassOf queries.
