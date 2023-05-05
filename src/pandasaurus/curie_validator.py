@@ -25,7 +25,7 @@ class CurieValidator:
             curie_list: List of CURIEs
 
         Returns:
-            List[List[str, bool]]: True or False status of the prefix validation for each term
+            True or False status of the prefix validation for each term
 
         """
         # Is there anyway to validate prefixes via Ubergraph or are we going to validate them via a config file? OAK?
@@ -41,7 +41,7 @@ class CurieValidator:
             curie_list: List of CURIEs
 
         Returns:
-            List[List[str, bool]]: True or False status of the CURIE validation for each term
+            True or False status of the CURIE validation for each term
 
         """
         run_curie_list_query(curie_list)
@@ -56,7 +56,7 @@ class CurieValidator:
             curie_list: List of CURIEs
 
         Returns:
-            List[List[str, bool]]: True or False status of the term for each term
+            True or False status of the term for each term
 
         """
         run_obsolete_term_query(curie_list)
@@ -64,14 +64,14 @@ class CurieValidator:
         pass
 
     @staticmethod
-    def find_obsolete_term_replacement(curie_list: List[str, str]):
+    def find_obsolete_term_replacement(curie_list: List[str, str]) -> List[str, str]:
         """Suggests terms for each obsoleted terms in the curie_list
 
         Args:
             curie_list: List of CURIEs
 
         Returns:
-            List[str, str]: List of suggested term
+            List of suggested term
 
         """
         run_replaced_by_query(curie_list)

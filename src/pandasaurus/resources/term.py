@@ -6,19 +6,19 @@ class Term:
         self.iri = iri
 
     def get_name(self) -> str:
-        """
+        """Returns term label
 
         Returns:
-            str: Term label
+            Term label
 
         """
         return self.label
 
     def get_iri(self) -> str:
-        """
+        """Returns term IRI
 
         Returns:
-            str: Term IRI
+            Term IRI
 
         """
         return self.iri
