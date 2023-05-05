@@ -1,5 +1,5 @@
 import logging
-from typing import List, Optional
+from typing import List
 
 import pandas as pd
 from utils.query_utils import (
@@ -20,7 +20,7 @@ class Query:
 
     """
 
-    def __init__(self, seed_list: List[str], enrichment_property_list: Optional[List[str]] = None):
+    def __init__(self, seed_list: List[str], *enrichment_property_list: str):
         """A Query object is initialised by passing a list of seed terms (where each term is a CURIE string,
         e.g. CL:0000001; all OBO standard CURIESs are recognised). It generates a pandas DataFrame that enriches the
         seed list with synonyms and all inferred subClassOf relationships by default, and it supports other
@@ -29,7 +29,7 @@ class Query:
 
         Args:
             seed_list: A list of seed terms where each term is a CURIE string
-            enrichment_property_list: Property list to extend enrichment queries. Defaults to None
+            enrichment_property_list: Optional list of property IRIs to extend enrichment queries.
 
         """
         self.seed_list = seed_list
@@ -56,7 +56,7 @@ class Query:
         given slim lists, classes tagged with some specified ‘subset’ axiom.
 
         Args:
-            slim_list: Slim list that consists of classes tagged with some specified ‘subset’ axiom
+            slim_list: List 'subset' tags that consists of classes tagged with some specified ‘subset’ axiom
 
         Returns:
             Enriched DataFrame
@@ -75,7 +75,7 @@ class Query:
         subClassOf queries.
 
         Args:
-             slim_list: Slim list that consists of classes tagged with some specified ‘subset’ axiom
+             slim_list: List 'subset' tags that consists of classes tagged with some specified ‘subset’ axiom
 
          Returns:
              Enriched DataFrame
