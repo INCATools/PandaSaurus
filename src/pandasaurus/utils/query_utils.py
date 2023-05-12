@@ -11,7 +11,7 @@ def run_sparql_query(query: str) -> Iterator:
 
 def chunks(lst, n):
     for i in range(0, len(lst), n):
-        yield lst[i : i + n]
+        yield lst[i: i + n]
 
 
 def get_prefixes(text, prefix_map):
