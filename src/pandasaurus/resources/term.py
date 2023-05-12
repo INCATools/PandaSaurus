@@ -4,8 +4,14 @@ from typing import Optional
 class Term:
     """Represents ontology terms."""
 
-    def __init__(self, label: str, iri: str, is_valid: bool, new_label: Optional[str] = None,
-                 new_iri: Optional[str] = None):
+    def __init__(
+        self,
+        label: str,
+        iri: str,
+        is_valid: bool,
+        new_label: Optional[str] = None,
+        new_iri: Optional[str] = None,
+    ):
         self.__label = label
         self.__iri = iri
         self.__is_valid = is_valid
@@ -66,7 +72,7 @@ class Term:
 
         """
         return self.__is_obsolete
-    
+
     def update_obsoleted_term(self):
         """Updates term label and IRI if the term is obsoleted, and changes its obsoletion status."""
         if self.__is_obsolete:

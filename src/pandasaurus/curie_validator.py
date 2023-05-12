@@ -1,17 +1,9 @@
-from typing import List, Dict
+from typing import Dict, List
 
 from .resources.term import Term
-from .utils.sparql_queries import (
-    get_label_query,
-    get_replaced_by_query
-)
-from .utils.query_utils import (
-    run_sparql_query
-)
-from .utils.pandasaurus_exceptions import (
-    InvalidTerm,
-    ObsoletedTerm
-)
+from .utils.pandasaurus_exceptions import InvalidTerm, ObsoletedTerm
+from .utils.query_utils import run_sparql_query
+from .utils.sparql_queries import get_label_query, get_replaced_by_query
 
 
 class CurieValidator:
@@ -54,9 +46,16 @@ class CurieValidator:
         """
         query_string = get_label_query(curie_list)
         # result = self.oi.query(query=query_string, prefixes=get_prefixes(query_string, self.oi.prefix_map().keys()))
-        result_dict = dict([(r.get("term"), r.get("label")) for r in run_sparql_query(query_string)])
-        return {curie: {"label": result_dict.get(curie) if curie in result_dict else None,
-                        "valid": True if curie in result_dict else False} for curie in curie_list}
+        result_dict = dict(
+            [(r.get("term"), r.get("label")) for r in run_sparql_query(query_string)]
+        )
+        return {
+            curie: {
+                "label": result_dict.get(curie) if curie in result_dict else None,
+                "valid": True if curie in result_dict else False,
+            }
+            for curie in curie_list
+        }
 
     @staticmethod
     def find_obsolete_terms(curie_list: List[str]) -> Dict:
@@ -129,8 +128,14 @@ class CurieValidator:
         term_obsoletion = self.find_obsolete_terms(seed_list)
         term_list: List[Term] = list()
         for seed in seed_list:
-            term = Term(term_validation.get(seed).get("label"), seed, term_validation.get(seed).get("valid"),
-                        term_obsoletion.get(seed).get("new_term_label") if seed in term_obsoletion else None,
-                        term_obsoletion.get(seed).get("new_term") if seed in term_obsoletion else None)
+            term = Term(
+                term_validation.get(seed).get("label"),
+                seed,
+                term_validation.get(seed).get("valid"),
+                term_obsoletion.get(seed).get("new_term_label")
+                if seed in term_obsoletion
+                else None,
+                term_obsoletion.get(seed).get("new_term") if seed in term_obsoletion else None,
+            )
             term_list.append(term)
         return term_list
