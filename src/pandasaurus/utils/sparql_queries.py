@@ -72,7 +72,6 @@ def get_slim_list_query(ontology: str) -> str:
 
 def get_slim_members_query(slim_name: str) -> str:
     return (
-        f"SELECT ?term ?term_label ?comment WHERE {{ ?term rdfs:label ?term_label. ?term oio:inSubset ?slim. ?slim "
-        f"rdfs:label '{slim_name}'^^<http://www.w3.org/2001/XMLSchema#string>. ?slim rdfs:comment ?comment.}} "
-        f"LIMIT 1000"
+        f"SELECT ?term WHERE {{ ?term oio:inSubset ?slim. "
+        f"?slim rdfs:label '{slim_name}'^^<http://www.w3.org/2001/XMLSchema#string>. }} LIMIT 1000"
     )

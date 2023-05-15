@@ -97,13 +97,8 @@ class Query:
         """
         logging.info(self.__seed_list)
         # Enrichment process
-        slim_manager = SlimManager()
         source_list = [term.get_iri() for term in self.__term_list]
-        object_list = source_list + [
-            term.get_iri()
-            for slim_name in slim_list
-            for term in slim_manager.get_slim_members(slim_name)
-        ]
+        object_list = source_list + self.generate_slim_terms(slim_list)
         s_result = []
         if len(object_list) > 90:
             for chunk in chunks(object_list, 90):
@@ -145,13 +140,8 @@ class Query:
         """
         logging.info(self.__seed_list)
         # Enrichment process
-        slim_manager = SlimManager()
         source_list = [term.get_iri() for term in self.__term_list]
-        object_list = source_list + [
-            term.get_iri()
-            for slim_name in slim_list
-            for term in slim_manager.get_slim_members(slim_name)
-        ]
+        object_list = source_list + SlimManager.get_slim_members(slim_list)
         s_result = []
         if len(object_list) > 90:
             for chunk in chunks(object_list, 90):
