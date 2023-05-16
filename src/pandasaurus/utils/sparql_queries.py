@@ -9,7 +9,7 @@ def get_simple_enrichment_query(
         f"SELECT ?s ?s_label ?p ?o ?o_label WHERE {{ GRAPH <http://reasoner.renci.org/redundant> {{"
         f"VALUES ?s {{ {' '.join(s_iri_list)} }} VALUES ?o {{ {' '.join(o_iri_list)} }} "
         f"VALUES ?p {{ {' '.join(property_list)} }}"
-        f"?s ?p ?o. }} ?s rdfs:label ?s_label. ?o rdfs:label ?o_label}} LIMIT 1000"
+        f"?s ?p ?o. }} ?s rdfs:label ?s_label. ?o rdfs:label ?o_label. FILTER(?s != ?o)}} LIMIT 1000"
     )
 
 
@@ -22,7 +22,7 @@ def get_full_enrichment_query(s_iri_list: List[str], o_iri_list: List[str]) -> s
     return (
         f"SELECT ?s ?s_label ?p ?o ?o_label WHERE {{ GRAPH <http://reasoner.renci.org/nonredundant> {{"
         f"VALUES ?s {{ {' '.join(s_iri_list)} }} VALUES ?o {{ {' '.join(o_iri_list)} }} "
-        f"?s rdfs:subClassOf* ?o. }} ?s rdfs:label ?s_label. ?o rdfs:label ?o_label}} LIMIT 1000"
+        f"?s rdfs:subClassOf* ?o. }} ?s rdfs:label ?s_label. ?o rdfs:label ?o_label FILTER(?s != ?o)}} LIMIT 1000"
     )
 
 
