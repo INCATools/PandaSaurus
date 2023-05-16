@@ -100,27 +100,17 @@ class Query:
         source_list = [term.get_iri() for term in self.__term_list]
         object_list = source_list + SlimManager.get_slim_members(slim_list)
         s_result = []
-        if len(object_list) > 90:
-            for chunk in chunks(object_list, 90):
-                s_result.extend(
-                    [
-                        res
-                        for res in run_sparql_query(
-                            get_simple_enrichment_query(
-                                source_list, chunk, self.__enrichment_property_list
-                            )
+        for chunk in chunks(object_list, 90):
+            s_result.extend(
+                [
+                    res
+                    for res in run_sparql_query(
+                        get_simple_enrichment_query(
+                            source_list, chunk, self.__enrichment_property_list
                         )
-                    ]
-                )
-        else:
-            s_result = [
-                res
-                for res in run_sparql_query(
-                    get_simple_enrichment_query(
-                        source_list, object_list, self.__enrichment_property_list
                     )
-                )
-            ]
+                ]
+            )
 
         self.enriched_df = pd.DataFrame(s_result, columns=["s", "s_label", "p", "o", "o_label"])
         return self.enriched_df
@@ -143,15 +133,11 @@ class Query:
         source_list = [term.get_iri() for term in self.__term_list]
         object_list = source_list + SlimManager.get_slim_members(slim_list)
         s_result = []
-        if len(object_list) > 90:
-            for chunk in chunks(object_list, 90):
-                s_result.extend(
-                    [res for res in run_sparql_query(get_full_enrichment_query(source_list, chunk))]
-                )
-        else:
-            s_result = [
-                res for res in run_sparql_query(get_full_enrichment_query(source_list, object_list))
-            ]
+        for chunk in chunks(object_list, 90):
+            s_result.extend(
+                [res for res in run_sparql_query(get_full_enrichment_query(source_list, chunk))]
+            )
+
         self.enriched_df = pd.DataFrame(s_result, columns=["s", "s_label", "p", "o", "o_label"])
         return self.enriched_df
 
@@ -174,27 +160,17 @@ class Query:
         source_list = [term.get_iri() for term in self.__term_list]
         object_list = source_list + [res.get("term") for res in run_sparql_query(query_string)]
         s_result = []
-        if len(object_list) > 90:
-            for chunk in chunks(object_list, 90):
-                s_result.extend(
-                    [
-                        res
-                        for res in run_sparql_query(
-                            get_simple_enrichment_query(
-                                source_list, chunk, self.__enrichment_property_list
-                            )
+        for chunk in chunks(object_list, 90):
+            s_result.extend(
+                [
+                    res
+                    for res in run_sparql_query(
+                        get_simple_enrichment_query(
+                            source_list, chunk, self.__enrichment_property_list
                         )
-                    ]
-                )
-        else:
-            s_result = [
-                res
-                for res in run_sparql_query(
-                    get_simple_enrichment_query(
-                        source_list, object_list, self.__enrichment_property_list
                     )
-                )
-            ]
+                ]
+            )
 
         self.enriched_df = pd.DataFrame(s_result, columns=["s", "s_label", "p", "o", "o_label"])
         return self.enriched_df
