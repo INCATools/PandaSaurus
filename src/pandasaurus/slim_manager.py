@@ -1,20 +1,18 @@
 from typing import Dict, List
 
-from utils.query_utils import run_slim_details_query, run_slim_list_query
-
 from .resources.slim import Slim
+from .utils.query_utils import run_sparql_query
+from .utils.sparql_queries import get_slim_list_query, get_slim_members_query
 
 
 class SlimManager:
     """SlimManager responsible for slim operations such as finding available slim in given ontologies and showing slim
-    content
+    content.
     """
 
-    def __init__(self):
-        self.slim_list: Dict[str, Slim] = dict()
-
-    def find_slim_list(self, ontology: str) -> List[List[str]]:
-        """Returns name and definition of available slims in given ontology
+    @staticmethod
+    def get_slim_list(ontology: str) -> List[Dict[str, str]]:
+        """Returns name and definition of available slims in given ontology.
 
         Args:
             ontology: Ontology name
@@ -24,22 +22,29 @@ class SlimManager:
 
         """
         slim_list: Dict[str, Slim] = dict()
-        # TODO Add missing implementation
-        self.slim_list = slim_list
-        # We probably need a good print method here instead of returning a list of list here.
-        return [[slim.name, slim.description] for slim in self.slim_list]
+        result = run_sparql_query(get_slim_list_query(ontology))
+        for res in result:
+            slim_list.update(
+                {res.get("label"): Slim(name=res.get("label"), description=res.get("comment"))}
+            )
+        return [
+            {"name": slim.get_name(), "description": slim.get_description()}
+            for slim in slim_list.values()
+        ]
 
-    def show_slim_content(self, slim_name: str) -> List[List[str]]:
+    @staticmethod
+    def get_slim_members(slim_list: List[str]) -> List[str]:
         """Lists names and IDs of all terms in slim.
 
         Args:
-            slim_name: Slim name
+            slim_list: A list of slim names
 
         Returns:
-            Term names and IDs of the slim
+            Term IRIs of the slim members
 
         """
-        slim: Slim = self.slim_list.get(slim_name)
-        # TODO Add missing implementation
-        # We probably need a good print method here instead of returning a list of list here.
-        return [[term.label, term.iri] for term in slim]
+        return [
+            term.get("term")
+            for slim_name in slim_list
+            for term in run_sparql_query(get_slim_members_query(slim_name))
+        ]

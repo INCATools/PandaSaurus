@@ -1,75 +1,23 @@
-from typing import List
+from typing import Iterator
 
-from sparql_queries import (
-    get_contextual_enrichment_query,
-    get_curie_prefix_validation_query,
-    get_curie_validation_query,
-    get_full_enrichment_query,
-    get_minimal_enrichment_query,
-    get_obsolete_term_query,
-    get_replaced_by_query,
-    get_simple_enrichment_query,
-    get_slim_details_query,
-    get_slim_list_query,
-)
-from SPARQLWrapper import JSON, SPARQLWrapper
+from oaklib.implementations import UbergraphImplementation
 
-from ..config import default_config
-
-# SPARQLWrapper init
-sparql = SPARQLWrapper(default_config["UBERGRAPH_ENDPOINT"])
-sparql.setReturnFormat(JSON)
+oi = UbergraphImplementation()
 
 
-def retrieve_simple_slim_triples(seed_list: List[str]):
-    # TODO Add missing implementation
-    pass
+def run_sparql_query(query: str) -> Iterator:
+    return oi.query(query=query, prefixes=get_prefixes(query, oi.prefix_map().keys()))
 
 
-def retrieve_minimal_slim_triples(seed_list: List[str]):
-    # TODO Add missing implementation
-    pass
+def chunks(lst, n):
+    for i in range(0, len(lst), n):
+        yield lst[i : i + n]
 
 
-def retrieve_full_slim_triples(seed_list: List[str]):
-    # TODO Add missing implementation
-    pass
+def get_prefixes(text, prefix_map):
+    _prefixes = []
+    for prefix in prefix_map:
+        if prefix in text:
+            _prefixes.append(prefix)
 
-
-def retrieve_contextual_slim_triples(seed_list: List[str]):
-    # TODO Add missing implementation
-    pass
-
-
-def run_curie_prefix_query(curie_list: List[str]):
-    sparql.setQuery(get_curie_prefix_validation_query(curie_list))
-    # TODO Add missing implementation
-    pass
-
-
-def run_curie_list_query(curie_list: List[str]):
-    sparql.setQuery(get_curie_validation_query(curie_list))
-    # TODO Add missing implementation
-    pass
-
-
-def run_obsolete_term_query(curie_list: List[str]):
-    sparql.setQuery(get_obsolete_term_query(curie_list))
-    # TODO Add missing implementation
-    pass
-
-
-def run_replaced_by_query(curie_list: List[str]):
-    sparql.setQuery(get_replaced_by_query(curie_list))
-    # TODO Add missing implementation
-    pass
-
-
-def run_slim_list_query(ontology: str):
-    sparql.setQuery(get_slim_list_query(ontology))
-    # TODO Add missing implementation
-    pass
-
-
-def run_slim_details_query():
-    pass
+    return _prefixes
