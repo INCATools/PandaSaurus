@@ -1,6 +1,6 @@
 import pytest
 
-from pandasaurus.utils.query_utils import run_sparql_query, chunks, get_prefixes
+from pandasaurus.utils.query_utils import chunks, get_prefixes, run_sparql_query
 
 
 def test_run_sparql_query():

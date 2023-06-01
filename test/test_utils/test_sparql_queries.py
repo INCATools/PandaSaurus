@@ -1,12 +1,12 @@
 from pandasaurus.utils.sparql_queries import (
-    get_simple_enrichment_query,
-    get_minimal_enrichment_query,
-    get_full_enrichment_query,
     get_contextual_enrichment_query,
     get_curie_prefix_validation_query,
+    get_full_enrichment_query,
     get_label_query,
+    get_minimal_enrichment_query,
     get_obsolete_term_query,
     get_replaced_by_query,
+    get_simple_enrichment_query,
     get_slim_list_query,
     get_slim_members_query,
 )
@@ -68,8 +68,10 @@ def test_get_label_query():
 
     query = get_label_query(term_iri_list)
 
-    expected_query = ("SELECT ?term ?label where { ?term rdf:type owl:Class. OPTIONAL {?term rdfs:label ?label.} "
-                      "VALUES ?term { CL:0000084 CL:0000787} }# LIMIT")
+    expected_query = (
+        "SELECT ?term ?label where { ?term rdf:type owl:Class. OPTIONAL {?term rdfs:label ?label.} "
+        "VALUES ?term { CL:0000084 CL:0000787} }# LIMIT"
+    )
 
     assert query == expected_query
 
@@ -83,8 +85,10 @@ def test_get_replaced_by_query():
 
     query = get_replaced_by_query(term_iri_list)
 
-    expected_query = ("SELECT * WHERE { ?term rdfs:label ?label. ?term owl:deprecated ?depr_status. ?term IAO:0100001 "
-                      "?new_term. ?new_term rdfs:label ?new_term_label VALUES ?term {CL:0000084 CL:0000787} }# LIMIT")
+    expected_query = (
+        "SELECT * WHERE { ?term rdfs:label ?label. ?term owl:deprecated ?depr_status. ?term IAO:0100001 "
+        "?new_term. ?new_term rdfs:label ?new_term_label VALUES ?term {CL:0000084 CL:0000787} }# LIMIT"
+    )
 
     assert query == expected_query
 
@@ -98,7 +102,9 @@ def test_get_slim_members_query():
 
     query = get_slim_members_query(slim_name)
 
-    expected_query = ("SELECT ?term WHERE { ?term oio:inSubset ?slim. ?slim rdfs:label "
-                      "'slim_name'^^<http://www.w3.org/2001/XMLSchema#string>. }# LIMIT")
+    expected_query = (
+        "SELECT ?term WHERE { ?term oio:inSubset ?slim. ?slim rdfs:label "
+        "'slim_name'^^<http://www.w3.org/2001/XMLSchema#string>. }# LIMIT"
+    )
 
     assert query == expected_query

@@ -17,7 +17,8 @@ def test_get_description():
     )
     assert (
         slim.get_description()
-        == "a subset of general classes related to blood and the immune system, primarily of hematopoietic origin"
+        == "a subset of general classes related to blood and the immune system, primarily of "
+        "hematopoietic origin"
     )
 
 

@@ -1,7 +1,3 @@
-from typing import Dict, List
-from unittest.mock import patch
-import pytest
-
 from pandasaurus.curie_validator import CurieValidator
 from pandasaurus.resources.term import Term
 from pandasaurus.utils.pandasaurus_exceptions import InvalidTerm, ObsoletedTerm
