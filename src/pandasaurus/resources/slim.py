@@ -43,4 +43,4 @@ class Slim:
         self._term_list = term_list
 
     def __str__(self):
-        return f"Name:{self.name}, Description: {self.description}"
+        return f"Name:{self._name}, Description: {self._description}"

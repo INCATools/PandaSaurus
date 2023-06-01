@@ -17,7 +17,7 @@ class ObsoletedTerm(Exception):
         self.term_list = term_list
         self.message = (
             f"The following terms are obsoleted: {', '.join([term.get_iri() for term in term_list])}, "
-            f"and replaced by following terms: {', '.join([term.get_new_iri() for term in term_list])} "
-            f"consider using the new terms"
+            f"and replaced by following terms: {', '.join([term.get_new_iri() for term in term_list])}. "
+            f"Please consider using the new terms"
         )
         super().__init__(self.message)

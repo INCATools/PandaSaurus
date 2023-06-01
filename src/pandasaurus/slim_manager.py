@@ -10,6 +10,7 @@ class SlimManager:
     content.
     """
 
+    # Might not be needed
     @staticmethod
     def get_slim_list(ontology: str) -> List[Dict[str, str]]:
         """Returns name and definition of available slims in given ontology.

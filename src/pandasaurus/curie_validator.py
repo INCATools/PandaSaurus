@@ -45,7 +45,6 @@ class CurieValidator:
 
         """
         query_string = get_label_query(curie_list)
-        # result = self.oi.query(query=query_string, prefixes=get_prefixes(query_string, self.oi.prefix_map().keys()))
         result_dict = dict(
             [(r.get("term"), r.get("label")) for r in run_sparql_query(query_string)]
         )
@@ -114,7 +113,8 @@ class CurieValidator:
         if obsoleted_terms:
             raise ObsoletedTerm(obsoleted_terms)
 
-    def construct_term_list(self, seed_list) -> List[Term]:
+    @staticmethod
+    def construct_term_list(seed_list) -> List[Term]:
         """Returns list of Term objects after running validate_curie_list and find_obsolete_terms methods.
 
         Args:
@@ -124,8 +124,8 @@ class CurieValidator:
             List of Term objects
 
         """
-        term_validation = self.validate_curie_list(seed_list)
-        term_obsoletion = self.find_obsolete_terms(seed_list)
+        term_validation = CurieValidator.validate_curie_list(seed_list)
+        term_obsoletion = CurieValidator.find_obsolete_terms(seed_list)
         term_list: List[Term] = list()
         for seed in seed_list:
             term = Term(
