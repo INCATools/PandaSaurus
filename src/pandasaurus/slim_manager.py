@@ -1,8 +1,8 @@
 from typing import Dict, List
 
-from .resources.slim import Slim
-from .utils.query_utils import run_sparql_query
-from .utils.sparql_queries import get_slim_list_query, get_slim_members_query
+from src.pandasaurus.resources.slim import Slim
+from src.pandasaurus.utils.query_utils import run_sparql_query
+from src.pandasaurus.utils.sparql_queries import get_slim_list_query, get_slim_members_query
 
 
 class SlimManager:

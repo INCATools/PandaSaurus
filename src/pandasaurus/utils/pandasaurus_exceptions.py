@@ -1,6 +1,6 @@
 from typing import List
 
-from pandasaurus.resources.term import Term
+from src.pandasaurus.resources.term import Term
 
 
 class InvalidTerm(Exception):

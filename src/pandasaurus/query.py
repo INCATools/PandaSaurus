@@ -3,12 +3,12 @@ from typing import List, Optional
 
 import pandas as pd
 
-from .curie_validator import CurieValidator
-from .resources.term import Term
-from .slim_manager import SlimManager
-from .utils.pandasaurus_exceptions import InvalidTerm, ObsoletedTerm
-from .utils.query_utils import chunks, run_sparql_query
-from .utils.sparql_queries import (
+from src.pandasaurus.curie_validator import CurieValidator
+from src.pandasaurus.resources.term import Term
+from src.pandasaurus.slim_manager import SlimManager
+from src.pandasaurus.utils.pandasaurus_exceptions import InvalidTerm, ObsoletedTerm
+from src.pandasaurus.utils.query_utils import chunks, run_sparql_query
+from src.pandasaurus.utils.sparql_queries import (
     get_contextual_enrichment_query,
     get_full_enrichment_query,
     get_simple_enrichment_query,
