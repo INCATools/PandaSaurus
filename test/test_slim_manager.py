@@ -1,4 +1,4 @@
-from pandasaurus.slim_manager import SlimManager
+from src.pandasaurus.slim_manager import SlimManager
 
 
 def test_find_slim_list():

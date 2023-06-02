@@ -1,8 +1,8 @@
 import pandas as pd
 
-from pandasaurus.query import Query
-from pandasaurus.utils.query_utils import run_sparql_query
-from pandasaurus.utils.sparql_queries import get_contextual_enrichment_query
+from src.pandasaurus.query import Query
+from src.pandasaurus.utils.query_utils import run_sparql_query
+from src.pandasaurus.utils.sparql_queries import get_contextual_enrichment_query
 
 blood_and_immune_test_data = [
     "CL:0000084",

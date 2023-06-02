@@ -1,4 +1,4 @@
-from pandasaurus.resources.term import Term
+from src.pandasaurus.resources.term import Term
 
 
 def test_get_label():

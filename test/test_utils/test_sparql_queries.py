@@ -1,4 +1,4 @@
-from pandasaurus.utils.sparql_queries import (
+from src.pandasaurus.utils.sparql_queries import (
     get_contextual_enrichment_query,
     get_curie_prefix_validation_query,
     get_full_enrichment_query,

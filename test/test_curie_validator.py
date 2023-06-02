@@ -1,13 +1,6 @@
-import os
-import sys
-
-from pandasaurus.curie_validator import CurieValidator
-from pandasaurus.resources.term import Term
+from src.pandasaurus.curie_validator import CurieValidator
+from src.pandasaurus.resources.term import Term
 from pandasaurus.utils.pandasaurus_exceptions import InvalidTerm, ObsoletedTerm
-
-current_dir = os.path.dirname(os.path.abspath(__file__))
-root_dir = os.path.dirname(current_dir)
-sys.path.append(root_dir)
 
 
 def test_validate_curie_prefixes():
