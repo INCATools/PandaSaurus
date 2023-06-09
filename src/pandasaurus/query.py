@@ -131,7 +131,9 @@ class Query:
         for chunk in chunks(object_list, 90):
             s_result.extend([res for res in run_sparql_query(get_full_enrichment_query(source_list, chunk))])
 
-        self.enriched_df = pd.DataFrame(s_result, columns=["s", "s_label", "p", "x", "x_label"])
+        self.enriched_df = pd.DataFrame(s_result, columns=["s", "s_label", "p", "x", "x_label"]).rename(
+            columns={"x": "o", "x_label": "o_label"}
+        )
         return self.enriched_df
 
     def contextual_slim_enrichment(self, context: List[str]) -> pd.DataFrame:
