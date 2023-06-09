@@ -44,9 +44,7 @@ class Query:
         """
         # Might be unnecessary
         self.__seed_list = seed_list
-        self.__enrichment_property_list = (
-            enrichment_property_list if enrichment_property_list else ["rdfs:subClassOf"]
-        )
+        self.__enrichment_property_list = enrichment_property_list if enrichment_property_list else ["rdfs:subClassOf"]
         self.enriched_df: pd.DataFrame = pd.DataFrame()
         self.__term_list: List[Term] = CurieValidator.construct_term_list(seed_list)
         # Validation and reporting
@@ -76,9 +74,7 @@ class Query:
         # Enrichment process
         source_list = [term.get_iri() for term in self.__term_list]
         object_list = [term.get_iri() for term in self.__term_list]
-        query_string = get_simple_enrichment_query(
-            source_list, object_list, self.__enrichment_property_list
-        )
+        query_string = get_simple_enrichment_query(source_list, object_list, self.__enrichment_property_list)
         self.enriched_df = pd.DataFrame(
             [res for res in run_sparql_query(query_string)],
             columns=["s", "s_label", "p", "o", "o_label"],
@@ -107,9 +103,7 @@ class Query:
                 [
                     res
                     for res in run_sparql_query(
-                        get_simple_enrichment_query(
-                            source_list, chunk, self.__enrichment_property_list
-                        )
+                        get_simple_enrichment_query(source_list, chunk, self.__enrichment_property_list)
                     )
                 ]
             )
@@ -135,11 +129,9 @@ class Query:
         object_list = source_list + SlimManager.get_slim_members(slim_list)
         s_result = []
         for chunk in chunks(object_list, 90):
-            s_result.extend(
-                [res for res in run_sparql_query(get_full_enrichment_query(source_list, chunk))]
-            )
+            s_result.extend([res for res in run_sparql_query(get_full_enrichment_query(source_list, chunk))])
 
-        self.enriched_df = pd.DataFrame(s_result, columns=["s", "s_label", "p", "o", "o_label"])
+        self.enriched_df = pd.DataFrame(s_result, columns=["s", "s_label", "p", "x", "x_label"])
         return self.enriched_df
 
     def contextual_slim_enrichment(self, context: List[str]) -> pd.DataFrame:
@@ -167,9 +159,7 @@ class Query:
                 [
                     res
                     for res in run_sparql_query(
-                        get_simple_enrichment_query(
-                            source_list, chunk, self.__enrichment_property_list
-                        )
+                        get_simple_enrichment_query(source_list, chunk, self.__enrichment_property_list)
                     )
                 ]
             )

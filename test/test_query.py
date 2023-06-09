@@ -739,9 +739,7 @@ def test_full_slim_enrichment():
             "o_label": "immature T cell",
         },
     ]
-    expected_full_slim_df = pd.DataFrame(
-        data_full_slim, columns=["s", "s_label", "p", "o", "o_label"]
-    ).sort_values("s")
+    expected_full_slim_df = pd.DataFrame(data_full_slim, columns=["s", "s_label", "p", "o", "o_label"]).sort_values("s")
 
     q = Query(blood_and_immune_test_data)
     df = q.full_slim_enrichment(slim_list)
@@ -827,9 +825,9 @@ def test_contextual_slim_enrichment():
             "o_label": "kidney loop of Henle thick ascending limb epithelial cell",
         },
     ]
-    expected_contextual_df = pd.DataFrame(
-        data_contextual, columns=["s", "s_label", "p", "o", "o_label"]
-    ).sort_values("s")
+    expected_contextual_df = pd.DataFrame(data_contextual, columns=["s", "s_label", "p", "o", "o_label"]).sort_values(
+        "s"
+    )
 
     q = Query(kidney_test_data)
     df = q.contextual_slim_enrichment(context_list)

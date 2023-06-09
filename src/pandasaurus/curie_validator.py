@@ -45,9 +45,7 @@ class CurieValidator:
 
         """
         query_string = get_label_query(curie_list)
-        result_dict = dict(
-            [(r.get("term"), r.get("label")) for r in run_sparql_query(query_string)]
-        )
+        result_dict = dict([(r.get("term"), r.get("label")) for r in run_sparql_query(query_string)])
         return {
             curie: {
                 "label": result_dict.get(curie) if curie in result_dict else None,
@@ -132,9 +130,7 @@ class CurieValidator:
                 term_validation.get(seed).get("label"),
                 seed,
                 term_validation.get(seed).get("valid"),
-                term_obsoletion.get(seed).get("new_term_label")
-                if seed in term_obsoletion
-                else None,
+                term_obsoletion.get(seed).get("new_term_label") if seed in term_obsoletion else None,
                 term_obsoletion.get(seed).get("new_term") if seed in term_obsoletion else None,
             )
             term_list.append(term)

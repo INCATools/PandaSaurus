@@ -28,13 +28,8 @@ class SlimManager:
         slim_list: Dict[str, Slim] = dict()
         result = run_sparql_query(get_slim_list_query(ontology))
         for res in result:
-            slim_list.update(
-                {res.get("label"): Slim(name=res.get("label"), description=res.get("comment"))}
-            )
-        return [
-            {"name": slim.get_name(), "description": slim.get_description()}
-            for slim in slim_list.values()
-        ]
+            slim_list.update({res.get("label"): Slim(name=res.get("label"), description=res.get("comment"))})
+        return [{"name": slim.get_name(), "description": slim.get_description()} for slim in slim_list.values()]
 
     @staticmethod
     def get_slim_members(slim_list: List[str]) -> List[str]:
@@ -48,7 +43,5 @@ class SlimManager:
 
         """
         return [
-            term.get("term")
-            for slim_name in slim_list
-            for term in run_sparql_query(get_slim_members_query(slim_name))
+            term.get("term") for slim_name in slim_list for term in run_sparql_query(get_slim_members_query(slim_name))
         ]

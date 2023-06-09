@@ -1,13 +1,9 @@
 from src.pandasaurus.utils.sparql_queries import (
     get_contextual_enrichment_query,
-    get_curie_prefix_validation_query,
     get_full_enrichment_query,
     get_label_query,
-    get_minimal_enrichment_query,
-    get_obsolete_term_query,
     get_replaced_by_query,
     get_simple_enrichment_query,
-    get_slim_list_query,
     get_slim_members_query,
 )
 

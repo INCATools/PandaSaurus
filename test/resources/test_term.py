@@ -50,7 +50,6 @@ def test_str():
     assert str(term) == "IRI: CL:0000084, Label: T cell, Valid: True, Obsoleted: False"
     obsolete_term = Term("obsolete Muller cell", "CL:0011107", True, "Muller cell", "CL:0000636")
     assert (
-        str(obsolete_term)
-        == "IRI: CL:0011107, Label: obsolete Muller cell, Valid: True, Obsoleted: True, "
+        str(obsolete_term) == "IRI: CL:0011107, Label: obsolete Muller cell, Valid: True, Obsoleted: True, "
         "New term label: Muller cell, New term IRI: CL:0000636"
     )

@@ -6,9 +6,7 @@ from src.pandasaurus.resources.term import Term
 class InvalidTerm(Exception):
     def __init__(self, term_list: List[Term]):
         self.term_list = term_list
-        self.message = (
-            f"The following terms are invalid: {', '.join([term.get_iri() for term in term_list])}"
-        )
+        self.message = f"The following terms are invalid: {', '.join([term.get_iri() for term in term_list])}"
         super().__init__(self.message)
 
 
