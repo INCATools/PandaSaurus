@@ -2,9 +2,7 @@ from typing import List
 
 
 # TODO might need to update the enrichment query method names
-def get_simple_enrichment_query(
-    s_iri_list: List[str], o_iri_list: List[str], property_list: List[str]
-) -> str:
+def get_simple_enrichment_query(s_iri_list: List[str], o_iri_list: List[str], property_list: List[str]) -> str:
     return (
         f"SELECT ?s ?s_label ?p ?o ?o_label WHERE {{ GRAPH <http://reasoner.renci.org/redundant> {{"
         f"VALUES ?s {{ {' '.join(s_iri_list)} }} VALUES ?o {{ {' '.join(o_iri_list)} }} "
@@ -20,9 +18,10 @@ def get_minimal_enrichment_query(seed_list: List[str]) -> str:
 
 def get_full_enrichment_query(s_iri_list: List[str], o_iri_list: List[str]) -> str:
     return (
-        f"SELECT DISTINCT ?s ?s_label ?p ?o ?o_label WHERE {{ GRAPH <http://reasoner.renci.org/nonredundant> {{"
-        f"VALUES ?s {{ {' '.join(s_iri_list)} }} VALUES ?o {{ {' '.join(o_iri_list)} }} "
-        f"?s rdfs:subClassOf* ?o. FILTER(?s != ?o)}} ?s rdfs:label ?s_label. ?o rdfs:label ?o_label }}# LIMIT"
+        f"SELECT DISTINCT ?s ?s_label ?p ?x ?x_label ?o ?o_label WHERE {{ GRAPH "
+        f"<http://reasoner.renci.org/nonredundant> {{ VALUES ?s {{ {' '.join(s_iri_list)} }} VALUES ?o {{ "
+        f" {' '.join(o_iri_list)} }}  ?s rdfs:subClassOf* ?x. ?x rdfs:subClassOf* ?o. FILTER(?s != ?o)}} ?s  "
+        f"rdfs:label ?s_label. ?x rdfs:label  ?x_label. ?o rdfs:label ?o_label }}# LIMIT"
     )
 
 
