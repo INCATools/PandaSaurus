@@ -1,13 +1,44 @@
 from src.pandasaurus.slim_manager import SlimManager
 
 
-def test_find_slim_list():
-    pass
+def test_get_slim_list(mocker):
+    expected_get_slim_list = [
+        {
+            "name": "blood_and_immune_upper_slim",
+            "description": "a subset of general classes related to blood and the immune system, primarily of "
+            "hematopoietic origin",
+        },
+        {
+            "name": "eye_upper_slim",
+            "description": "a subset of general classes related to specific cell types in the eye.",
+        },
+    ]
+
+    # Mocking the run_sparql_query function
+    mocker.patch(
+        "src.pandasaurus.slim_manager.run_sparql_query",
+        return_value=iter(
+            [
+                {
+                    "slim": "cl#blood:and:immune:upper:slim",
+                    "label": "blood_and_immune_upper_slim",
+                    "comment": "a subset of general classes related to blood and the immune system, primarily of "
+                    "hematopoietic origin",
+                },
+                {
+                    "slim": "cl#eye:upper:slim",
+                    "label": "eye_upper_slim",
+                    "comment": "a subset of general classes related to specific cell types in the eye.",
+                },
+            ]
+        ),
+    )
+    assert SlimManager.get_slim_list("Cell Ontology") == expected_get_slim_list
 
 
-def test_show_slim_content():
+def test_get_slim_members():
     slim_list = ["blood_and_immune_upper_slim"]
-    expected_show_slim_content = [
+    expected_get_slim_members = [
         "CL:0000037",
         "CL:0000038",
         "CL:0000097",
@@ -46,5 +77,5 @@ def test_show_slim_content():
         "CL:4030029",
     ]
 
-    show_slim_content = SlimManager.get_slim_members(slim_list)
-    assert show_slim_content == expected_show_slim_content
+    get_slim_members = SlimManager.get_slim_members(slim_list)
+    assert get_slim_members == expected_get_slim_members
