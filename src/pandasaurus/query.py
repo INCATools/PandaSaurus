@@ -3,12 +3,12 @@ from typing import List, Optional
 
 import pandas as pd
 
-from .curie_validator import CurieValidator
-from .resources.term import Term
-from .slim_manager import SlimManager
-from .utils.pandasaurus_exceptions import InvalidTerm, ObsoletedTerm
-from .utils.query_utils import chunks, run_sparql_query
-from .utils.sparql_queries import (
+from src.pandasaurus.curie_validator import CurieValidator
+from src.pandasaurus.resources.term import Term
+from src.pandasaurus.slim_manager import SlimManager
+from src.pandasaurus.utils.pandasaurus_exceptions import InvalidTerm, ObsoletedTerm
+from src.pandasaurus.utils.query_utils import chunks, run_sparql_query
+from src.pandasaurus.utils.sparql_queries import (
     get_contextual_enrichment_query,
     get_full_enrichment_query,
     get_simple_enrichment_query,
@@ -44,9 +44,9 @@ class Query:
         """
         # Might be unnecessary
         self.__seed_list = seed_list
-        self.__enrichment_property_list = enrichment_property_list
+        self.__enrichment_property_list = enrichment_property_list if enrichment_property_list else ["rdfs:subClassOf"]
         self.enriched_df: pd.DataFrame = pd.DataFrame()
-        self.__term_list: List[Term] = CurieValidator().construct_term_list(seed_list)
+        self.__term_list: List[Term] = CurieValidator.construct_term_list(seed_list)
         # Validation and reporting
         try:
             CurieValidator.get_validation_report(self.__term_list)
@@ -74,9 +74,7 @@ class Query:
         # Enrichment process
         source_list = [term.get_iri() for term in self.__term_list]
         object_list = [term.get_iri() for term in self.__term_list]
-        query_string = get_simple_enrichment_query(
-            source_list, object_list, self.__enrichment_property_list
-        )
+        query_string = get_simple_enrichment_query(source_list, object_list, self.__enrichment_property_list)
         self.enriched_df = pd.DataFrame(
             [res for res in run_sparql_query(query_string)],
             columns=["s", "s_label", "p", "o", "o_label"],
@@ -105,13 +103,10 @@ class Query:
                 [
                     res
                     for res in run_sparql_query(
-                        get_simple_enrichment_query(
-                            source_list, chunk, self.__enrichment_property_list
-                        )
+                        get_simple_enrichment_query(source_list, chunk, self.__enrichment_property_list)
                     )
                 ]
             )
-
         self.enriched_df = pd.DataFrame(s_result, columns=["s", "s_label", "p", "o", "o_label"])
         return self.enriched_df
 
@@ -134,11 +129,11 @@ class Query:
         object_list = source_list + SlimManager.get_slim_members(slim_list)
         s_result = []
         for chunk in chunks(object_list, 90):
-            s_result.extend(
-                [res for res in run_sparql_query(get_full_enrichment_query(source_list, chunk))]
-            )
+            s_result.extend([res for res in run_sparql_query(get_full_enrichment_query(source_list, chunk))])
 
-        self.enriched_df = pd.DataFrame(s_result, columns=["s", "s_label", "p", "o", "o_label"])
+        self.enriched_df = pd.DataFrame(s_result, columns=["s", "s_label", "p", "x", "x_label"]).rename(
+            columns={"x": "o", "x_label": "o_label"}
+        )
         return self.enriched_df
 
     def contextual_slim_enrichment(self, context: List[str]) -> pd.DataFrame:
@@ -148,12 +143,13 @@ class Query:
 
         Args:
             context: Organ/tissue/multicellular anatomical structure list to determine the redundant graph via
-            existential restrictions
+            existential restrictions. It must be a valid CURIE.
 
         Returns:
             Enriched DataFrame
 
         """
+        # TODO add a curie checking mechanism for context list
         logging.info(self.__seed_list)
         # Enrichment process
         query_string = get_contextual_enrichment_query(context)
@@ -165,14 +161,13 @@ class Query:
                 [
                     res
                     for res in run_sparql_query(
-                        get_simple_enrichment_query(
-                            source_list, chunk, self.__enrichment_property_list
-                        )
+                        get_simple_enrichment_query(source_list, chunk, self.__enrichment_property_list)
                     )
                 ]
             )
 
         self.enriched_df = pd.DataFrame(s_result, columns=["s", "s_label", "p", "o", "o_label"])
+        print(self.enriched_df.to_dict("records"))
         return self.enriched_df
 
     def query(self, column_name: str, query_term: str) -> pd.DataFrame:

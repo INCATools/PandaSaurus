@@ -1,8 +1,11 @@
 from typing import Dict, List
 
-from .resources.slim import Slim
-from .utils.query_utils import run_sparql_query
-from .utils.sparql_queries import get_slim_list_query, get_slim_members_query
+from src.pandasaurus.resources.slim import Slim
+from src.pandasaurus.utils.query_utils import run_sparql_query
+from src.pandasaurus.utils.sparql_queries import (
+    get_slim_list_query,
+    get_slim_members_query,
+)
 
 
 class SlimManager:
@@ -10,6 +13,7 @@ class SlimManager:
     content.
     """
 
+    # Might not be needed
     @staticmethod
     def get_slim_list(ontology: str) -> List[Dict[str, str]]:
         """Returns name and definition of available slims in given ontology.
@@ -24,13 +28,8 @@ class SlimManager:
         slim_list: Dict[str, Slim] = dict()
         result = run_sparql_query(get_slim_list_query(ontology))
         for res in result:
-            slim_list.update(
-                {res.get("label"): Slim(name=res.get("label"), description=res.get("comment"))}
-            )
-        return [
-            {"name": slim.get_name(), "description": slim.get_description()}
-            for slim in slim_list.values()
-        ]
+            slim_list.update({res.get("label"): Slim(name=res.get("label"), description=res.get("comment"))})
+        return [{"name": slim.get_name(), "description": slim.get_description()} for slim in slim_list.values()]
 
     @staticmethod
     def get_slim_members(slim_list: List[str]) -> List[str]:
@@ -44,7 +43,5 @@ class SlimManager:
 
         """
         return [
-            term.get("term")
-            for slim_name in slim_list
-            for term in run_sparql_query(get_slim_members_query(slim_name))
+            term.get("term") for slim_name in slim_list for term in run_sparql_query(get_slim_members_query(slim_name))
         ]

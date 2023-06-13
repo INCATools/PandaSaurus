@@ -80,6 +80,21 @@ class Term:
             self.__iri = self.__new_iri
             self.__is_obsolete = False
 
+    def __eq__(self, other):
+        if isinstance(other, Term):
+            return (
+                self.__label == other.__label
+                and self.__iri == other.__iri
+                and self.__is_valid == other.__is_valid
+                and self.__is_obsolete == other.__is_obsolete
+                and self.__new_label == other.__new_label
+                if (self.__is_obsolete and other.__is_obsolete)
+                else True and self.__new_iri == other.__new_iri
+                if (self.__is_obsolete and other.__is_obsolete)
+                else True
+            )
+        return False
+
     def __str__(self):
         msg = f"IRI: {self.__iri}, Label: {self.__label}, Valid: {self.__is_valid}"
         if self.__is_valid:
