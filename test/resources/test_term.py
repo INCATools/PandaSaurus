@@ -42,7 +42,11 @@ def test_update_obsoleted_term():
 def test_eq():
     term1 = Term("T cell", "CL:0000084", True)
     term2 = Term("T cell", "CL:0000084", True)
+    term3 = Term("T cell", "CL:00000841", True)
+    term4 = "term"
     assert term1 == term2
+    assert term1 != term3
+    assert term2 != term4
 
 
 def test_str():

@@ -87,11 +87,8 @@ class Term:
                 and self.__iri == other.__iri
                 and self.__is_valid == other.__is_valid
                 and self.__is_obsolete == other.__is_obsolete
-                and self.__new_label == other.__new_label
-                if (self.__is_obsolete and other.__is_obsolete)
-                else True and self.__new_iri == other.__new_iri
-                if (self.__is_obsolete and other.__is_obsolete)
-                else True
+                and (self.__new_label == other.__new_label if (self.__is_obsolete and other.__is_obsolete) else True)
+                and (self.__new_iri == other.__new_iri if (self.__is_obsolete and other.__is_obsolete) else True)
             )
         return False
 

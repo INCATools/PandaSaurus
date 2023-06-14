@@ -1,4 +1,5 @@
 import pandas as pd
+import pytest
 
 from src.pandasaurus.query import Query
 from src.pandasaurus.utils.query_utils import run_sparql_query
@@ -42,6 +43,37 @@ kidney_test_data = [
 
 slim_list = ["blood_and_immune_upper_slim"]
 context_list = ["UBERON:0000362"]  # renal medulla
+
+
+def test_query_constructor_with_valid_seed_list():
+    seed_list = ["CL:0000084", "CL:0000787"]
+    query = Query(seed_list)
+    assert query is not None
+
+
+def test_query_constructor_with_invalid_seed_list():
+    seed_list = ["CL:0000084", "CL:1234567"]
+    with pytest.raises(ValueError) as exc_info:
+        Query(seed_list, force_fail=True)
+
+    exception = exc_info.value
+    assert type(exception) == ValueError
+    expected_message = "Check your seed list! It contains invalid terms"
+    assert str(exception) == expected_message
+
+
+def test_query_constructor_with_obsoleted_seed_list():
+    seed_list = ["CL:0000084", "CL:0011107"]
+    with pytest.raises(ValueError) as exc_info:
+        Query(seed_list, force_fail=True)
+
+    exception = exc_info.value
+    assert type(exception) == ValueError
+    expected_message = (
+        "Check your seed list! It contains obsoleted terms. Use update_obsoleted_terms method to update all "
+        "obsoleted term"
+    )
+    assert str(exception) == expected_message
 
 
 def test_simple_enrichment():
@@ -956,3 +988,14 @@ def test_contextual_slim_enrichment():
 
 def test_query():
     pass
+
+
+def test_update_obsoleted_terms():
+    seed_list = ["CL:0000084", "CL:0011107"]
+    expected_update_obsoleted_terms = [
+        "IRI: CL:0000084, Label: T cell, Valid: True, Obsoleted: False",
+        "IRI: CL:0000636, Label: Mueller cell, Valid: True, Obsoleted: False",
+    ]
+    q = Query(seed_list)
+    q.update_obsoleted_terms()
+    assert [str(term) for term in q._Query__term_list] == expected_update_obsoleted_terms
