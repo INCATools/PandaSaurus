@@ -1,4 +1,4 @@
-from src.pandasaurus.slim_manager import SlimManager
+from pandasaurus.slim_manager import SlimManager
 
 
 def test_get_slim_list(mocker):
@@ -16,7 +16,7 @@ def test_get_slim_list(mocker):
 
     # Mocking the run_sparql_query function
     mocker.patch(
-        "src.pandasaurus.slim_manager.run_sparql_query",
+        "pandasaurus.slim_manager.run_sparql_query",
         return_value=iter(
             [
                 {

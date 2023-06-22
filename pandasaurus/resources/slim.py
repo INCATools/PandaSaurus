@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from src.pandasaurus.resources.term import Term
+from pandasaurus.resources.term import Term
 
 
 class Slim:

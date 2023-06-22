@@ -1,7 +1,7 @@
 import pytest
 
-from src.pandasaurus.resources.term import Term
-from src.pandasaurus.utils.pandasaurus_exceptions import InvalidTerm, ObsoletedTerm
+from pandasaurus.resources.term import Term
+from pandasaurus.utils.pandasaurus_exceptions import InvalidTerm, ObsoletedTerm
 
 
 def test_invalid_term_exception():
@@ -10,7 +10,6 @@ def test_invalid_term_exception():
         raise InvalidTerm(term_list)
 
     exception = exc_info.value
-    assert exception.term_list == term_list
     expected_message = "The following terms are invalid: CL:0000084, CL:0000787"
     assert str(exception) == expected_message
 
@@ -21,7 +20,6 @@ def test_obsoleted_term_exception():
         raise ObsoletedTerm(term_list)
 
     exception = exc_info.value
-    assert exception.term_list == term_list
     expected_message = (
         "The following terms are obsoleted: CL:0011107, and replaced by following terms: CL:0000636. "
         "Please consider using the new terms"

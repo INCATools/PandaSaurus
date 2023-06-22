@@ -23,7 +23,7 @@ jobs:
           pip install flake8 flake8-black flake8-isort
       - name: Check code quality 
         run: |
-          flake8 --ignore=F401,E203,W503 src/ test/
+          flake8 --ignore=F401,E203,W503 pandasaurus/ test/
 
   test:
     runs-on: ubuntu-latest
@@ -74,9 +74,7 @@ jobs:
       #              run test suite   
       #----------------------------------------------
       - name: Run tests
-        run: |
-          pwd
-          poetry run pytest --cov=src --cov-report=xml
+        run: poetry run pytest --cov=src --cov-report=xml
 
         #----------------------------------------------
         # upload coverage reports to Codecov

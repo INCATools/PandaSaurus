@@ -1,9 +1,9 @@
 from typing import Dict, List
 
-from src.pandasaurus.resources.term import Term
-from src.pandasaurus.utils.pandasaurus_exceptions import InvalidTerm, ObsoletedTerm
-from src.pandasaurus.utils.query_utils import run_sparql_query
-from src.pandasaurus.utils.sparql_queries import get_label_query, get_replaced_by_query
+from pandasaurus.resources.term import Term
+from pandasaurus.utils.pandasaurus_exceptions import InvalidTerm, ObsoletedTerm
+from pandasaurus.utils.query_utils import run_sparql_query
+from pandasaurus.utils.sparql_queries import get_label_query, get_replaced_by_query
 
 
 class CurieValidator:
