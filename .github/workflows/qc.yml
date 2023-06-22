@@ -74,7 +74,9 @@ jobs:
       #              run test suite   
       #----------------------------------------------
       - name: Run tests
-        run: poetry run pytest --cov=src --cov-report=xml
+        run: |
+          pwd
+          poetry run pytest --cov=src --cov-report=xml
 
         #----------------------------------------------
         # upload coverage reports to Codecov
