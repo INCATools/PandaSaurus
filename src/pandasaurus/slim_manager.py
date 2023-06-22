@@ -2,10 +2,7 @@ from typing import Dict, List
 
 from pandasaurus.resources.slim import Slim
 from pandasaurus.utils.query_utils import run_sparql_query
-from pandasaurus.utils.sparql_queries import (
-    get_slim_list_query,
-    get_slim_members_query,
-)
+from pandasaurus.utils.sparql_queries import get_slim_list_query, get_slim_members_query
 
 
 class SlimManager:
