@@ -3,12 +3,12 @@ from typing import List, Optional
 
 import pandas as pd
 
-from src.pandasaurus.curie_validator import CurieValidator
-from src.pandasaurus.resources.term import Term
-from src.pandasaurus.slim_manager import SlimManager
-from src.pandasaurus.utils.pandasaurus_exceptions import InvalidTerm, ObsoletedTerm
-from src.pandasaurus.utils.query_utils import chunks, run_sparql_query
-from src.pandasaurus.utils.sparql_queries import (
+from pandasaurus.curie_validator import CurieValidator
+from pandasaurus.resources.term import Term
+from pandasaurus.slim_manager import SlimManager
+from pandasaurus.utils.pandasaurus_exceptions import InvalidTerm, ObsoletedTerm
+from pandasaurus.utils.query_utils import chunks, run_sparql_query
+from pandasaurus.utils.sparql_queries import (
     get_contextual_enrichment_query,
     get_full_enrichment_query,
     get_simple_enrichment_query,
@@ -167,7 +167,6 @@ class Query:
             )
 
         self.enriched_df = pd.DataFrame(s_result, columns=["s", "s_label", "p", "o", "o_label"])
-        print(self.enriched_df.to_dict("records"))
         return self.enriched_df
 
     def query(self, column_name: str, query_term: str) -> pd.DataFrame:

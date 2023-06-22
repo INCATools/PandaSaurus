@@ -1,5 +1,5 @@
-from src.pandasaurus.resources.slim import Slim
-from src.pandasaurus.resources.term import Term
+from pandasaurus.resources.slim import Slim
+from pandasaurus.resources.term import Term
 
 
 def test_get_name():

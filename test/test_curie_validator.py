@@ -1,8 +1,8 @@
 import pytest
 
-from src.pandasaurus.curie_validator import CurieValidator
-from src.pandasaurus.resources.term import Term
-from src.pandasaurus.utils.pandasaurus_exceptions import InvalidTerm, ObsoletedTerm
+from pandasaurus.curie_validator import CurieValidator
+from pandasaurus.resources.term import Term
+from pandasaurus.utils.pandasaurus_exceptions import InvalidTerm, ObsoletedTerm
 
 
 def test_validate_curie_prefixes():

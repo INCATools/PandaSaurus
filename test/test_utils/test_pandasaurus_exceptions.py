@@ -1,7 +1,7 @@
 import pytest
 
-from src.pandasaurus.resources.term import Term
-from src.pandasaurus.utils.pandasaurus_exceptions import InvalidTerm, ObsoletedTerm
+from pandasaurus.resources.term import Term
+from pandasaurus.utils.pandasaurus_exceptions import InvalidTerm, ObsoletedTerm
 
 
 def test_invalid_term_exception():
