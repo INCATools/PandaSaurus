@@ -37,7 +37,7 @@ def test_get_full_enrichment_query():
     expected_query = (
         "SELECT DISTINCT ?s ?s_label ?p ?x ?x_label ?o ?o_label WHERE { GRAPH "
         "<http://reasoner.renci.org/nonredundant> { VALUES ?s { CL:0000084 CL:0000787 } VALUES ?o {  "
-        "CL:0000788 CL:0000798 }  ?s rdfs:subClassOf* ?x. ?x rdfs:subClassOf* ?o. FILTER(?s != ?o)} ?s  "
+        "CL:0000788 CL:0000798 }  ?s rdfs:subClassOf* ?x. ?x rdfs:subClassOf* ?o. FILTER(?s != ?x)} ?s  "
         "rdfs:label ?s_label. ?x rdfs:label  ?x_label. ?o rdfs:label ?o_label }# LIMIT"
     )
     assert query == expected_query
