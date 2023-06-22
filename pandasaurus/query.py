@@ -75,9 +75,13 @@ class Query:
         source_list = [term.get_iri() for term in self.__term_list]
         object_list = [term.get_iri() for term in self.__term_list]
         query_string = get_simple_enrichment_query(source_list, object_list, self.__enrichment_property_list)
-        self.enriched_df = pd.DataFrame(
-            [res for res in run_sparql_query(query_string)],
-            columns=["s", "s_label", "p", "o", "o_label"],
+        self.enriched_df = (
+            pd.DataFrame(
+                [res for res in run_sparql_query(query_string)],
+                columns=["s", "s_label", "p", "o", "o_label"],
+            )
+            .sort_values("s")
+            .reset_index(drop=True)
         )
         return self.enriched_df
 
@@ -107,7 +111,11 @@ class Query:
                     )
                 ]
             )
-        self.enriched_df = pd.DataFrame(s_result, columns=["s", "s_label", "p", "o", "o_label"])
+        self.enriched_df = (
+            pd.DataFrame(s_result, columns=["s", "s_label", "p", "o", "o_label"])
+            .sort_values("s")
+            .reset_index(drop=True)
+        )
         return self.enriched_df
 
     def full_slim_enrichment(self, slim_list: List[str]) -> pd.DataFrame:
@@ -131,8 +139,12 @@ class Query:
         for chunk in chunks(object_list, 90):
             s_result.extend([res for res in run_sparql_query(get_full_enrichment_query(source_list, chunk))])
 
-        self.enriched_df = pd.DataFrame(s_result, columns=["s", "s_label", "p", "x", "x_label"]).rename(
-            columns={"x": "o", "x_label": "o_label"}
+        self.enriched_df = (
+            pd.DataFrame(s_result, columns=["s", "s_label", "p", "x", "x_label"])
+            .rename(columns={"x": "o", "x_label": "o_label"})
+            .fillna({"p": "rdfs:subClassOf"})
+            .sort_values("s")
+            .reset_index(drop=True)
         )
         return self.enriched_df
 
@@ -166,7 +178,11 @@ class Query:
                 ]
             )
 
-        self.enriched_df = pd.DataFrame(s_result, columns=["s", "s_label", "p", "o", "o_label"])
+        self.enriched_df = (
+            pd.DataFrame(s_result, columns=["s", "s_label", "p", "o", "o_label"])
+            .sort_values("s")
+            .reset_index(drop=True)
+        )
         return self.enriched_df
 
     def query(self, column_name: str, query_term: str) -> pd.DataFrame:
