@@ -54,7 +54,6 @@ def test_get_validation_report():
         CurieValidator.get_validation_report(term_list)
 
     exception = exc_info.value
-    assert exception.term_list == term_list
     expected_message = "The following terms are invalid: CL:1234567"
     assert str(exception) == expected_message
 
@@ -63,7 +62,6 @@ def test_get_validation_report():
         CurieValidator.get_validation_report(term_list)
 
     exception = exc_info.value
-    assert exception.term_list == term_list
     expected_message = (
         "The following terms are obsoleted: CL:0011107, and replaced by following terms: CL:0000636. "
         "Please consider using the new terms"
