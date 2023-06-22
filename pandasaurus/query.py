@@ -1,4 +1,3 @@
-import logging
 from typing import List, Optional
 
 import pandas as pd
@@ -70,8 +69,6 @@ class Query:
              Enriched DataFrame
 
         """
-        logging.debug(self.__seed_list)
-        # Enrichment process
         source_list = [term.get_iri() for term in self.__term_list]
         object_list = [term.get_iri() for term in self.__term_list]
         query_string = get_simple_enrichment_query(source_list, object_list, self.__enrichment_property_list)
@@ -97,8 +94,6 @@ class Query:
             Enriched DataFrame
 
         """
-        logging.info(self.__seed_list)
-        # Enrichment process
         source_list = [term.get_iri() for term in self.__term_list]
         object_list = source_list + SlimManager.get_slim_members(slim_list)
         s_result = []
@@ -131,8 +126,6 @@ class Query:
              Enriched DataFrame
 
         """
-        logging.info(self.__seed_list)
-        # Enrichment process
         source_list = [term.get_iri() for term in self.__term_list]
         object_list = source_list + SlimManager.get_slim_members(slim_list)
         s_result = []
@@ -162,8 +155,6 @@ class Query:
 
         """
         # TODO add a curie checking mechanism for context list
-        logging.info(self.__seed_list)
-        # Enrichment process
         query_string = get_contextual_enrichment_query(context)
         source_list = [term.get_iri() for term in self.__term_list]
         object_list = source_list + [res.get("term") for res in run_sparql_query(query_string)]
