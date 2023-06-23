@@ -5,12 +5,13 @@ import pandas as pd
 from pandasaurus.curie_validator import CurieValidator
 from pandasaurus.resources.term import Term
 from pandasaurus.slim_manager import SlimManager
-from pandasaurus.utils.pandasaurus_exceptions import InvalidTerm, ObsoletedTerm
+from pandasaurus.utils.pandasaurus_exceptions import InvalidTerm, ObsoletedTerm, EnrichedDataFrameEmpty
 from pandasaurus.utils.query_utils import chunks, run_sparql_query
 from pandasaurus.utils.sparql_queries import (
     get_contextual_enrichment_query,
     get_full_enrichment_query,
     get_simple_enrichment_query,
+    get_synonym_query,
 )
 
 
@@ -175,6 +176,41 @@ class Query:
             .reset_index(drop=True)
         )
         return self.enriched_df
+
+    def synonym_lookup(self) -> pd.DataFrame:
+        """
+        Notes:
+            An enrichment method has to be called before calling this method.
+
+        Returns:
+            A DataFrame containing labels and synonyms of the terms extracted from the enriched DataFrame.
+
+        Raises:
+            EnrichedDataFrameEmpty: If the enriched DataFrame is empty.
+
+        """
+        if self.enriched_df.empty:
+            raise EnrichedDataFrameEmpty()
+        # Generating label df
+        label_dict = pd.Series(
+            self.enriched_df["s_label"].tolist() + self.enriched_df["o_label"].tolist(),
+            index=self.enriched_df["s"].tolist() + self.enriched_df["o"].tolist(),
+        ).to_dict()
+        label_df = pd.DataFrame(label_dict.items(), columns=["ID", "name"])
+        label_df["type"] = "label"
+
+        # Generating synonym df
+        synonym_query_results = run_sparql_query(get_synonym_query(label_df["ID"].tolist()))
+        synonym_df = (
+            pd.DataFrame([res for res in synonym_query_results if any("synonym" in key for key in res.keys())])
+            .melt(id_vars="s", var_name="type", value_name="name")
+            .rename(columns={"s": "ID"}).dropna(subset=['name'])[["ID", "name", "type"]]
+        )
+
+        # Concatenating two df
+        result_df = pd.concat([synonym_df, label_df]).sort_values("ID").reset_index(drop=True)
+
+        return result_df
 
     def query(self, column_name: str, query_term: str) -> pd.DataFrame:
         """Returns filtered dataframe via join on column to subject of enriched_df, looking up of object name or

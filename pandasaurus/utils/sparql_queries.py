@@ -46,6 +46,16 @@ def get_label_query(term_iri_list: List[str]) -> str:
     )
 
 
+def get_synonym_query(term_iri_list: List[str]) -> str:
+    return (
+        f"SELECT * WHERE {{VALUES ?s {{ {' '.join(term_iri_list)} }}"
+        f"{{ OPTIONAL {{ ?s oio:hasNarrowSynonym ?narrowsynonym }} }} "
+        f"UNION {{ OPTIONAL {{ ?s oio:hasExactSynonym ?exactsynonym }} }} "
+        f"UNION {{ OPTIONAL {{?s oio:hasRelatedSynonym ?relatedsynonym}} }} "
+        f"UNION {{ OPTIONAL {{?s oio:hasBroadSynonym ?broadsynonym}} }} }} # LIMIT"
+    )
+
+
 def get_obsolete_term_query(seed_list: List[str]) -> str:
     # TODO Add missing implementation. Might not be needed
     pass

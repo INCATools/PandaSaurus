@@ -17,3 +17,11 @@ class ObsoletedTerm(Exception):
             f"Please consider using the new terms"
         )
         super().__init__(self.message)
+
+
+class EnrichedDataFrameEmpty(Exception):
+    def __init__(self):
+        self.message = (
+            "The enriched DataFrame cannot be empty for synonym lookup. Please use an enrichment method first"
+        )
+        super().__init__(self.message)
