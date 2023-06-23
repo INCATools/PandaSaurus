@@ -5,7 +5,11 @@ import pandas as pd
 from pandasaurus.curie_validator import CurieValidator
 from pandasaurus.resources.term import Term
 from pandasaurus.slim_manager import SlimManager
-from pandasaurus.utils.pandasaurus_exceptions import InvalidTerm, ObsoletedTerm, EnrichedDataFrameEmpty
+from pandasaurus.utils.pandasaurus_exceptions import (
+    EnrichedDataFrameEmpty,
+    InvalidTerm,
+    ObsoletedTerm,
+)
 from pandasaurus.utils.query_utils import chunks, run_sparql_query
 from pandasaurus.utils.sparql_queries import (
     get_contextual_enrichment_query,
@@ -204,7 +208,8 @@ class Query:
         synonym_df = (
             pd.DataFrame([res for res in synonym_query_results if any("synonym" in key for key in res.keys())])
             .melt(id_vars="s", var_name="type", value_name="name")
-            .rename(columns={"s": "ID"}).dropna(subset=['name'])[["ID", "name", "type"]]
+            .rename(columns={"s": "ID"})
+            .dropna(subset=["name"])[["ID", "name", "type"]]
         )
 
         # Concatenating two df
