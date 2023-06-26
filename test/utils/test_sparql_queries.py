@@ -4,6 +4,7 @@ from pandasaurus.utils.sparql_queries import (
     get_label_query,
     get_replaced_by_query,
     get_simple_enrichment_query,
+    get_slim_list_query,
     get_slim_members_query,
 )
 
@@ -91,7 +92,17 @@ def test_get_replaced_by_query():
 
 
 def test_get_slim_list_query():
-    pass
+    ontology_name = "ontology_name"
+
+    query = get_slim_list_query(ontology_name)
+
+    expected_query = (
+        "SELECT DISTINCT ?slim ?label ?comment WHERE { GRAPH ?ontology { ?ontology a owl:Ontology. "
+        "?ontology <http://purl.org/dc/elements/1.1/title> ?title. ?term oio:inSubset ?slim. "
+        "?slim rdfs:label ?label. ?slim rdfs:comment ?comment. FILTER(str(?title) = 'ontology_name') } }# LIMIT"
+    )
+
+    assert query == expected_query
 
 
 def test_get_slim_members_query():
@@ -101,7 +112,7 @@ def test_get_slim_members_query():
 
     expected_query = (
         "SELECT ?term WHERE { ?term oio:inSubset ?slim. ?slim rdfs:label "
-        "'slim_name'^^<http://www.w3.org/2001/XMLSchema#string>. }# LIMIT"
+        "?slim_name. FILTER(str(?slim_name) = 'slim_name') }# LIMIT"
     )
 
     assert query == expected_query
