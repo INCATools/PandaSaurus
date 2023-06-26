@@ -200,8 +200,7 @@ class Query:
             self.enriched_df["s_label"].tolist() + self.enriched_df["o_label"].tolist(),
             index=self.enriched_df["s"].tolist() + self.enriched_df["o"].tolist(),
         ).to_dict()
-        label_df = pd.DataFrame(label_dict.items(), columns=["ID", "name"])
-        label_df["type"] = "label"
+        label_df = pd.DataFrame(label_dict.items(), columns=["ID", "label"])
 
         # Generating synonym df
         synonym_query_results = run_sparql_query(get_synonym_query(label_df["ID"].tolist()))
@@ -212,8 +211,10 @@ class Query:
             .dropna(subset=["name"])[["ID", "name", "type"]]
         )
 
-        # Concatenating two df
-        result_df = pd.concat([synonym_df, label_df]).sort_values("ID").reset_index(drop=True)
+        # Merging two df
+        result_df = pd.merge(synonym_df, label_df, on="ID", how="left").sort_values("ID").reset_index(drop=True)[
+            ["ID", "label", "name", "type"]
+        ]
 
         return result_df
 
