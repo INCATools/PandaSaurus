@@ -17,21 +17,62 @@ def test_get_slim_list(mocker):
     # Mocking the run_sparql_query function
     mocker.patch(
         "pandasaurus.slim_manager.run_sparql_query",
-        return_value=iter(
-            [
-                {
-                    "slim": "cl#blood:and:immune:upper:slim",
-                    "label": "blood_and_immune_upper_slim",
-                    "comment": "a subset of general classes related to blood and the immune system, primarily of "
-                    "hematopoietic origin",
-                },
-                {
-                    "slim": "cl#eye:upper:slim",
-                    "label": "eye_upper_slim",
-                    "comment": "a subset of general classes related to specific cell types in the eye.",
-                },
-            ]
-        ),
+        side_effect=[
+            iter(
+                [
+                    {"title": "Ontology for the Anatomy of the Insect SkeletoMuscular system"},
+                    {"title": "Biological Spatial Ontology"},
+                    {"title": "Cell Ontology"},
+                    {"title": "Core Ontology for Biology and Biomedicine"},
+                    {"title": "Coleoptera Anatomy Ontology"},
+                    {"title": "Drosophila Phenotype Ontology (DPO)"},
+                    {"title": "Evidence & Conclusion Ontology (ECO)"},
+                    {"title": "Information Artifact Ontology (IAO)"},
+                    {"title": "Environment Exposure Ontology"},
+                    {"title": "The Environment Ontology"},
+                    {"title": "Drosophila Anatomy Ontology (DAO)"},
+                    {"title": "FlyBase Controlled Vocabulary (FBcv)"},
+                    {"title": "Drosophila Developmental Ontology"},
+                    {"title": "Fission Yeast Phenotype Ontology (FYPO)"},
+                    {"title": "Gene Ontology"},
+                    {"title": "Human Phenotype Ontology"},
+                    {"title": "Lepidoptera Anatomy Ontology"},
+                    {"title": "Medical Action Ontology"},
+                    {"title": "Mondo Disease Ontology"},
+                    {"title": "The Mammalian Phenotype Ontology"},
+                    {"title": "Ontology of Biological Attributes (OBA)"},
+                    {"title": "PATO - the Phenotype And Trait Ontology"},
+                    {"title": "Provisional Cell Ontology"},
+                    {"title": "Population and Community Ontology"},
+                    {"title": "OBO Relations Ontology"},
+                    {"title": "CL bridge to fbbt"},
+                    {"title": "Uberon bridge to fbbt"},
+                    {"title": "Uber-anatomy ontology"},
+                    {"title": "C. elegans Gross Anatomy Ontology"},
+                    {"title": "C. elegans Development Ontology"},
+                    {"title": "C elegans Phenotype Ontology"},
+                    {"title": "Zebrafish Anatomy Ontology (ZFA)"},
+                    {"title": "Ascomycete Phenotype Ontology (APO)"},
+                    {"title": "MHC Restriction Ontology"},
+                    {"title": "Collembola Anatomy Ontology"},
+                ]
+            ),
+            iter(
+                [
+                    {
+                        "slim": "cl#blood:and:immune:upper:slim",
+                        "label": "blood_and_immune_upper_slim",
+                        "comment": "a subset of general classes related to blood and the immune system, primarily of "
+                        "hematopoietic origin",
+                    },
+                    {
+                        "slim": "cl#eye:upper:slim",
+                        "label": "eye_upper_slim",
+                        "comment": "a subset of general classes related to specific cell types in the eye.",
+                    },
+                ]
+            ),
+        ],
     )
     assert SlimManager.get_slim_list("Cell Ontology") == expected_get_slim_list
 
