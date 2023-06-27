@@ -6,6 +6,7 @@ from pandasaurus.utils.sparql_queries import (
     get_simple_enrichment_query,
     get_slim_list_query,
     get_slim_members_query,
+    get_synonym_query,
 )
 
 
@@ -72,6 +73,17 @@ def test_get_label_query():
     )
 
     assert query == expected_query
+
+
+def test_get_synonym_query():
+    term_iri_list = ["term1", "term2", "term3"]
+    expected_query = (
+        "SELECT * WHERE {VALUES ?s { term1 term2 term3 }{ OPTIONAL { ?s oio:hasNarrowSynonym ?narrow_synonym } } "
+        "UNION { OPTIONAL { ?s oio:hasExactSynonym ?exact_synonym } } "
+        "UNION { OPTIONAL {?s oio:hasRelatedSynonym ?related_synonym} } "
+        "UNION { OPTIONAL {?s oio:hasBroadSynonym ?broad_synonym} } } # LIMIT"
+    )
+    assert get_synonym_query(term_iri_list) == expected_query
 
 
 def test_get_obsolete_term_query():
