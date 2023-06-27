@@ -212,9 +212,11 @@ class Query:
         )
 
         # Merging two df
-        result_df = pd.merge(synonym_df, label_df, on="ID", how="left").sort_values("ID").reset_index(drop=True)[
-            ["ID", "label", "name", "type"]
-        ]
+        result_df = (
+            pd.merge(synonym_df, label_df, on="ID", how="left")
+            .sort_values("ID")
+            .reset_index(drop=True)[["ID", "label", "name", "type"]]
+        )
 
         return result_df
 
