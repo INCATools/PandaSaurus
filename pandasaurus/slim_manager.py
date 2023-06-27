@@ -1,7 +1,7 @@
 from typing import Dict, List
 
-from pandasaurus.utils.pandasaurus_exceptions import InvalidOntology
 from pandasaurus.resources.slim import Slim
+from pandasaurus.utils.pandasaurus_exceptions import InvalidOntology
 from pandasaurus.utils.query_utils import run_sparql_query
 from pandasaurus.utils.sparql_queries import (
     get_ontology_list_query,
