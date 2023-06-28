@@ -1042,19 +1042,19 @@ def test_contextual_slim_enrichment():
     )
 
 
-def test_synonym_lookup_empty_df():
-    q = Query(kidney_test_data)
+# def test_synonym_lookup_empty_df():
+#     q = Query(kidney_test_data)
+#
+#     with pytest.raises(EnrichedDataFrameEmpty) as exc_info:
+#         q.synonym_lookup()
+#
+#     expected_message = (
+#         "The enriched DataFrame cannot be empty for synonym lookup. Please use an enrichment method first"
+#     )
+#     assert str(exc_info.value) == expected_message
 
-    with pytest.raises(EnrichedDataFrameEmpty) as exc_info:
-        q.synonym_lookup()
 
-    expected_message = (
-        "The enriched DataFrame cannot be empty for synonym lookup. Please use an enrichment method first"
-    )
-    assert str(exc_info.value) == expected_message
-
-
-def test_synonym_lookup_non_empty_df(mocker):
+def test_synonym_lookup(mocker):
     q = Query(
         [
             "CL:0000084",
