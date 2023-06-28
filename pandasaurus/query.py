@@ -193,16 +193,18 @@ class Query:
             EnrichedDataFrameEmpty: If the enriched DataFrame is empty.
 
         """
-        if self.enriched_df.empty:
-            raise EnrichedDataFrameEmpty()
+        # I might have misinterpreted the requirement in https://github.com/INCATools/PandaSaurus/issues/18
+        # if self.enriched_df.empty:
+        #     raise EnrichedDataFrameEmpty()
         # Generating label df
-        label_dict = pd.Series(
-            self.enriched_df["s_label"].tolist() + self.enriched_df["o_label"].tolist(),
-            index=self.enriched_df["s"].tolist() + self.enriched_df["o"].tolist(),
-        ).to_dict()
-        label_df = pd.DataFrame(label_dict.items(), columns=["ID", "label"])
+        # label_dict = pd.Series(
+        #     self.enriched_df["s_label"].tolist() + self.enriched_df["o_label"].tolist(),
+        #     index=self.enriched_df["s"].tolist() + self.enriched_df["o"].tolist(),
+        # ).to_dict()
+        label_df = pd.DataFrame(
+            {term.get_iri(): term.get_label() for term in self.__term_list}.items(), columns=["ID", "label"]
+        )
 
-        # Generating synonym df
         synonym_query_results = run_sparql_query(get_synonym_query(label_df["ID"].tolist()))
         synonym_df = (
             pd.DataFrame([res for res in synonym_query_results if any("synonym" in key for key in res.keys())])
