@@ -2,6 +2,7 @@ import pandas as pd
 import pytest
 
 from pandasaurus.query import Query
+from pandasaurus.utils.pandasaurus_exceptions import EnrichedDataFrameEmpty
 from pandasaurus.utils.query_utils import run_sparql_query
 from pandasaurus.utils.sparql_queries import get_contextual_enrichment_query
 
@@ -1039,6 +1040,170 @@ def test_contextual_slim_enrichment():
         .reset_index(drop=True)
         .equals(df["o"].sort_values().reset_index(drop=True))
     )
+
+
+# def test_synonym_lookup_empty_df():
+#     q = Query(kidney_test_data)
+#
+#     with pytest.raises(EnrichedDataFrameEmpty) as exc_info:
+#         q.synonym_lookup()
+#
+#     expected_message = (
+#         "The enriched DataFrame cannot be empty for synonym lookup. Please use an enrichment method first"
+#     )
+#     assert str(exc_info.value) == expected_message
+
+
+def test_synonym_lookup(mocker):
+    q = Query(
+        [
+            "CL:0000084",
+            "CL:0000813",
+            "CL:0000815",
+            "CL:0000900",
+        ]
+    )
+
+    # Mock the run_sparql_query function
+    mocker.patch(
+        "pandasaurus.query.run_sparql_query",
+        side_effect=[
+            iter(
+                [
+                    {
+                        "o": "CL:0000084",
+                        "s": "CL:0000813",
+                        "p": "rdfs:subClassOf",
+                        "s_label": "memory T cell",
+                        "o_label": "T cell",
+                    },
+                    {
+                        "o": "CL:0000084",
+                        "s": "CL:0000815",
+                        "p": "rdfs:subClassOf",
+                        "s_label": "regulatory T cell",
+                        "o_label": "T cell",
+                    },
+                    {
+                        "o": "CL:0000084",
+                        "s": "CL:0000900",
+                        "p": "rdfs:subClassOf",
+                        "s_label": "naive thymus-derived CD8-positive, alpha-beta T cell",
+                        "o_label": "T cell",
+                    },
+                ]
+            ),
+            iter(
+                [
+                    {"s": "CL:0000084"},
+                    {"s": "CL:0000813"},
+                    {"s": "CL:0000815"},
+                    {"s": "CL:0000900", "narrow_synonym": "T.8Nve.Sp"},
+                    {"s": "CL:0000084", "exact_synonym": "T lymphocyte"},
+                    {"s": "CL:0000084", "exact_synonym": "T-cell"},
+                    {"s": "CL:0000084", "exact_synonym": "T-lymphocyte"},
+                    {"s": "CL:0000813", "exact_synonym": "memory T lymphocyte"},
+                    {"s": "CL:0000813", "exact_synonym": "memory T-cell"},
+                    {"s": "CL:0000813", "exact_synonym": "memory T-lymphocyte"},
+                    {"s": "CL:0000815", "exact_synonym": "regulatory T lymphocyte"},
+                    {"s": "CL:0000815", "exact_synonym": "regulatory T-cell"},
+                    {"s": "CL:0000815", "exact_synonym": "regulatory T-lymphocyte"},
+                    {"s": "CL:0000815", "exact_synonym": "Treg"},
+                    {"s": "CL:0000900", "exact_synonym": "naive thymus-dervied CD8-positive, alpha-beta T lymphocyte"},
+                    {"s": "CL:0000900", "exact_synonym": "naive thymus-dervied CD8-positive, alpha-beta T-cell"},
+                    {"s": "CL:0000900", "exact_synonym": "naive thymus-dervied CD8-positive, alpha-beta T-lymphocyte"},
+                    {"s": "CL:0000084", "related_synonym": "immature T cell"},
+                    {"s": "CL:0000084", "related_synonym": "mature T cell"},
+                    {"s": "CL:0000813"},
+                    {"s": "CL:0000815"},
+                    {"s": "CL:0000900"},
+                    {"s": "CL:0000084"},
+                    {"s": "CL:0000813"},
+                    {"s": "CL:0000815", "broad_synonym": "suppressor T cell"},
+                    {"s": "CL:0000815", "broad_synonym": "suppressor T lymphocyte"},
+                    {"s": "CL:0000815", "broad_synonym": "suppressor T-cell"},
+                    {"s": "CL:0000815", "broad_synonym": "suppressor T-lymphocyte"},
+                    {"s": "CL:0000900", "broad_synonym": "naive CD8+ T cell"},
+                ]
+            ),
+        ],
+    )
+
+    q.simple_enrichment()
+    result_df = q.synonym_lookup()
+
+    expected_df = pd.DataFrame(
+        [
+            {"ID": "CL:0000084", "label": "T cell", "name": "T lymphocyte", "type": "exact_synonym"},
+            {"ID": "CL:0000084", "label": "T cell", "name": "T-cell", "type": "exact_synonym"},
+            {"ID": "CL:0000084", "label": "T cell", "name": "T-lymphocyte", "type": "exact_synonym"},
+            {"ID": "CL:0000084", "label": "T cell", "name": "immature T cell", "type": "related_synonym"},
+            {"ID": "CL:0000084", "label": "T cell", "name": "mature T cell", "type": "related_synonym"},
+            {"ID": "CL:0000813", "label": "memory T cell", "name": "memory T lymphocyte", "type": "exact_synonym"},
+            {"ID": "CL:0000813", "label": "memory T cell", "name": "memory T-cell", "type": "exact_synonym"},
+            {"ID": "CL:0000813", "label": "memory T cell", "name": "memory T-lymphocyte", "type": "exact_synonym"},
+            {"ID": "CL:0000815", "label": "regulatory T cell", "name": "Treg", "type": "exact_synonym"},
+            {
+                "ID": "CL:0000815",
+                "label": "regulatory T cell",
+                "name": "regulatory T lymphocyte",
+                "type": "exact_synonym",
+            },
+            {"ID": "CL:0000815", "label": "regulatory T cell", "name": "regulatory T-cell", "type": "exact_synonym"},
+            {
+                "ID": "CL:0000815",
+                "label": "regulatory T cell",
+                "name": "regulatory T-lymphocyte",
+                "type": "exact_synonym",
+            },
+            {
+                "ID": "CL:0000815",
+                "label": "regulatory T cell",
+                "name": "suppressor T-lymphocyte",
+                "type": "broad_synonym",
+            },
+            {"ID": "CL:0000815", "label": "regulatory T cell", "name": "suppressor T-cell", "type": "broad_synonym"},
+            {
+                "ID": "CL:0000815",
+                "label": "regulatory T cell",
+                "name": "suppressor T lymphocyte",
+                "type": "broad_synonym",
+            },
+            {"ID": "CL:0000815", "label": "regulatory T cell", "name": "suppressor T cell", "type": "broad_synonym"},
+            {
+                "ID": "CL:0000900",
+                "label": "naive thymus-derived CD8-positive, alpha-beta T cell",
+                "name": "T.8Nve.Sp",
+                "type": "narrow_synonym",
+            },
+            {
+                "ID": "CL:0000900",
+                "label": "naive thymus-derived CD8-positive, alpha-beta T cell",
+                "name": "naive thymus-dervied CD8-positive, alpha-beta T-cell",
+                "type": "exact_synonym",
+            },
+            {
+                "ID": "CL:0000900",
+                "label": "naive thymus-derived CD8-positive, alpha-beta T cell",
+                "name": "naive thymus-dervied CD8-positive, alpha-beta T lymphocyte",
+                "type": "exact_synonym",
+            },
+            {
+                "ID": "CL:0000900",
+                "label": "naive thymus-derived CD8-positive, alpha-beta T cell",
+                "name": "naive thymus-dervied CD8-positive, alpha-beta T-lymphocyte",
+                "type": "exact_synonym",
+            },
+            {
+                "ID": "CL:0000900",
+                "label": "naive thymus-derived CD8-positive, alpha-beta T cell",
+                "name": "naive CD8+ T cell",
+                "type": "broad_synonym",
+            },
+        ]
+    )
+
+    pd.testing.assert_frame_equal(result_df, expected_df)
 
 
 def test_query():

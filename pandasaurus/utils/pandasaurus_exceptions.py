@@ -17,3 +17,20 @@ class ObsoletedTerm(Exception):
             f"Please consider using the new terms"
         )
         super().__init__(self.message)
+
+
+class EnrichedDataFrameEmpty(Exception):
+    def __init__(self):
+        self.message = (
+            "The enriched DataFrame cannot be empty for synonym lookup. Please use an enrichment method first"
+        )
+        super().__init__(self.message)
+
+
+class InvalidOntology(Exception):
+    def __init__(self, input_ontology: str, ontology_list: List[str]):
+        self.message = (
+            f"The '{input_ontology}' ontology is invalid. \n"
+            f"Please use one of the following ontologies: \n{', '.join(ontology_list)}"
+        )
+        super().__init__(self.message)

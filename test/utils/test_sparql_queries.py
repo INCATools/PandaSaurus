@@ -4,7 +4,9 @@ from pandasaurus.utils.sparql_queries import (
     get_label_query,
     get_replaced_by_query,
     get_simple_enrichment_query,
+    get_slim_list_query,
     get_slim_members_query,
+    get_synonym_query,
 )
 
 
@@ -73,6 +75,17 @@ def test_get_label_query():
     assert query == expected_query
 
 
+def test_get_synonym_query():
+    term_iri_list = ["term1", "term2", "term3"]
+    expected_query = (
+        "SELECT * WHERE {VALUES ?s { term1 term2 term3 }{ OPTIONAL { ?s oio:hasNarrowSynonym ?narrow_synonym } } "
+        "UNION { OPTIONAL { ?s oio:hasExactSynonym ?exact_synonym } } "
+        "UNION { OPTIONAL {?s oio:hasRelatedSynonym ?related_synonym} } "
+        "UNION { OPTIONAL {?s oio:hasBroadSynonym ?broad_synonym} } } # LIMIT"
+    )
+    assert get_synonym_query(term_iri_list) == expected_query
+
+
 def test_get_obsolete_term_query():
     pass
 
@@ -91,7 +104,17 @@ def test_get_replaced_by_query():
 
 
 def test_get_slim_list_query():
-    pass
+    ontology_name = "ontology_name"
+
+    query = get_slim_list_query(ontology_name)
+
+    expected_query = (
+        "SELECT DISTINCT ?slim ?label ?comment WHERE { GRAPH ?ontology { ?ontology a owl:Ontology. "
+        "?ontology <http://purl.org/dc/elements/1.1/title> ?title. ?term oio:inSubset ?slim. "
+        "?slim rdfs:label ?label. ?slim rdfs:comment ?comment. FILTER(str(?title) = 'ontology_name') } }# LIMIT"
+    )
+
+    assert query == expected_query
 
 
 def test_get_slim_members_query():
@@ -101,7 +124,7 @@ def test_get_slim_members_query():
 
     expected_query = (
         "SELECT ?term WHERE { ?term oio:inSubset ?slim. ?slim rdfs:label "
-        "'slim_name'^^<http://www.w3.org/2001/XMLSchema#string>. }# LIMIT"
+        "?slim_name. FILTER(str(?slim_name) = 'slim_name') }# LIMIT"
     )
 
     assert query == expected_query

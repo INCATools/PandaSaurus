@@ -46,6 +46,16 @@ def get_label_query(term_iri_list: List[str]) -> str:
     )
 
 
+def get_synonym_query(term_iri_list: List[str]) -> str:
+    return (
+        f"SELECT * WHERE {{VALUES ?s {{ {' '.join(term_iri_list)} }}"
+        f"{{ OPTIONAL {{ ?s oio:hasNarrowSynonym ?narrow_synonym }} }} "
+        f"UNION {{ OPTIONAL {{ ?s oio:hasExactSynonym ?exact_synonym }} }} "
+        f"UNION {{ OPTIONAL {{?s oio:hasRelatedSynonym ?related_synonym}} }} "
+        f"UNION {{ OPTIONAL {{?s oio:hasBroadSynonym ?broad_synonym}} }} }} # LIMIT"
+    )
+
+
 def get_obsolete_term_query(seed_list: List[str]) -> str:
     # TODO Add missing implementation. Might not be needed
     pass
@@ -64,13 +74,20 @@ def get_replaced_by_query(term_iri_list: List[str]) -> str:
 def get_slim_list_query(ontology: str) -> str:
     return (
         f"SELECT DISTINCT ?slim ?label ?comment WHERE {{ GRAPH ?ontology {{ ?ontology a owl:Ontology. ?ontology "
-        f"<http://purl.org/dc/elements/1.1/title> '{ontology}'^^<http://www.w3.org/2001/XMLSchema#string>. "
-        f"?term oio:inSubset ?slim. ?slim rdfs:label ?label. ?slim rdfs:comment ?comment. }} }}# LIMIT"
+        f"<http://purl.org/dc/elements/1.1/title> ?title. ?term oio:inSubset ?slim. ?slim rdfs:label ?label. "
+        f"?slim rdfs:comment ?comment. FILTER(str(?title) = '{ontology}') }} }}# LIMIT"
     )
 
 
 def get_slim_members_query(slim_name: str) -> str:
     return (
         f"SELECT ?term WHERE {{ ?term oio:inSubset ?slim. "
-        f"?slim rdfs:label '{slim_name}'^^<http://www.w3.org/2001/XMLSchema#string>. }}# LIMIT"
+        f"?slim rdfs:label ?slim_name. FILTER(str(?slim_name) = '{slim_name}') }}# LIMIT"
+    )
+
+
+def get_ontology_list_query() -> str:
+    return (
+        "SELECT ?title "
+        "WHERE { ?ontology a owl:Ontology. ?ontology <http://purl.org/dc/elements/1.1/title> ?title }# LIMIT"
     )
