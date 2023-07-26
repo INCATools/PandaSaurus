@@ -2,7 +2,6 @@ import pandas as pd
 import pytest
 
 from pandasaurus.query import Query
-from pandasaurus.utils.pandasaurus_exceptions import EnrichedDataFrameEmpty
 from pandasaurus.utils.query_utils import run_sparql_query
 from pandasaurus.utils.sparql_queries import get_contextual_enrichment_query
 
@@ -1064,7 +1063,7 @@ def test_synonym_lookup(mocker):
         ]
     )
 
-    # Mock the run_sparql_query function
+    # Mock the run_sparql_query function in query
     mocker.patch(
         "pandasaurus.query.run_sparql_query",
         side_effect=[

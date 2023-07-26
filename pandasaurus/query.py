@@ -6,7 +6,6 @@ from pandasaurus.curie_validator import CurieValidator
 from pandasaurus.resources.term import Term
 from pandasaurus.slim_manager import SlimManager
 from pandasaurus.utils.pandasaurus_exceptions import (
-    EnrichedDataFrameEmpty,
     InvalidTerm,
     ObsoletedTerm,
 )
@@ -189,18 +188,7 @@ class Query:
         Returns:
             A DataFrame containing labels and synonyms of the terms extracted from the enriched DataFrame.
 
-        Raises:
-            EnrichedDataFrameEmpty: If the enriched DataFrame is empty.
-
         """
-        # I might have misinterpreted the requirement in https://github.com/INCATools/PandaSaurus/issues/18
-        # if self.enriched_df.empty:
-        #     raise EnrichedDataFrameEmpty()
-        # Generating label df
-        # label_dict = pd.Series(
-        #     self.enriched_df["s_label"].tolist() + self.enriched_df["o_label"].tolist(),
-        #     index=self.enriched_df["s"].tolist() + self.enriched_df["o"].tolist(),
-        # ).to_dict()
         label_df = pd.DataFrame(
             {term.get_iri(): term.get_label() for term in self.__term_list}.items(), columns=["ID", "label"]
         )
