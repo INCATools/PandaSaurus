@@ -1,3 +1,15 @@
+from test.data.curie_validator_data import (
+    get_construct_term_list_data,
+    get_construct_term_list_result,
+    get_expected_construct_term_list,
+    get_expected_find_obsolete_terms,
+    get_expected_validate_curie_list,
+    get_find_obsolete_terms_data,
+    get_find_obsolete_terms_result,
+    get_validate_curie_list_data,
+    get_validate_curie_list_result,
+)
+
 import pytest
 
 from pandasaurus.curie_validator import CurieValidator
@@ -9,35 +21,24 @@ def test_validate_curie_prefixes():
     pass
 
 
-def test_validate_curie_list():
-    curie_list_test_data = ["CL:0002681", "CL:0002518", "CL:1234567", "CL:1000500"]
+def test_validate_curie_list(mocker):
+    mocker.patch(
+        "pandasaurus.curie_validator.run_sparql_query",
+        side_effect=[iter(get_validate_curie_list_result())],
+    )
 
-    expected_validate_curie_list = {
-        "CL:0002681": {"label": "kidney cortical cell", "valid": True},
-        "CL:0002518": {"label": "kidney epithelial cell", "valid": True},
-        "CL:1234567": {"label": None, "valid": False},
-        "CL:1000500": {"label": "kidney interstitial cell", "valid": True},
-    }
-
-    validate_curie_list = CurieValidator.validate_curie_list(curie_list_test_data)
-    assert validate_curie_list == expected_validate_curie_list
+    assert CurieValidator.validate_curie_list(get_validate_curie_list_data()) == get_expected_validate_curie_list()
 
 
-def test_find_obsolete_terms():
-    find_obsolete_term_test_data = ["CL:0000337", "CL:0011107", "CL:0002371", "CL:0002150"]
+def test_find_obsolete_terms(mocker):
+    mocker.patch(
+        "pandasaurus.curie_validator.run_sparql_query",
+        side_effect=[
+            iter(get_find_obsolete_terms_result()),
+        ],
+    )
 
-    expected_find_obsolete_terms = {
-        "CL:0011107": {
-            "term": "CL:0011107",
-            "depr_status": "true",
-            "new_term": "CL:0000636",
-            "label": "obsolete Muller cell",
-            "new_term_label": "Mueller cell",
-        }
-    }
-
-    find_obsolete_terms = CurieValidator.find_obsolete_terms(find_obsolete_term_test_data)
-    assert find_obsolete_terms == expected_find_obsolete_terms
+    assert CurieValidator.find_obsolete_terms(get_find_obsolete_terms_data()) == get_expected_find_obsolete_terms()
 
 
 def test_find_obsolete_term_replacement():
@@ -66,14 +67,13 @@ def test_get_validation_report():
     assert str(exc_info.value) == expected_message
 
 
-def test_construct_term_list():
-    construct_term_list_test_data = ["CL:0000084", "CL:0000787", "CL:0000788", "CL:0000798"]
-    expected_construct_term_list = [
-        Term("T cell", "CL:0000084", True),
-        Term("memory B cell", "CL:0000787", True),
-        Term("naive B cell", "CL:0000788", True),
-        Term("gamma-delta T cell", "CL:0000798", True),
-    ]
+def test_construct_term_list(mocker):
+    mocker.patch(
+        "pandasaurus.curie_validator.run_sparql_query",
+        side_effect=[
+            iter(get_construct_term_list_result()),
+            iter([]),
+        ],
+    )
 
-    construct_term_list = CurieValidator.construct_term_list(construct_term_list_test_data)
-    assert construct_term_list == expected_construct_term_list
+    assert CurieValidator.construct_term_list(get_construct_term_list_data()) == get_expected_construct_term_list()
