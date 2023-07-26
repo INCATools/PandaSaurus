@@ -1,5 +1,12 @@
-from test.data.slim_manager_data import get_slim_list, get_valid_ontology_expected_message, get_ontology_list_result, \
-    get_invalid_ontology_expected_message, get_get_slim_list_result, get_slim_members_result, get_expected_slim_members
+from test.data.slim_manager_data import (
+    get_expected_slim_members,
+    get_get_slim_list_result,
+    get_invalid_ontology_expected_message,
+    get_ontology_list_result,
+    get_slim_list,
+    get_slim_members_result,
+    get_valid_ontology_expected_message,
+)
 
 import pytest
 
@@ -11,12 +18,8 @@ def test_get_slim_list_valid_ontology(mocker):
     mocker.patch(
         "pandasaurus.slim_manager.run_sparql_query",
         side_effect=[
-            iter(
-                get_ontology_list_result()
-            ),
-            iter(
-                get_get_slim_list_result()
-            ),
+            iter(get_ontology_list_result()),
+            iter(get_get_slim_list_result()),
         ],
     )
     assert SlimManager.get_slim_list("Cell Ontology") == get_valid_ontology_expected_message()
@@ -26,9 +29,7 @@ def test_get_slim_list_invalid_ontology(mocker):
     mocker.patch(
         "pandasaurus.slim_manager.run_sparql_query",
         side_effect=[
-            iter(
-                get_ontology_list_result()
-            ),
+            iter(get_ontology_list_result()),
         ],
     )
 
@@ -42,11 +43,7 @@ def test_get_slim_members(mocker):
     slim_list = get_slim_list()
     mocker.patch(
         "pandasaurus.slim_manager.run_sparql_query",
-        side_effect=[
-            iter(
-                get_slim_members_result()
-            )
-        ],
+        side_effect=[iter(get_slim_members_result())],
     )
     get_slim_members = SlimManager.get_slim_members(slim_list)
 
