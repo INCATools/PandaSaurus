@@ -13,11 +13,10 @@ from test.data.query_data import (
     get_minimal_enrichment_result,
     get_simple_enrichment_data,
     get_simple_enrichment_result,
-    get_slim_list,
-    get_slim_members_result,
     get_synonym_lookup_data,
     get_synonym_lookup_result,
 )
+from test.data.slim_manager_data import get_slim_list, get_slim_members_result
 
 import pandas as pd
 import pytest

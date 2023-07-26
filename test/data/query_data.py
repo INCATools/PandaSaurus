@@ -38,10 +38,6 @@ def get_kidney_test_data():
     ]
 
 
-def get_slim_list():
-    return ["blood_and_immune_upper_slim"]
-
-
 def get_context_list():
     return ["UBERON:0000362"]
 
@@ -2807,47 +2803,6 @@ def get_contextual_enrichment_result():
             "s_label": "kidney loop of Henle medullary thick ascending limb epithelial cell",
             "o_label": "kidney loop of Henle thick ascending limb epithelial cell",
         },
-    ]
-
-
-def get_slim_members_result():
-    return [
-        {"term": "CL:0000037"},
-        {"term": "CL:0000038"},
-        {"term": "CL:0000097"},
-        {"term": "CL:0000145"},
-        {"term": "CL:0000232"},
-        {"term": "CL:0000233"},
-        {"term": "CL:0000235"},
-        {"term": "CL:0000236"},
-        {"term": "CL:0000547"},
-        {"term": "CL:0000556"},
-        {"term": "CL:0000558"},
-        {"term": "CL:0000576"},
-        {"term": "CL:0000647"},
-        {"term": "CL:0000762"},
-        {"term": "CL:0000765"},
-        {"term": "CL:0000767"},
-        {"term": "CL:0000771"},
-        {"term": "CL:0000775"},
-        {"term": "CL:0000784"},
-        {"term": "CL:0000786"},
-        {"term": "CL:0000789"},
-        {"term": "CL:0000798"},
-        {"term": "CL:0000816"},
-        {"term": "CL:0000837"},
-        {"term": "CL:0000842"},
-        {"term": "CL:0000889"},
-        {"term": "CL:0000990"},
-        {"term": "CL:0001065"},
-        {"term": "CL:0002031"},
-        {"term": "CL:0002032"},
-        {"term": "CL:0002087"},
-        {"term": "CL:0002420"},
-        {"term": "CL:0002679"},
-        {"term": "CL:0017005"},
-        {"term": "CL:0017006"},
-        {"term": "CL:4030029"},
     ]
 
 
