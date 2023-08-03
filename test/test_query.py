@@ -59,7 +59,7 @@ def test_query_constructor_with_invalid_seed_list(mocker):
         Query(seed_list, force_fail=True)
 
     exception = exc_info.value
-    assert type(exception) == ValueError
+    assert isinstance(exception, ValueError)
     expected_message = "Check your seed list! It contains invalid terms"
     assert str(exception) == expected_message
 
@@ -87,7 +87,7 @@ def test_query_constructor_with_obsoleted_seed_list(mocker):
         Query(seed_list, force_fail=True)
 
     exception = exc_info.value
-    assert type(exception) == ValueError
+    assert isinstance(exception, ValueError)
     expected_message = (
         "Check your seed list! It contains obsoleted terms. Use update_obsoleted_terms method to update all "
         "obsoleted term"
