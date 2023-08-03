@@ -2,7 +2,6 @@ import pytest
 
 from pandasaurus.resources.term import Term
 from pandasaurus.utils.pandasaurus_exceptions import (
-    EnrichedDataFrameEmpty,
     InvalidOntology,
     InvalidTerm,
     ObsoletedTerm,
@@ -26,16 +25,6 @@ def test_obsoleted_term_exception():
     expected_message = (
         "The following terms are obsoleted: CL:0011107, and replaced by following terms: CL:0000636. "
         "Please consider using the new terms"
-    )
-    assert str(exc_info.value) == expected_message
-
-
-def test_enriched_dataframe_empty_exception():
-    with pytest.raises(EnrichedDataFrameEmpty) as exc_info:
-        raise EnrichedDataFrameEmpty()
-
-    expected_message = (
-        "The enriched DataFrame cannot be empty for synonym lookup. Please use an enrichment method " "first"
     )
     assert str(exc_info.value) == expected_message
 

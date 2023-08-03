@@ -5,11 +5,7 @@ import pandas as pd
 from pandasaurus.curie_validator import CurieValidator
 from pandasaurus.resources.term import Term
 from pandasaurus.slim_manager import SlimManager
-from pandasaurus.utils.pandasaurus_exceptions import (
-    EnrichedDataFrameEmpty,
-    InvalidTerm,
-    ObsoletedTerm,
-)
+from pandasaurus.utils.pandasaurus_exceptions import InvalidTerm, ObsoletedTerm
 from pandasaurus.utils.query_utils import chunks, run_sparql_query
 from pandasaurus.utils.sparql_queries import (
     get_contextual_enrichment_query,
@@ -183,24 +179,11 @@ class Query:
 
     def synonym_lookup(self) -> pd.DataFrame:
         """
-        Notes:
-            An enrichment method has to be called before calling this method.
 
         Returns:
-            A DataFrame containing labels and synonyms of the terms extracted from the enriched DataFrame.
-
-        Raises:
-            EnrichedDataFrameEmpty: If the enriched DataFrame is empty.
+            A DataFrame containing labels and synonyms of the terms from the seed list.
 
         """
-        # I might have misinterpreted the requirement in https://github.com/INCATools/PandaSaurus/issues/18
-        # if self.enriched_df.empty:
-        #     raise EnrichedDataFrameEmpty()
-        # Generating label df
-        # label_dict = pd.Series(
-        #     self.enriched_df["s_label"].tolist() + self.enriched_df["o_label"].tolist(),
-        #     index=self.enriched_df["s"].tolist() + self.enriched_df["o"].tolist(),
-        # ).to_dict()
         label_df = pd.DataFrame(
             {term.get_iri(): term.get_label() for term in self.__term_list}.items(), columns=["ID", "label"]
         )

@@ -19,14 +19,6 @@ class ObsoletedTerm(Exception):
         super().__init__(self.message)
 
 
-class EnrichedDataFrameEmpty(Exception):
-    def __init__(self):
-        self.message = (
-            "The enriched DataFrame cannot be empty for synonym lookup. Please use an enrichment method first"
-        )
-        super().__init__(self.message)
-
-
 class InvalidOntology(Exception):
     def __init__(self, input_ontology: str, ontology_list: List[str]):
         self.message = (
