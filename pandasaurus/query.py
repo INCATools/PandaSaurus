@@ -1,8 +1,10 @@
 from typing import List, Optional
 
 import pandas as pd
+from rdflib import Graph
 
 from pandasaurus.curie_validator import CurieValidator
+from pandasaurus.graph.graph_generator import GraphGenerator
 from pandasaurus.resources.term import Term
 from pandasaurus.slim_manager import SlimManager
 from pandasaurus.utils.pandasaurus_exceptions import InvalidTerm, ObsoletedTerm
@@ -45,8 +47,9 @@ class Query:
         # Might be unnecessary
         self.__seed_list = seed_list
         self.__enrichment_property_list = enrichment_property_list if enrichment_property_list else ["rdfs:subClassOf"]
-        self.enriched_df: pd.DataFrame = pd.DataFrame()
         self.__term_list: List[Term] = CurieValidator.construct_term_list(seed_list)
+        self.enriched_df = pd.DataFrame()
+        self.graph = Graph()
         # Validation and reporting
         try:
             CurieValidator.get_validation_report(self.__term_list)
@@ -81,6 +84,9 @@ class Query:
             .sort_values("s")
             .reset_index(drop=True)
         )
+        self.graph = GraphGenerator.generate_enrichment_graph(self.enriched_df)
+        self.graph = GraphGenerator.apply_transitive_reduction(self.graph, self.enriched_df["p"].unique().tolist())
+
         return self.enriched_df
 
     def minimal_slim_enrichment(self, slim_list: List[str]) -> pd.DataFrame:
@@ -112,6 +118,9 @@ class Query:
             .sort_values("s")
             .reset_index(drop=True)
         )
+        self.graph = GraphGenerator.generate_enrichment_graph(self.enriched_df)
+        self.graph = GraphGenerator.apply_transitive_reduction(self.graph, self.enriched_df["p"].unique().tolist())
+
         return self.enriched_df
 
     def full_slim_enrichment(self, slim_list: List[str]) -> pd.DataFrame:
@@ -140,6 +149,9 @@ class Query:
             .sort_values("s")
             .reset_index(drop=True)
         )
+        self.graph = GraphGenerator.generate_enrichment_graph(self.enriched_df)
+        self.graph = GraphGenerator.apply_transitive_reduction(self.graph, self.enriched_df["p"].unique().tolist())
+
         return self.enriched_df
 
     def contextual_slim_enrichment(self, context: List[str]) -> pd.DataFrame:
@@ -175,6 +187,9 @@ class Query:
             .sort_values("s")
             .reset_index(drop=True)
         )
+        self.graph = GraphGenerator.generate_enrichment_graph(self.enriched_df)
+        self.graph = GraphGenerator.apply_transitive_reduction(self.graph, self.enriched_df["p"].unique().tolist())
+
         return self.enriched_df
 
     def synonym_lookup(self) -> pd.DataFrame:
@@ -224,3 +239,6 @@ class Query:
     def update_obsoleted_terms(self):
         """Replaces all obsoleted terms in the term list with the new term that obsoletes them."""
         [getattr(term, "update_obsoleted_term")() for term in self.__term_list]
+
+    def get_graph_triples(self):
+        return [[s.n3(), p.n3(), o.n3()] for s, p, o in self.graph.triples((None, None, None))]
