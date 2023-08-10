@@ -32,7 +32,7 @@ class GraphGenerator:
     def apply_transitive_reduction(graph: Graph, predicate_list: List[str]) -> Graph:
         invalid_predicates = []
         # TODO We need a better way to handle the queries, and decide the format we accept in the predicate list
-        ask_query = prepareQuery(f"ASK {{ ?s ?p ?o }}")
+        ask_query = prepareQuery("ASK { ?s ?p ?o }")
         for predicate in predicate_list:
             if predicate and not graph.query(ask_query, initNs={"rdfs": RDFS}):
                 invalid_predicates.append(predicate)

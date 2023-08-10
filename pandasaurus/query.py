@@ -239,6 +239,3 @@ class Query:
     def update_obsoleted_terms(self):
         """Replaces all obsoleted terms in the term list with the new term that obsoletes them."""
         [getattr(term, "update_obsoleted_term")() for term in self.__term_list]
-
-    def get_graph_triples(self):
-        return [[s.n3(), p.n3(), o.n3()] for s, p, o in self.graph.triples((None, None, None))]
