@@ -34,7 +34,7 @@ class GraphGenerator:
         # TODO We need a better way to handle the queries, and decide the format we accept in the predicate list
         ask_query = prepareQuery("ASK { ?s ?p ?o }")
         for predicate in predicate_list:
-            if predicate and not graph.query(ask_query, initNs={"rdfs": RDFS}):
+            if predicate and not graph.query(ask_query, initBindings={"p": predicate}, initNs={"rdfs": RDFS}):
                 invalid_predicates.append(predicate)
                 continue
 

@@ -1,3 +1,5 @@
+import io
+import logging
 from test.data.graph_generator_data import (
     get_generate_enrichment_graph_data,
     get_nonredundant_expected_triples,
@@ -7,6 +9,9 @@ from test.data.graph_generator_data import (
 import pandas as pd
 
 from pandasaurus.graph.graph_generator import GraphGenerator
+from pandasaurus.utils.logging_config import configure_logger
+
+logger = configure_logger()
 
 
 def test_generate_enrichment_graph():
