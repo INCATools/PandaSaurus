@@ -17,7 +17,7 @@ def chunks(lst, n):
 def get_prefixes(text, prefix_map):
     _prefixes = []
     for prefix in prefix_map:
-        if prefix in text:
+        if prefix + ":" in text:
             _prefixes.append(prefix)
 
     return _prefixes
