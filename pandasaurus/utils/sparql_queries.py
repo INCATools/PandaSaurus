@@ -29,7 +29,7 @@ def get_contextual_enrichment_query(context_list: List[str]) -> str:
     # BFO:0000050 , part of
     return (
         f"SELECT * WHERE {{ VALUES ?context {{{' '.join(context_list)} }} ?term BFO:0000050 ?context. "
-        f"?term rdfs:label ?label }}# LIMIT"
+        f"?term rdfs:subClassOf CL:0000000. ?term rdfs:label ?label }}# LIMIT"
     )
 
 
