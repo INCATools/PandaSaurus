@@ -55,7 +55,7 @@ class GraphGenerator:
             edge_diff = list(set(nx_graph.edges) - set(transitive_reduction_graph.edges))
             for edge in edge_diff:
                 graph.remove((URIRef(edge[0]), predicate_, URIRef(edge[1])))
-            logger.info(f"Transitive reduction has been applied on {predicate}.")
+            logger.info(f"Transitive reduction has been applied on {predicate} for graph generation.")
 
         if invalid_predicates:
             error_msg = (
