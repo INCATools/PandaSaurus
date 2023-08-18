@@ -52,7 +52,7 @@ def test_get_contextual_enrichment_query():
 
     expected_query = (
         "SELECT * WHERE { VALUES ?context {UBERON:0000362 UBERON:0002113 } ?term BFO:0000050 ?context. ?term "
-        "rdfs:label ?label }# LIMIT"
+        "rdfs:subClassOf CL:0000000. ?term rdfs:label ?label }# LIMIT"
     )
 
     assert query == expected_query
