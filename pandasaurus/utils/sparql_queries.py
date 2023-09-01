@@ -56,6 +56,30 @@ def get_synonym_query(term_iri_list: List[str]) -> str:
     )
 
 
+def get_most_specific_objects_query(term_iri_list: List[str], predicate: str, ontology: str) -> str:
+    return (
+        f"SELECT DISTINCT (?cell as ?s) (?cell_label as ?s_label) (?predicate as ?p) (?process as ?o) "
+        f"(?function_label as ?o_label)  "
+        f"FROM <http://reasoner.renci.org/ontology> FROM <http://reasoner.renci.org/redundant> "
+        f"WHERE {{ VALUES ?cell {{ {' '.join(term_iri_list)} }} VALUES ?predicate {{ {predicate} }} "
+        f"?cell rdfs:isDefinedBy <{ontology}>. ?cell ?predicate ?process. ?cell rdfs:label ?cell_label. "
+        f"?process rdfs:label ?function_label. FILTER NOT EXISTS {{ ?cell ?predicate ?process2. "
+        f"?process2 rdfs:subClassOf ?process. FILTER(?process2 != ?process) }} }} # LIMIT"
+    )
+
+
+def get_most_specific_subjects_query(term_iri_list: List[str], predicate: str, ontology: str):
+    return (
+        f"SELECT DISTINCT (?cell as ?s) (?cell_label as ?s_label) (?predicate as ?p) (?process as ?o) "
+        f"(?function_label as ?o_label)  "
+        f"FROM <http://reasoner.renci.org/ontology> FROM <http://reasoner.renci.org/redundant> "
+        f"WHERE {{ VALUES ?process {{ {' '.join(term_iri_list)} }} VALUES ?predicate {{ {predicate} }} "
+        f"?cell rdfs:isDefinedBy <{ontology}>. ?cell ?predicate ?process. ?cell rdfs:label ?cell_label. "
+        f"?process rdfs:label ?function_label. FILTER NOT EXISTS {{ ?cell ?predicate ?process2. "
+        f"?process2 rdfs:subClassOf ?process. FILTER(?process2 != ?process) }} }} # LIMIT"
+    )
+
+
 def get_obsolete_term_query(seed_list: List[str]) -> str:
     # TODO Add missing implementation. Might not be needed
     pass
