@@ -49,7 +49,7 @@ def get_label_query(term_iri_list: List[str]) -> str:
 def get_ancestor_enrichment_query(seed_list: List[str], step_count) -> str:
     query = "SELECT * WHERE { GRAPH <http://reasoner.renci.org/nonredundant> "
     query += f"{{ VALUES ?s {{{' '.join(seed_list)} }} "
-    query += f"?s rdfs:subClassOf ?o0. "
+    query += "?s rdfs:subClassOf ?o0. "
 
     defined_by = (
         "GRAPH <http://reasoner.renci.org/ontology> { ?o0 rdfs:isDefinedBy " "<http://purl.obolibrary.org/obo/cl.owl>. "
