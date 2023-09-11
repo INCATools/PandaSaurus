@@ -1,8 +1,12 @@
+from test.data.query_data import get_blood_and_immune_test_data
+
 from pandasaurus.utils.sparql_queries import (
     get_ancestor_enrichment_query,
     get_contextual_enrichment_query,
     get_full_enrichment_query,
     get_label_query,
+    get_most_specific_objects_query,
+    get_most_specific_subjects_query,
     get_replaced_by_query,
     get_simple_enrichment_query,
     get_slim_list_query,
@@ -145,3 +149,25 @@ def test_get_slim_members_query():
     )
 
     assert query == expected_query
+
+
+def test_get_most_specific_objects_query():
+    assert (
+        len(
+            get_most_specific_objects_query(
+                get_blood_and_immune_test_data(), "RO:0002215", "http://purl.obolibrary.org/obo/cl.owl"
+            )
+        )
+        == 703
+    )
+
+
+def test_get_most_specific_subjects_query():
+    assert (
+        len(
+            get_most_specific_subjects_query(
+                get_blood_and_immune_test_data(), "RO:0002215", "http://purl.obolibrary.org/obo/cl.owl"
+            )
+        )
+        == 706
+    )

@@ -14,6 +14,8 @@ from test.data.query_data import (
     get_kidney_test_data,
     get_minimal_enrichment_data,
     get_minimal_enrichment_result,
+    get_most_specific_objects_result,
+    get_most_specific_subjects_result,
     get_simple_enrichment_data,
     get_simple_enrichment_result,
     get_synonym_lookup_data,
@@ -310,4 +312,54 @@ def test_update_obsoleted_terms():
     ]
     q = Query(seed_list)
     q.update_obsoleted_terms()
-    assert [str(term) for term in q._Query__term_list] == expected_update_obsoleted_terms
+    assert [str(term) for term in q._term_list] == expected_update_obsoleted_terms
+
+
+def test_get_most_specific_objects(mocker):
+    seed_list = get_blood_and_immune_test_data()
+    expected_df = (
+        pd.DataFrame(
+            get_most_specific_objects_result(),
+            columns=["s", "s_label", "p", "o", "o_label"],
+        )
+        .sort_values("s")
+        .reset_index(drop=True)
+    )
+
+    mocker.patch(
+        "pandasaurus.query.run_sparql_query",
+        side_effect=[
+            iter(get_most_specific_objects_result()),
+        ],
+    )
+
+    q = Query(seed_list)
+    result_df = q.get_most_specific_objects("RO:0002215", "http://purl.obolibrary.org/obo/cl.owl")
+
+    assert expected_df["s"].reset_index(drop=True).equals(result_df["s"].reset_index(drop=True))
+    assert expected_df["o"].reset_index(drop=True).equals(result_df["o"].reset_index(drop=True))
+
+
+def test_get_most_specific_subjects(mocker):
+    seed_list = get_blood_and_immune_test_data()
+    expected_df = (
+        pd.DataFrame(
+            get_most_specific_subjects_result(),
+            columns=["s", "s_label", "p", "o", "o_label"],
+        )
+        .sort_values("s")
+        .reset_index(drop=True)
+    )
+
+    mocker.patch(
+        "pandasaurus.query.run_sparql_query",
+        side_effect=[
+            iter(get_most_specific_subjects_result()),
+        ],
+    )
+
+    q = Query(seed_list)
+    result_df = q.get_most_specific_subjects("RO:0002215", "http://purl.obolibrary.org/obo/cl.owl")
+
+    assert expected_df["s"].reset_index(drop=True).equals(result_df["s"].reset_index(drop=True))
+    assert expected_df["o"].reset_index(drop=True).equals(result_df["o"].reset_index(drop=True))
