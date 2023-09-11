@@ -85,7 +85,7 @@ def test_get_ancestor_enrichment_query():
         "GRAPH <http://reasoner.renci.org/ontology> { ?o0 rdfs:isDefinedBy <http://purl.obolibrary.org/obo/cl.owl>. "
         "?o1 rdfs:isDefinedBy <http://purl.obolibrary.org/obo/cl.owl>. "
         "?o2 rdfs:isDefinedBy <http://purl.obolibrary.org/obo/cl.owl>. "
-        "?o3 rdfs:isDefinedBy <http://purl.obolibrary.org/obo/cl.owl>. }}"
+        "?o3 rdfs:isDefinedBy <http://purl.obolibrary.org/obo/cl.owl>. }} #LIMIT"
     )
     assert get_ancestor_enrichment_query(term_iri_list, 4) == expected_n4_query
     assert "o6" in get_ancestor_enrichment_query(term_iri_list, 7)
