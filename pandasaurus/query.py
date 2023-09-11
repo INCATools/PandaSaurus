@@ -10,6 +10,7 @@ from pandasaurus.slim_manager import SlimManager
 from pandasaurus.utils.pandasaurus_exceptions import InvalidTerm, ObsoletedTerm
 from pandasaurus.utils.query_utils import chunks, run_sparql_query
 from pandasaurus.utils.sparql_queries import (
+    get_ancestor_enrichment_query,
     get_contextual_enrichment_query,
     get_full_enrichment_query,
     get_most_specific_objects_query,
@@ -177,6 +178,32 @@ class Query:
         query_string = get_contextual_enrichment_query(context)
         source_list = [term.get_iri() for term in self.__term_list]
         object_list = source_list + [res.get("term") for res in run_sparql_query(query_string)]
+        s_result = []
+        for chunk in chunks(object_list, 90):
+            s_result.extend(
+                [
+                    res
+                    for res in run_sparql_query(
+                        get_simple_enrichment_query(source_list, chunk, self.__enrichment_property_list)
+                    )
+                ]
+            )
+
+        self.enriched_df = (
+            pd.DataFrame(s_result, columns=["s", "s_label", "p", "o", "o_label"])
+            .sort_values("s")
+            .reset_index(drop=True)
+        )
+        self.mirror_enrichment_for_graph_generation(object_list)
+        self.graph = GraphGenerator.generate_enrichment_graph(self.graph_df)
+        self.graph = GraphGenerator.apply_transitive_reduction(self.graph, self.enriched_df["p"].unique().tolist())
+
+        return self.enriched_df
+
+    def ancestor_enrichment(self, step_count: str) -> pd.DataFrame:
+        source_list = [term.get_iri() for term in self.__term_list]
+        query_string = get_ancestor_enrichment_query(source_list, step_count)
+        object_list = list(set(uri for res in run_sparql_query(query_string) for uri in res.values()))
         s_result = []
         for chunk in chunks(object_list, 90):
             s_result.extend(
