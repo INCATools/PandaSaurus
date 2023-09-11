@@ -1,4 +1,5 @@
 from pandasaurus.utils.sparql_queries import (
+    get_ancestor_enrichment_query,
     get_contextual_enrichment_query,
     get_full_enrichment_query,
     get_label_query,
@@ -73,6 +74,22 @@ def test_get_label_query():
     )
 
     assert query == expected_query
+
+
+def test_get_ancestor_enrichment_query():
+    term_iri_list = ["term1", "term2", "term3"]
+    expected_n4_query = (
+        "SELECT * WHERE { GRAPH <http://reasoner.renci.org/nonredundant> { VALUES ?s {term1 term2 term3 } "
+        "?s rdfs:subClassOf ?o0. OPTIONAL { ?o0 rdfs:subClassOf ?o1.} "
+        "OPTIONAL { ?o1 rdfs:subClassOf ?o2.} OPTIONAL { ?o2 rdfs:subClassOf ?o3.} } "
+        "GRAPH <http://reasoner.renci.org/ontology> { ?o0 rdfs:isDefinedBy <http://purl.obolibrary.org/obo/cl.owl>. "
+        "?o1 rdfs:isDefinedBy <http://purl.obolibrary.org/obo/cl.owl>. "
+        "?o2 rdfs:isDefinedBy <http://purl.obolibrary.org/obo/cl.owl>. "
+        "?o3 rdfs:isDefinedBy <http://purl.obolibrary.org/obo/cl.owl>. }}"
+    )
+    assert get_ancestor_enrichment_query(term_iri_list, 4) == expected_n4_query
+    assert "o6" in get_ancestor_enrichment_query(term_iri_list, 7)
+    assert "o7" not in get_ancestor_enrichment_query(term_iri_list, 7)
 
 
 def test_get_synonym_query():
