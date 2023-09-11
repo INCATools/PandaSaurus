@@ -193,6 +193,25 @@ class Query:
         return self.enriched_df
 
     def ancestor_enrichment(self, step_count: str) -> pd.DataFrame:
+        """
+        Perform ancestor enrichment analysis with a specified number of hops.
+
+        Args:
+            step_count (str): The number of hops to consider when enriching terms.
+
+        Returns:
+            pd.DataFrame: A DataFrame containing enriched terms and associated information.
+
+        This method conducts an ancestor enrichment analysis on a set of seed terms,
+        considering the specified number of hops in the ontology graph. The analysis
+        retrieves terms that are ancestors of the seed terms within the specified
+        number of hops and compiles the results into a DataFrame.
+
+        The `step_count` parameter controls the depth of the analysis. A smaller
+        `step_count` limits the analysis to immediate ancestors, while a larger value
+        includes more distant ancestors.
+
+        """
         source_list = [term.get_iri() for term in self._term_list]
         query_string = get_ancestor_enrichment_query(source_list, step_count)
         object_list = list(set(uri for res in run_sparql_query(query_string) for uri in res.values()))
@@ -215,6 +234,26 @@ class Query:
         self._generate_enrichment_graph(object_list)
 
         return self.enriched_df
+
+    def parent_enrichment(self):
+        """
+        Perform parent enrichment analysis.
+
+        This method is a convenience wrapper around the `ancestor_enrichment` method,
+        specifically designed to perform parent enrichment analysis. Parent enrichment
+        analysis considers only immediate parent terms of the seed terms in the ontology
+        graph (i.e., one-hop ancestors).
+
+        Returns:
+            pd.DataFrame: A DataFrame containing enriched parent terms and associated
+            information.
+
+        This method simplifies the process of conducting parent enrichment analysis by
+        calling the `ancestor_enrichment` method with a `step_count` of 1, which limits
+        the analysis to immediate parent terms of the seed terms.
+
+        """
+        self.ancestor_enrichment(1)
 
     def synonym_lookup(self) -> pd.DataFrame:
         """
