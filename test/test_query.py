@@ -1,7 +1,7 @@
 from test.data.query_data import (
     get_ancestor_enrichment_data,
-    get_ancestor_object_list,
     get_ancestor_enrichment_result,
+    get_ancestor_object_list,
     get_blood_and_immune_test_data,
     get_context_list,
     get_context_members_result,
