@@ -78,7 +78,7 @@ class Query:
 
         """
         source_list = [term.get_iri() for term in self._term_list]
-        object_list = [term.get_iri() for term in self._term_list]
+        object_list = source_list
         query_string = get_simple_enrichment_query(source_list, object_list, self._enrichment_property_list)
         self.enriched_df = (
             pd.DataFrame(
@@ -105,7 +105,7 @@ class Query:
 
         """
         source_list = [term.get_iri() for term in self._term_list]
-        object_list = source_list + SlimManager.get_slim_members(slim_list)
+        object_list = list(set(source_list + SlimManager.get_slim_members(slim_list)))
         s_result = []
         for chunk in chunks(object_list, 90):
             s_result.extend(
@@ -139,7 +139,7 @@ class Query:
 
         """
         source_list = [term.get_iri() for term in self._term_list]
-        object_list = source_list + SlimManager.get_slim_members(slim_list)
+        object_list = list(set(source_list + SlimManager.get_slim_members(slim_list)))
         s_result = []
         for chunk in chunks(object_list, 90):
             s_result.extend([res for res in run_sparql_query(get_full_enrichment_query(source_list, chunk))])
@@ -171,7 +171,7 @@ class Query:
         # TODO add a curie checking mechanism for context list
         query_string = get_contextual_enrichment_query(context)
         source_list = [term.get_iri() for term in self._term_list]
-        object_list = source_list + [res.get("term") for res in run_sparql_query(query_string)]
+        object_list = list(set(source_list + [res.get("term") for res in run_sparql_query(query_string)]))
         s_result = []
         for chunk in chunks(object_list, 90):
             s_result.extend(
@@ -378,4 +378,3 @@ class Query:
         self.mirror_enrichment_for_graph_generation(object_list)
         self.graph = GraphGenerator.generate_enrichment_graph(self.graph_df)
         self.graph = GraphGenerator.apply_transitive_reduction(self.graph, self.enriched_df["p"].unique().tolist())
-        # self.graph = GraphGenerator.apply_transitive_reduction(self.graph, self.graph_df["p"].unique().tolist())ş
