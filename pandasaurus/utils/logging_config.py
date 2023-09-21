@@ -29,7 +29,7 @@ def configure_logger():
     logger.addHandler(info)
     logger.addHandler(error)
 
-    if 'pytest' not in sys.modules:
+    if "pytest" not in sys.modules:
         logger.propagate = False
 
     return logger

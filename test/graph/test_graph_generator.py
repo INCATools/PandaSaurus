@@ -1,7 +1,4 @@
 import logging
-
-import pytest
-
 from test.data.graph_generator_data import (
     get_generate_enrichment_graph_data,
     get_nonredundant_expected_triples,
@@ -9,6 +6,7 @@ from test.data.graph_generator_data import (
 )
 
 import pandas as pd
+import pytest
 
 from pandasaurus.graph.graph_generator import GraphGenerator
 from pandasaurus.utils.logging_config import configure_logger
@@ -46,7 +44,7 @@ def test_apply_transitive_reduction_with_invalid_predicates(sample_test_df, samp
 
     # Perform some actions that generate log messages
     invalid_predicate_list = ["invalid_predicate"]
-    graph = GraphGenerator.apply_transitive_reduction(sample_rdf_graph, invalid_predicate_list)
+    GraphGenerator.apply_transitive_reduction(sample_rdf_graph, invalid_predicate_list)
     assert "The predicate 'invalid_predicate' does not exist in the graph" in caplog.text
 
     # expected_triples = get_nonredundant_expected_triples()

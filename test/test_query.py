@@ -369,7 +369,8 @@ def test_get_most_specific_subjects(mocker):
 def enrichment_instance():
     return Query(blood_and_immune_test_data)
 
+
 def test_parent_enrichment(enrichment_instance, mocker):
-    ancestor_enrichment_spy = mocker.spy(enrichment_instance, 'ancestor_enrichment')
+    ancestor_enrichment_spy = mocker.spy(enrichment_instance, "ancestor_enrichment")
     enrichment_instance.parent_enrichment()
     ancestor_enrichment_spy.assert_called_once_with(1)
