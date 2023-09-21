@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from typing import Dict, List
 
 from pandasaurus.resources.term import Term
@@ -12,6 +13,7 @@ class CurieValidator:
     """
 
     @staticmethod
+    @abstractmethod
     def validate_curie_prefixes(curie_list: List[str]) -> Dict[str, bool]:
         """Reports whether the CURIE prefixes are valid or not.
 
@@ -25,7 +27,7 @@ class CurieValidator:
         # Is there anyway to validate prefixes via Ubergraph or are we going to validate them via a config file? OAK?
         # Do we still need this? https://github.com/INCATools/PandaSaurus/issues/1#issuecomment-1527753655
         # TODO Add missing implementation
-        pass
+        raise NotImplementedError
 
     @staticmethod
     def validate_curie_list(curie_list: List[str]) -> Dict[str, bool]:
@@ -76,6 +78,7 @@ class CurieValidator:
         return result_dict
 
     @staticmethod
+    @abstractmethod
     def find_obsolete_term_replacement(curie_list: Dict[str, str]) -> Dict[str, str]:
         """Suggests terms for each obsoleted terms in the curie_list.
 
@@ -88,7 +91,7 @@ class CurieValidator:
         """
         # TODO Add missing implementation
         # We probably don't need this method
-        pass
+        raise NotImplementedError
 
     @staticmethod
     def get_validation_report(term_list: List[Term]):

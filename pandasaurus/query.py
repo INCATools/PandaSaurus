@@ -347,9 +347,8 @@ class Query:
             Filtered DataFrame
 
         """
-        df = self.enriched_df
         # TODO Add missing implementation
-        return df
+        raise NotImplementedError
 
     def update_obsoleted_terms(self):
         """Replaces all obsoleted terms in the term list with the new term that obsoletes them."""

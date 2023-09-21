@@ -1,4 +1,5 @@
 import logging
+import sys
 
 
 # Create a filter to exclude ERROR log records
@@ -10,7 +11,7 @@ class NoErrorFilter(logging.Filter):
 def configure_logger():
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.INFO)
-    logger.propagate = False
+    # logger.propagate = False
 
     # Create a console handler and set the level to INFO
     info = logging.StreamHandler()
@@ -27,5 +28,8 @@ def configure_logger():
     # Add the console handler to the logger
     logger.addHandler(info)
     logger.addHandler(error)
+
+    if 'pytest' not in sys.modules:
+        logger.propagate = False
 
     return logger
