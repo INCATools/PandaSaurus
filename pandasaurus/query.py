@@ -12,6 +12,8 @@ from pandasaurus.utils.query_utils import chunks, run_sparql_query
 from pandasaurus.utils.sparql_queries import (
     get_contextual_enrichment_query,
     get_full_enrichment_query,
+    get_most_specific_objects_query,
+    get_most_specific_subjects_query,
     get_simple_enrichment_query,
     get_synonym_query,
 )
@@ -224,6 +226,58 @@ class Query:
         )
 
         return result_df
+
+    def get_most_specific_objects(self, predicate: str, ontology: str):
+        """
+
+        Args:
+            predicate: Relationship that wanted to be explored
+            ontology: PURL of obo ontologies in Ubergraph.
+
+        Examples:
+            Example Ontology PURLs:
+                - http://purl.obolibrary.org/obo/cl.owl \n
+                - http://purl.obolibrary.org/obo/uberon.owl
+
+        Returns:
+
+        """
+        subject_list = [term.get_iri() for term in self.__term_list]
+        query_string = get_most_specific_objects_query(subject_list, predicate, ontology)
+        return (
+            pd.DataFrame(
+                [res for res in run_sparql_query(query_string)],
+                columns=["s", "s_label", "p", "o", "o_label"],
+            )
+            .sort_values("s")
+            .reset_index(drop=True)
+        )
+
+    def get_most_specific_subjects(self, predicate: str, ontology: str):
+        """
+
+        Args:
+            predicate: Relationship that wanted to be explored
+            ontology: PURL of obo ontologies in Ubergraph.
+
+        Examples:
+            Example Ontology PURLs:
+                - http://purl.obolibrary.org/obo/cl.owl \n
+                - http://purl.obolibrary.org/obo/uberon.owl
+
+        Returns:
+
+        """
+        object_list = [term.get_iri() for term in self.__term_list]
+        query_string = get_most_specific_subjects_query(object_list, predicate, ontology)
+        return (
+            pd.DataFrame(
+                [res for res in run_sparql_query(query_string)],
+                columns=["s", "s_label", "p", "o", "o_label"],
+            )
+            .sort_values("s")
+            .reset_index(drop=True)
+        )
 
     def query(self, column_name: str, query_term: str) -> pd.DataFrame:
         """Returns filtered dataframe via join on column to subject of enriched_df, looking up of object name or
