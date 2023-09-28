@@ -1,4 +1,7 @@
 from test.data.query_data import (
+    get_ancestor_enrichment_data,
+    get_ancestor_enrichment_result,
+    get_ancestor_object_list,
     get_blood_and_immune_test_data,
     get_context_list,
     get_context_members_result,
@@ -11,6 +14,8 @@ from test.data.query_data import (
     get_kidney_test_data,
     get_minimal_enrichment_data,
     get_minimal_enrichment_result,
+    get_most_specific_objects_result,
+    get_most_specific_subjects_result,
     get_simple_enrichment_data,
     get_simple_enrichment_result,
     get_synonym_lookup_data,
@@ -105,6 +110,13 @@ def test_simple_enrichment(mocker):
         side_effect=[
             iter(get_enrichment_validate_curie_list_result()),
             iter(get_enrichment_find_obsolete_terms_data()),
+        ],
+    )
+    # TODO Second call has to be revised
+    mocker.patch(
+        "pandasaurus.query.run_sparql_query",
+        side_effect=[
+            iter(get_simple_enrichment_result()),
             iter(get_simple_enrichment_result()),
         ],
     )
@@ -126,7 +138,22 @@ def test_minimal_slim_enrichment(mocker):
         side_effect=[
             iter(get_enrichment_validate_curie_list_result()),
             iter(get_enrichment_find_obsolete_terms_data()),
+        ],
+    )
+    mocker.patch(
+        "pandasaurus.slim_manager.run_sparql_query",
+        side_effect=[
             iter(get_slim_members_result()),
+        ],
+    )
+    # TODO refactor needed!!!
+    mocker.patch(
+        "pandasaurus.query.run_sparql_query",
+        side_effect=[
+            iter(get_minimal_enrichment_result()),
+            iter(get_minimal_enrichment_result()),
+            iter(get_minimal_enrichment_result()),
+            iter(get_minimal_enrichment_result()),
             iter(get_minimal_enrichment_result()),
         ],
     )
@@ -153,7 +180,22 @@ def test_full_slim_enrichment(mocker):
         side_effect=[
             iter(get_enrichment_validate_curie_list_result()),
             iter(get_enrichment_find_obsolete_terms_data()),
+        ],
+    )
+    mocker.patch(
+        "pandasaurus.slim_manager.run_sparql_query",
+        side_effect=[
             iter(get_slim_members_result()),
+        ],
+    )
+    # TODO refactor needed!!!
+    mocker.patch(
+        "pandasaurus.query.run_sparql_query",
+        side_effect=[
+            iter(get_full_enrichment_result()),
+            iter(get_full_enrichment_result()),
+            iter(get_full_enrichment_result()),
+            iter(get_full_enrichment_result()),
             iter(get_full_enrichment_result()),
         ],
     )
@@ -180,7 +222,23 @@ def test_contextual_slim_enrichment(mocker):
         side_effect=[
             iter(get_enrichment_validate_curie_list_result()),
             iter(get_enrichment_find_obsolete_terms_data()),
+        ],
+    )
+    # TODO refactor needed!!!
+    mocker.patch(
+        "pandasaurus.query.run_sparql_query",
+        side_effect=[
             iter(get_context_members_result()),
+            iter(get_contextual_enrichment_result()[0:89]),
+            iter(get_contextual_enrichment_result()[90:113]),
+            iter(get_contextual_enrichment_result()),
+            iter(get_contextual_enrichment_result()),
+            iter(get_contextual_enrichment_result()),
+            iter(get_contextual_enrichment_result()),
+            iter(get_contextual_enrichment_result()),
+            iter(get_contextual_enrichment_result()),
+            iter(get_contextual_enrichment_result()),
+            iter(get_contextual_enrichment_result()),
             iter(get_contextual_enrichment_result()),
         ],
     )
@@ -197,6 +255,34 @@ def test_contextual_slim_enrichment(mocker):
         .reset_index(drop=True)
         .equals(df["o"].sort_values().reset_index(drop=True))
     )
+
+
+def test_ancestor_enrichment(mocker):
+    expected_simple_df = pd.DataFrame(
+        get_ancestor_enrichment_data(), columns=["s", "s_label", "p", "o", "o_label"]
+    ).sort_values("s")
+
+    mocker.patch(
+        "pandasaurus.curie_validator.run_sparql_query",
+        side_effect=[
+            iter(get_enrichment_validate_curie_list_result()),
+            iter(get_enrichment_find_obsolete_terms_data()),
+        ],
+    )
+    mocker.patch(
+        "pandasaurus.query.run_sparql_query",
+        side_effect=[
+            iter(get_ancestor_object_list()),
+            iter(get_ancestor_enrichment_result()),
+            iter(get_ancestor_enrichment_result()),
+        ],
+    )
+    q = Query(blood_and_immune_test_data)
+    df = q.ancestor_enrichment(2)
+    assert df["s"].isin(blood_and_immune_test_data).any()
+    assert df["o"].isin(blood_and_immune_test_data).any()
+    assert expected_simple_df["s"].reset_index(drop=True).equals(df["s"].reset_index(drop=True))
+    assert expected_simple_df["o"].reset_index(drop=True).equals(df["o"].reset_index(drop=True))
 
 
 def test_synonym_lookup(mocker):
@@ -226,4 +312,54 @@ def test_update_obsoleted_terms():
     ]
     q = Query(seed_list)
     q.update_obsoleted_terms()
-    assert [str(term) for term in q._Query__term_list] == expected_update_obsoleted_terms
+    assert [str(term) for term in q._term_list] == expected_update_obsoleted_terms
+
+
+def test_get_most_specific_objects(mocker):
+    seed_list = get_blood_and_immune_test_data()
+    expected_df = (
+        pd.DataFrame(
+            get_most_specific_objects_result(),
+            columns=["s", "s_label", "p", "o", "o_label"],
+        )
+        .sort_values("s")
+        .reset_index(drop=True)
+    )
+
+    mocker.patch(
+        "pandasaurus.query.run_sparql_query",
+        side_effect=[
+            iter(get_most_specific_objects_result()),
+        ],
+    )
+
+    q = Query(seed_list)
+    result_df = q.get_most_specific_objects("RO:0002215", "http://purl.obolibrary.org/obo/cl.owl")
+
+    assert expected_df["s"].reset_index(drop=True).equals(result_df["s"].reset_index(drop=True))
+    assert expected_df["o"].reset_index(drop=True).equals(result_df["o"].reset_index(drop=True))
+
+
+def test_get_most_specific_subjects(mocker):
+    seed_list = get_blood_and_immune_test_data()
+    expected_df = (
+        pd.DataFrame(
+            get_most_specific_subjects_result(),
+            columns=["s", "s_label", "p", "o", "o_label"],
+        )
+        .sort_values("s")
+        .reset_index(drop=True)
+    )
+
+    mocker.patch(
+        "pandasaurus.query.run_sparql_query",
+        side_effect=[
+            iter(get_most_specific_subjects_result()),
+        ],
+    )
+
+    q = Query(seed_list)
+    result_df = q.get_most_specific_subjects("RO:0002215", "http://purl.obolibrary.org/obo/cl.owl")
+
+    assert expected_df["s"].reset_index(drop=True).equals(result_df["s"].reset_index(drop=True))
+    assert expected_df["o"].reset_index(drop=True).equals(result_df["o"].reset_index(drop=True))

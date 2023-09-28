@@ -46,6 +46,28 @@ def get_label_query(term_iri_list: List[str]) -> str:
     )
 
 
+def get_ancestor_enrichment_query(seed_list: List[str], step_count) -> str:
+    query = "SELECT * WHERE { GRAPH <http://reasoner.renci.org/nonredundant> "
+    query += f"{{ VALUES ?s {{{' '.join(seed_list)} }} "
+    query += "?s rdfs:subClassOf ?o0. "
+
+    defined_by = (
+        "GRAPH <http://reasoner.renci.org/ontology> { ?o0 rdfs:isDefinedBy " "<http://purl.obolibrary.org/obo/cl.owl>. "
+    )
+
+    # Build the nested OPTIONAL blocks for the specified number of steps
+    for step in range(step_count):
+        if step < step_count - 1:
+            query += f"OPTIONAL {{ ?o{step} rdfs:subClassOf ?o{step + 1}.}} "
+            defined_by += f"?o{step + 1} rdfs:isDefinedBy <http://purl.obolibrary.org/obo/cl.owl>. "
+
+    query += "} "
+    query += defined_by
+    query += "}} #LIMIT"
+
+    return query
+
+
 def get_synonym_query(term_iri_list: List[str]) -> str:
     return (
         f"SELECT * WHERE {{VALUES ?s {{ {' '.join(term_iri_list)} }}"

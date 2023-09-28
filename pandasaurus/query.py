@@ -10,6 +10,7 @@ from pandasaurus.slim_manager import SlimManager
 from pandasaurus.utils.pandasaurus_exceptions import InvalidTerm, ObsoletedTerm
 from pandasaurus.utils.query_utils import chunks, run_sparql_query
 from pandasaurus.utils.sparql_queries import (
+    get_ancestor_enrichment_query,
     get_contextual_enrichment_query,
     get_full_enrichment_query,
     get_most_specific_objects_query,
@@ -47,15 +48,15 @@ class Query:
 
         """
         # Might be unnecessary
-        self.__seed_list = seed_list
-        self.__enrichment_property_list = enrichment_property_list if enrichment_property_list else ["rdfs:subClassOf"]
-        self.__term_list: List[Term] = CurieValidator.construct_term_list(seed_list)
+        self._seed_list = seed_list
+        self._enrichment_property_list = enrichment_property_list if enrichment_property_list else ["rdfs:subClassOf"]
+        self._term_list: List[Term] = CurieValidator.construct_term_list(seed_list)
         self.enriched_df = pd.DataFrame()
         self.graph_df = pd.DataFrame()
         self.graph = Graph()
         # Validation and reporting
         try:
-            CurieValidator.get_validation_report(self.__term_list)
+            CurieValidator.get_validation_report(self._term_list)
         except InvalidTerm as e:
             print(e.message)
             if force_fail:
@@ -76,9 +77,9 @@ class Query:
              Enriched DataFrame
 
         """
-        source_list = [term.get_iri() for term in self.__term_list]
-        object_list = [term.get_iri() for term in self.__term_list]
-        query_string = get_simple_enrichment_query(source_list, object_list, self.__enrichment_property_list)
+        source_list = [term.get_iri() for term in self._term_list]
+        object_list = [term.get_iri() for term in self._term_list]
+        query_string = get_simple_enrichment_query(source_list, object_list, self._enrichment_property_list)
         self.enriched_df = (
             pd.DataFrame(
                 [res for res in run_sparql_query(query_string)],
@@ -87,9 +88,7 @@ class Query:
             .sort_values("s")
             .reset_index(drop=True)
         )
-        self.mirror_enrichment_for_graph_generation(object_list)
-        self.graph = GraphGenerator.generate_enrichment_graph(self.graph_df)
-        self.graph = GraphGenerator.apply_transitive_reduction(self.graph, self.graph_df["p"].unique().tolist())
+        self._generate_enrichment_graph(object_list)
 
         return self.enriched_df
 
@@ -105,7 +104,7 @@ class Query:
             Enriched DataFrame
 
         """
-        source_list = [term.get_iri() for term in self.__term_list]
+        source_list = [term.get_iri() for term in self._term_list]
         object_list = source_list + SlimManager.get_slim_members(slim_list)
         s_result = []
         for chunk in chunks(object_list, 90):
@@ -113,7 +112,7 @@ class Query:
                 [
                     res
                     for res in run_sparql_query(
-                        get_simple_enrichment_query(source_list, chunk, self.__enrichment_property_list)
+                        get_simple_enrichment_query(source_list, chunk, self._enrichment_property_list)
                     )
                 ]
             )
@@ -122,9 +121,7 @@ class Query:
             .sort_values("s")
             .reset_index(drop=True)
         )
-        self.mirror_enrichment_for_graph_generation(object_list)
-        self.graph = GraphGenerator.generate_enrichment_graph(self.graph_df)
-        self.graph = GraphGenerator.apply_transitive_reduction(self.graph, self.enriched_df["p"].unique().tolist())
+        self._generate_enrichment_graph(object_list)
 
         return self.enriched_df
 
@@ -141,7 +138,7 @@ class Query:
              Enriched DataFrame
 
         """
-        source_list = [term.get_iri() for term in self.__term_list]
+        source_list = [term.get_iri() for term in self._term_list]
         object_list = source_list + SlimManager.get_slim_members(slim_list)
         s_result = []
         for chunk in chunks(object_list, 90):
@@ -154,9 +151,7 @@ class Query:
             .sort_values("s")
             .reset_index(drop=True)
         )
-        self.mirror_enrichment_for_graph_generation(object_list)
-        self.graph = GraphGenerator.generate_enrichment_graph(self.graph_df)
-        self.graph = GraphGenerator.apply_transitive_reduction(self.graph, self.enriched_df["p"].unique().tolist())
+        self._generate_enrichment_graph(object_list)
 
         return self.enriched_df
 
@@ -175,7 +170,7 @@ class Query:
         """
         # TODO add a curie checking mechanism for context list
         query_string = get_contextual_enrichment_query(context)
-        source_list = [term.get_iri() for term in self.__term_list]
+        source_list = [term.get_iri() for term in self._term_list]
         object_list = source_list + [res.get("term") for res in run_sparql_query(query_string)]
         s_result = []
         for chunk in chunks(object_list, 90):
@@ -183,7 +178,7 @@ class Query:
                 [
                     res
                     for res in run_sparql_query(
-                        get_simple_enrichment_query(source_list, chunk, self.__enrichment_property_list)
+                        get_simple_enrichment_query(source_list, chunk, self._enrichment_property_list)
                     )
                 ]
             )
@@ -193,11 +188,72 @@ class Query:
             .sort_values("s")
             .reset_index(drop=True)
         )
-        self.mirror_enrichment_for_graph_generation(object_list)
-        self.graph = GraphGenerator.generate_enrichment_graph(self.graph_df)
-        self.graph = GraphGenerator.apply_transitive_reduction(self.graph, self.enriched_df["p"].unique().tolist())
+        self._generate_enrichment_graph(object_list)
 
         return self.enriched_df
+
+    def ancestor_enrichment(self, step_count: str) -> pd.DataFrame:
+        """
+        Perform ancestor enrichment analysis with a specified number of hops.
+
+        Args:
+            step_count (str): The number of hops to consider when enriching terms.
+
+        Returns:
+            pd.DataFrame: A DataFrame containing enriched terms and associated information.
+
+        This method conducts an ancestor enrichment analysis on a set of seed terms,
+        considering the specified number of hops in the ontology graph. The analysis
+        retrieves terms that are ancestors of the seed terms within the specified
+        number of hops and compiles the results into a DataFrame.
+
+        The `step_count` parameter controls the depth of the analysis. A smaller
+        `step_count` limits the analysis to immediate ancestors, while a larger value
+        includes more distant ancestors.
+
+        """
+        source_list = [term.get_iri() for term in self._term_list]
+        query_string = get_ancestor_enrichment_query(source_list, step_count)
+        object_list = list(set(uri for res in run_sparql_query(query_string) for uri in res.values()))
+        s_result = []
+        for chunk in chunks(object_list, 90):
+            s_result.extend(
+                [
+                    res
+                    for res in run_sparql_query(
+                        get_simple_enrichment_query(source_list, chunk, self._enrichment_property_list)
+                    )
+                ]
+            )
+
+        self.enriched_df = (
+            pd.DataFrame(s_result, columns=["s", "s_label", "p", "o", "o_label"])
+            .sort_values("s")
+            .reset_index(drop=True)
+        )
+        self._generate_enrichment_graph(object_list)
+
+        return self.enriched_df
+
+    def parent_enrichment(self):
+        """
+        Perform parent enrichment analysis.
+
+        This method is a convenience wrapper around the `ancestor_enrichment` method,
+        specifically designed to perform parent enrichment analysis. Parent enrichment
+        analysis considers only immediate parent terms of the seed terms in the ontology
+        graph (i.e., one-hop ancestors).
+
+        Returns:
+            pd.DataFrame: A DataFrame containing enriched parent terms and associated
+            information.
+
+        This method simplifies the process of conducting parent enrichment analysis by
+        calling the `ancestor_enrichment` method with a `step_count` of 1, which limits
+        the analysis to immediate parent terms of the seed terms.
+
+        """
+        self.ancestor_enrichment(1)
 
     def synonym_lookup(self) -> pd.DataFrame:
         """
@@ -207,7 +263,7 @@ class Query:
 
         """
         label_df = pd.DataFrame(
-            {term.get_iri(): term.get_label() for term in self.__term_list}.items(), columns=["ID", "label"]
+            {term.get_iri(): term.get_label() for term in self._term_list}.items(), columns=["ID", "label"]
         )
 
         synonym_query_results = run_sparql_query(get_synonym_query(label_df["ID"].tolist()))
@@ -242,7 +298,7 @@ class Query:
         Returns:
 
         """
-        subject_list = [term.get_iri() for term in self.__term_list]
+        subject_list = [term.get_iri() for term in self._term_list]
         query_string = get_most_specific_objects_query(subject_list, predicate, ontology)
         return (
             pd.DataFrame(
@@ -268,7 +324,7 @@ class Query:
         Returns:
 
         """
-        object_list = [term.get_iri() for term in self.__term_list]
+        object_list = [term.get_iri() for term in self._term_list]
         query_string = get_most_specific_subjects_query(object_list, predicate, ontology)
         return (
             pd.DataFrame(
@@ -297,7 +353,7 @@ class Query:
 
     def update_obsoleted_terms(self):
         """Replaces all obsoleted terms in the term list with the new term that obsoletes them."""
-        [getattr(term, "update_obsoleted_term")() for term in self.__term_list]
+        [getattr(term, "update_obsoleted_term")() for term in self._term_list]
 
     def mirror_enrichment_for_graph_generation(self, term_list: List[str]):
         # TODO definitely need a refactoring later on
@@ -308,7 +364,7 @@ class Query:
                     [
                         res
                         for res in run_sparql_query(
-                            get_simple_enrichment_query(s_chunk, o_chunk, self.__enrichment_property_list)
+                            get_simple_enrichment_query(s_chunk, o_chunk, self._enrichment_property_list)
                         )
                     ]
                 )
@@ -317,3 +373,9 @@ class Query:
             .sort_values("s")
             .reset_index(drop=True)
         )
+
+    def _generate_enrichment_graph(self, object_list):
+        self.mirror_enrichment_for_graph_generation(object_list)
+        self.graph = GraphGenerator.generate_enrichment_graph(self.graph_df)
+        self.graph = GraphGenerator.apply_transitive_reduction(self.graph, self.enriched_df["p"].unique().tolist())
+        # self.graph = GraphGenerator.apply_transitive_reduction(self.graph, self.graph_df["p"].unique().tolist())ş
