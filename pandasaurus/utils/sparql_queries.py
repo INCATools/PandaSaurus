@@ -13,7 +13,7 @@ def get_simple_enrichment_query(s_iri_list: List[str], o_iri_list: List[str], pr
 
 def get_minimal_enrichment_query(seed_list: List[str]) -> str:
     # TODO Add missing implementation. Might not be needed
-    pass
+    raise NotImplementedError
 
 
 def get_full_enrichment_query(s_iri_list: List[str], o_iri_list: List[str]) -> str:
@@ -35,7 +35,7 @@ def get_contextual_enrichment_query(context_list: List[str]) -> str:
 
 def get_curie_prefix_validation_query(seed_list: List[str]) -> str:
     # TODO Add missing implementation. Might not be needed
-    pass
+    raise NotImplementedError
 
 
 def get_label_query(term_iri_list: List[str]) -> str:
@@ -104,7 +104,7 @@ def get_most_specific_subjects_query(term_iri_list: List[str], predicate: str, o
 
 def get_obsolete_term_query(seed_list: List[str]) -> str:
     # TODO Add missing implementation. Might not be needed
-    pass
+    raise NotImplementedError
 
 
 def get_replaced_by_query(term_iri_list: List[str]) -> str:

@@ -363,3 +363,14 @@ def test_get_most_specific_subjects(mocker):
 
     assert expected_df["s"].reset_index(drop=True).equals(result_df["s"].reset_index(drop=True))
     assert expected_df["o"].reset_index(drop=True).equals(result_df["o"].reset_index(drop=True))
+
+
+@pytest.fixture
+def enrichment_instance():
+    return Query(blood_and_immune_test_data)
+
+
+def test_parent_enrichment(enrichment_instance, mocker):
+    ancestor_enrichment_spy = mocker.spy(enrichment_instance, "ancestor_enrichment")
+    enrichment_instance.parent_enrichment()
+    ancestor_enrichment_spy.assert_called_once_with(1)
