@@ -2,8 +2,8 @@ from typing import List
 
 from pandasaurus.resources.term import Term
 
-class InvalidTerm(Exception):
 
+class InvalidTerm(Exception):
     def __init__(self, term_list: List[Term]):
         """
         Exception raised for invalid ontology terms.
@@ -16,7 +16,6 @@ class InvalidTerm(Exception):
 
 
 class ObsoletedTerm(Exception):
-
     def __init__(self, term_list: List[Term]):
         """
         Exception raised for obsoleted ontology terms.
@@ -33,7 +32,6 @@ class ObsoletedTerm(Exception):
 
 
 class InvalidOntology(Exception):
-
     def __init__(self, input_ontology: str, ontology_list: List[str]):
         """
         Exception raised for invalid ontology names.
