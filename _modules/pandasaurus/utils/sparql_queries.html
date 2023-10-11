@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pandasaurus.utils.sparql_queries &mdash; pandasaurus 0.3.5 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=ba50482b"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            pandasaurus
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Pandasaurus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pandasaurus/index.html">Library documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">pandasaurus</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pandasaurus.utils.sparql_queries</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pandasaurus.utils.sparql_queries</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+
+
+<span class="c1"># TODO might need to update the enrichment query method names</span>
+<span class="k">def</span> <span class="nf">get_simple_enrichment_query</span><span class="p">(</span><span class="n">s_iri_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">o_iri_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">property_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;SELECT ?s ?s_label ?p ?o ?o_label WHERE </span><span class="se">{{</span><span class="s2"> GRAPH &lt;http://reasoner.renci.org/redundant&gt; </span><span class="se">{{</span><span class="s2">&quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;VALUES ?s </span><span class="se">{{</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">s_iri_list</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="se">}}</span><span class="s2"> VALUES ?o </span><span class="se">{{</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">o_iri_list</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="se">}}</span><span class="s2"> &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;VALUES ?p </span><span class="se">{{</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">property_list</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="se">}}</span><span class="s2">&quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;?s ?p ?o. </span><span class="se">}}</span><span class="s2"> ?s rdfs:label ?s_label. ?o rdfs:label ?o_label. FILTER(?s != ?o)</span><span class="se">}}</span><span class="s2"># LIMIT&quot;</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">get_minimal_enrichment_query</span><span class="p">(</span><span class="n">seed_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="c1"># TODO Add missing implementation. Might not be needed</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+
+<span class="k">def</span> <span class="nf">get_full_enrichment_query</span><span class="p">(</span><span class="n">s_iri_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">o_iri_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;SELECT DISTINCT ?s ?s_label ?p ?x ?x_label ?o ?o_label WHERE </span><span class="se">{{</span><span class="s2"> GRAPH &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;&lt;http://reasoner.renci.org/nonredundant&gt; </span><span class="se">{{</span><span class="s2"> VALUES ?s </span><span class="se">{{</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">s_iri_list</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="se">}}</span><span class="s2"> VALUES ?o </span><span class="se">{{</span><span class="s2"> &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">o_iri_list</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="se">}}</span><span class="s2">  ?s rdfs:subClassOf* ?x. ?x rdfs:subClassOf* ?o. FILTER(?s != ?x)</span><span class="se">}}</span><span class="s2"> ?s  &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;rdfs:label ?s_label. ?x rdfs:label  ?x_label. ?o rdfs:label ?o_label </span><span class="se">}}</span><span class="s2"># LIMIT&quot;</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">get_contextual_enrichment_query</span><span class="p">(</span><span class="n">context_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="c1"># BFO:0000050 , part of</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;SELECT * WHERE </span><span class="se">{{</span><span class="s2"> VALUES ?context </span><span class="se">{{</span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">context_list</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="se">}}</span><span class="s2"> ?term BFO:0000050 ?context. &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;?term rdfs:subClassOf CL:0000000. ?term rdfs:label ?label </span><span class="se">}}</span><span class="s2"># LIMIT&quot;</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">get_curie_prefix_validation_query</span><span class="p">(</span><span class="n">seed_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="c1"># TODO Add missing implementation. Might not be needed</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+
+<div class="viewcode-block" id="get_label_query">
+<a class="viewcode-back" href="../../../pandasaurus/utils/sparql_queries.html#pandasaurus.utils.sparql_queries.get_label_query">[docs]</a>
+<span class="k">def</span> <span class="nf">get_label_query</span><span class="p">(</span><span class="n">term_iri_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Used for CURIE validation&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;SELECT ?term ?label where </span><span class="se">{{</span><span class="s2"> ?term rdf:type owl:Class. OPTIONAL </span><span class="se">{{</span><span class="s2">?term rdfs:label ?label.</span><span class="se">}}</span><span class="s2"> &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;VALUES ?term </span><span class="se">{{</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">term_iri_list</span><span class="p">)</span><span class="si">}</span><span class="se">}}</span><span class="s2"> </span><span class="se">}}</span><span class="s2"># LIMIT&quot;</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">get_ancestor_enrichment_query</span><span class="p">(</span><span class="n">seed_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">step_count</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT * WHERE { GRAPH &lt;http://reasoner.renci.org/nonredundant&gt; &quot;</span>
+    <span class="n">query</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">{{</span><span class="s2"> VALUES ?s </span><span class="se">{{</span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">seed_list</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="se">}}</span><span class="s2"> &quot;</span>
+    <span class="n">query</span> <span class="o">+=</span> <span class="s2">&quot;?s rdfs:subClassOf ?o0. &quot;</span>
+
+    <span class="n">defined_by</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;GRAPH &lt;http://reasoner.renci.org/ontology&gt; { ?o0 rdfs:isDefinedBy &quot;</span> <span class="s2">&quot;&lt;http://purl.obolibrary.org/obo/cl.owl&gt;. &quot;</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Build the nested OPTIONAL blocks for the specified number of steps</span>
+    <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">step_count</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">step</span> <span class="o">&lt;</span> <span class="n">step_count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;OPTIONAL </span><span class="se">{{</span><span class="s2"> ?o</span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2"> rdfs:subClassOf ?o</span><span class="si">{</span><span class="n">step</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">.</span><span class="se">}}</span><span class="s2"> &quot;</span>
+            <span class="n">defined_by</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;?o</span><span class="si">{</span><span class="n">step</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> rdfs:isDefinedBy &lt;http://purl.obolibrary.org/obo/cl.owl&gt;. &quot;</span>
+
+    <span class="n">query</span> <span class="o">+=</span> <span class="s2">&quot;} &quot;</span>
+    <span class="n">query</span> <span class="o">+=</span> <span class="n">defined_by</span>
+    <span class="n">query</span> <span class="o">+=</span> <span class="s2">&quot;}} #LIMIT&quot;</span>
+
+    <span class="k">return</span> <span class="n">query</span>
+
+
+<span class="k">def</span> <span class="nf">get_synonym_query</span><span class="p">(</span><span class="n">term_iri_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;SELECT * WHERE </span><span class="se">{{</span><span class="s2">VALUES ?s </span><span class="se">{{</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">term_iri_list</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="se">}}</span><span class="s2">&quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="se">{{</span><span class="s2"> OPTIONAL </span><span class="se">{{</span><span class="s2"> ?s oio:hasNarrowSynonym ?narrow_synonym </span><span class="se">}}</span><span class="s2"> </span><span class="se">}}</span><span class="s2"> &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;UNION </span><span class="se">{{</span><span class="s2"> OPTIONAL </span><span class="se">{{</span><span class="s2"> ?s oio:hasExactSynonym ?exact_synonym </span><span class="se">}}</span><span class="s2"> </span><span class="se">}}</span><span class="s2"> &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;UNION </span><span class="se">{{</span><span class="s2"> OPTIONAL </span><span class="se">{{</span><span class="s2">?s oio:hasRelatedSynonym ?related_synonym</span><span class="se">}}</span><span class="s2"> </span><span class="se">}}</span><span class="s2"> &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;UNION </span><span class="se">{{</span><span class="s2"> OPTIONAL </span><span class="se">{{</span><span class="s2">?s oio:hasBroadSynonym ?broad_synonym</span><span class="se">}}</span><span class="s2"> </span><span class="se">}}</span><span class="s2"> </span><span class="se">}}</span><span class="s2"> # LIMIT&quot;</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">get_most_specific_objects_query</span><span class="p">(</span><span class="n">term_iri_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">predicate</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ontology</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;SELECT DISTINCT (?cell as ?s) (?cell_label as ?s_label) (?predicate as ?p) (?process as ?o) &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;(?function_label as ?o_label)  &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;FROM &lt;http://reasoner.renci.org/ontology&gt; FROM &lt;http://reasoner.renci.org/redundant&gt; &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;WHERE </span><span class="se">{{</span><span class="s2"> VALUES ?cell </span><span class="se">{{</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">term_iri_list</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="se">}}</span><span class="s2"> VALUES ?predicate </span><span class="se">{{</span><span class="s2"> </span><span class="si">{</span><span class="n">predicate</span><span class="si">}</span><span class="s2"> </span><span class="se">}}</span><span class="s2"> &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;?cell rdfs:isDefinedBy &lt;</span><span class="si">{</span><span class="n">ontology</span><span class="si">}</span><span class="s2">&gt;. ?cell ?predicate ?process. ?cell rdfs:label ?cell_label. &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;?process rdfs:label ?function_label. FILTER NOT EXISTS </span><span class="se">{{</span><span class="s2"> ?cell ?predicate ?process2. &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;?process2 rdfs:subClassOf ?process. FILTER(?process2 != ?process) </span><span class="se">}}</span><span class="s2"> </span><span class="se">}}</span><span class="s2"> # LIMIT&quot;</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">get_most_specific_subjects_query</span><span class="p">(</span><span class="n">term_iri_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">predicate</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ontology</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;SELECT DISTINCT (?cell as ?s) (?cell_label as ?s_label) (?predicate as ?p) (?process as ?o) &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;(?function_label as ?o_label)  &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;FROM &lt;http://reasoner.renci.org/ontology&gt; FROM &lt;http://reasoner.renci.org/redundant&gt; &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;WHERE </span><span class="se">{{</span><span class="s2"> VALUES ?process </span><span class="se">{{</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">term_iri_list</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="se">}}</span><span class="s2"> VALUES ?predicate </span><span class="se">{{</span><span class="s2"> </span><span class="si">{</span><span class="n">predicate</span><span class="si">}</span><span class="s2"> </span><span class="se">}}</span><span class="s2"> &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;?cell rdfs:isDefinedBy &lt;</span><span class="si">{</span><span class="n">ontology</span><span class="si">}</span><span class="s2">&gt;. ?cell ?predicate ?process. ?cell rdfs:label ?cell_label. &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;?process rdfs:label ?function_label. FILTER NOT EXISTS </span><span class="se">{{</span><span class="s2"> ?cell ?predicate ?process2. &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;?process2 rdfs:subClassOf ?process. FILTER(?process2 != ?process) </span><span class="se">}}</span><span class="s2"> </span><span class="se">}}</span><span class="s2"> # LIMIT&quot;</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">get_obsolete_term_query</span><span class="p">(</span><span class="n">seed_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="c1"># TODO Add missing implementation. Might not be needed</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+
+<span class="k">def</span> <span class="nf">get_replaced_by_query</span><span class="p">(</span><span class="n">term_iri_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="c1"># IAO:0100001, term replaced by .</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;SELECT * WHERE </span><span class="se">{{</span><span class="s2"> ?term rdfs:label ?label. ?term owl:deprecated ?depr_status. &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;?term IAO:0100001 ?new_term. ?new_term rdfs:label ?new_term_label &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;VALUES ?term </span><span class="se">{{</span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">term_iri_list</span><span class="p">)</span><span class="si">}</span><span class="se">}}</span><span class="s2"> </span><span class="se">}}</span><span class="s2"># LIMIT&quot;</span>
+    <span class="p">)</span>
+
+
+<span class="c1"># Might not be needed</span>
+<span class="k">def</span> <span class="nf">get_slim_list_query</span><span class="p">(</span><span class="n">ontology</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;SELECT DISTINCT ?slim ?label ?comment WHERE </span><span class="se">{{</span><span class="s2"> GRAPH ?ontology </span><span class="se">{{</span><span class="s2"> ?ontology a owl:Ontology. ?ontology &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;&lt;http://purl.org/dc/elements/1.1/title&gt; ?title. ?term oio:inSubset ?slim. ?slim rdfs:label ?label. &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;?slim rdfs:comment ?comment. FILTER(str(?title) = &#39;</span><span class="si">{</span><span class="n">ontology</span><span class="si">}</span><span class="s2">&#39;) </span><span class="se">}}</span><span class="s2"> </span><span class="se">}}</span><span class="s2"># LIMIT&quot;</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">get_slim_members_query</span><span class="p">(</span><span class="n">slim_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;SELECT ?term WHERE </span><span class="se">{{</span><span class="s2"> ?term oio:inSubset ?slim. &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;?slim rdfs:label ?slim_name. FILTER(str(?slim_name) = &#39;</span><span class="si">{</span><span class="n">slim_name</span><span class="si">}</span><span class="s2">&#39;) </span><span class="se">}}</span><span class="s2"># LIMIT&quot;</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">get_ontology_list_query</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="s2">&quot;SELECT ?title &quot;</span>
+        <span class="s2">&quot;WHERE { ?ontology a owl:Ontology. ?ontology &lt;http://purl.org/dc/elements/1.1/title&gt; ?title }# LIMIT&quot;</span>
+    <span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Ugur Bayindir.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
