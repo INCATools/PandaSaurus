@@ -11,11 +11,3 @@ Library documentation
    graph/index
    resources/index
    utils/index
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
