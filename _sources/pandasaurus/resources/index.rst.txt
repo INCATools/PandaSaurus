@@ -1,4 +1,4 @@
-Library documentation
+Resource Module
 =======================
 
 .. toctree::
@@ -7,10 +7,3 @@ Library documentation
 
    slim
    term
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

@@ -1,4 +1,4 @@
-Library documentation
+Utils Module
 =======================
 
 .. toctree::
@@ -8,10 +8,3 @@ Library documentation
    pandasaurus_exceptions
    query_utils
    sparql_queries
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
