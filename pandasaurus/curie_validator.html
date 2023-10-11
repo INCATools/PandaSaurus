@@ -47,7 +47,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../introduction.html">Pandasaurus</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Library documentation</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Curie Validator</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#documentation">Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#documentation">Documentation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pandasaurus.curie_validator.CurieValidator"><code class="docutils literal notranslate"><span class="pre">CurieValidator</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="query.html">Query</a></li>
@@ -88,6 +91,114 @@
 <h1>Curie Validator<a class="headerlink" href="#curie-validator" title="Link to this heading"></a></h1>
 <section id="documentation">
 <h2>Documentation<a class="headerlink" href="#documentation" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pandasaurus.curie_validator.CurieValidator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pandasaurus.curie_validator.</span></span><span class="sig-name descname"><span class="pre">CurieValidator</span></span><a class="reference internal" href="../_modules/pandasaurus/curie_validator.html#CurieValidator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pandasaurus.curie_validator.CurieValidator" title="Link to this definition"></a></dt>
+<dd><p>CurieValidator is responsible for validating CURIE prefixes and CURIEs of slim terms. It also suggests
+replacements for obsoleted slim terms.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pandasaurus.curie_validator.CurieValidator.construct_term_list">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">construct_term_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed_list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="resources/term.html#pandasaurus.resources.term.Term" title="pandasaurus.resources.term.Term"><span class="pre">Term</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pandasaurus/curie_validator.html#CurieValidator.construct_term_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pandasaurus.curie_validator.CurieValidator.construct_term_list" title="Link to this definition"></a></dt>
+<dd><p>Returns list of Term objects after running validate_curie_list and find_obsolete_terms methods.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>seed_list</strong> – A list of seed terms where each term is a CURIE string</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of Term objects</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pandasaurus.curie_validator.CurieValidator.find_obsolete_term_replacement">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">find_obsolete_term_replacement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">curie_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pandasaurus/curie_validator.html#CurieValidator.find_obsolete_term_replacement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pandasaurus.curie_validator.CurieValidator.find_obsolete_term_replacement" title="Link to this definition"></a></dt>
+<dd><p>Suggests terms for each obsoleted terms in the curie_list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>curie_list</strong> – List of CURIEs</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of suggested term</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pandasaurus.curie_validator.CurieValidator.find_obsolete_terms">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">find_obsolete_terms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">curie_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="reference internal" href="../_modules/pandasaurus/curie_validator.html#CurieValidator.find_obsolete_terms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pandasaurus.curie_validator.CurieValidator.find_obsolete_terms" title="Link to this definition"></a></dt>
+<dd><p>Returns obsoleted terms in the curie_list and label and IRI for of the term that is replaced the obsoleted
+terms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>curie_list</strong> – List of CURIEs</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="line-block">
+<div class="line">An example output that shows 1 obsoleted CURIE:</div>
+<div class="line">{‘CL:0011107’: {‘term’: ‘CL:0011107’, ‘label’: ‘obsolete Muller cell’, depr_status’: ‘true’,</div>
+<div class="line">‘new_term’: ‘CL:0000636’, new_term_label’: ‘Mueller cell’}</div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True or False status of the term for each term</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pandasaurus.curie_validator.CurieValidator.get_validation_report">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_validation_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="resources/term.html#pandasaurus.resources.term.Term" title="pandasaurus.resources.term.Term"><span class="pre">Term</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pandasaurus/curie_validator.html#CurieValidator.get_validation_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pandasaurus.curie_validator.CurieValidator.get_validation_report" title="Link to this definition"></a></dt>
+<dd><p>Returns validation report which includes invalid and obsoleted terms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>term_list</strong> – A list of seed terms where each term is a Term object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pandasaurus.curie_validator.CurieValidator.validate_curie_list">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_curie_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">curie_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pandasaurus/curie_validator.html#CurieValidator.validate_curie_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pandasaurus.curie_validator.CurieValidator.validate_curie_list" title="Link to this definition"></a></dt>
+<dd><p>Reports whether the CURIEs are valid or not.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>curie_list</strong> – List of CURIEs</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="line-block">
+<div class="line">An example output that shows 2 valid and 1 invalid CURIEs:</div>
+<div class="line">{‘CL:0002681’: {‘label’: ‘kidney cortical cell’, ‘valid’: True},</div>
+<div class="line-block">
+<div class="line">‘CL:0002518’: {‘label’: ‘kidney epithelial cell’, ‘valid’: True},</div>
+<div class="line">‘CL:1234567’: {‘label’: None, ‘valid’: False}}</div>
+</div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True or False status of the CURIE validation for each term</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pandasaurus.curie_validator.CurieValidator.validate_curie_prefixes">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_curie_prefixes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">curie_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pandasaurus/curie_validator.html#CurieValidator.validate_curie_prefixes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pandasaurus.curie_validator.CurieValidator.validate_curie_prefixes" title="Link to this definition"></a></dt>
+<dd><p>Reports whether the CURIE prefixes are valid or not.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>curie_list</strong> – List of CURIEs</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True or False status of the prefix validation for each term</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 </section>
 

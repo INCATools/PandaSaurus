@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pandasaurus.slim_manager &mdash; pandasaurus 0.3.5 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=ba50482b"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            pandasaurus
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../introduction.html">Pandasaurus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pandasaurus/index.html">Library documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">pandasaurus</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pandasaurus.slim_manager</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pandasaurus.slim_manager</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="kn">from</span> <span class="nn">pandasaurus.resources.slim</span> <span class="kn">import</span> <span class="n">Slim</span>
+<span class="kn">from</span> <span class="nn">pandasaurus.utils.pandasaurus_exceptions</span> <span class="kn">import</span> <span class="n">InvalidOntology</span>
+<span class="kn">from</span> <span class="nn">pandasaurus.utils.query_utils</span> <span class="kn">import</span> <span class="n">run_sparql_query</span>
+<span class="kn">from</span> <span class="nn">pandasaurus.utils.sparql_queries</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">get_ontology_list_query</span><span class="p">,</span>
+    <span class="n">get_slim_list_query</span><span class="p">,</span>
+    <span class="n">get_slim_members_query</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="SlimManager">
+<a class="viewcode-back" href="../../pandasaurus/slim_manager.html#pandasaurus.slim_manager.SlimManager">[docs]</a>
+<span class="k">class</span> <span class="nc">SlimManager</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;SlimManager responsible for slim operations such as finding available slim in given ontologies and showing slim</span>
+<span class="sd">    content.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Might not be needed</span>
+<div class="viewcode-block" id="SlimManager.get_slim_list">
+<a class="viewcode-back" href="../../pandasaurus/slim_manager.html#pandasaurus.slim_manager.SlimManager.get_slim_list">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_slim_list</span><span class="p">(</span><span class="n">ontology</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns name and definition of available slims in given ontology.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ontology: Ontology name</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Slim names and definitions list</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ontology_list</span> <span class="o">=</span> <span class="n">SlimManager</span><span class="o">.</span><span class="n">_get_ontology_list</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">ontology</span> <span class="ow">in</span> <span class="n">ontology_list</span><span class="p">:</span>
+            <span class="n">slim_list</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Slim</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">run_sparql_query</span><span class="p">(</span><span class="n">get_slim_list_query</span><span class="p">(</span><span class="n">ontology</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+                <span class="n">slim_list</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">res</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">):</span> <span class="n">Slim</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">),</span> <span class="n">description</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;comment&quot;</span><span class="p">))})</span>
+            <span class="k">return</span> <span class="p">[{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">slim</span><span class="o">.</span><span class="n">get_name</span><span class="p">(),</span> <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="n">slim</span><span class="o">.</span><span class="n">get_description</span><span class="p">()}</span> <span class="k">for</span> <span class="n">slim</span> <span class="ow">in</span> <span class="n">slim_list</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+        <span class="k">raise</span> <span class="n">InvalidOntology</span><span class="p">(</span><span class="n">ontology</span><span class="p">,</span> <span class="n">ontology_list</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SlimManager.get_slim_members">
+<a class="viewcode-back" href="../../pandasaurus/slim_manager.html#pandasaurus.slim_manager.SlimManager.get_slim_members">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_slim_members</span><span class="p">(</span><span class="n">slim_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Lists names and IDs of all terms in slim.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            slim_list: A list of slim names</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Term IRIs of the slim members</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">term</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;term&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">slim_name</span> <span class="ow">in</span> <span class="n">slim_list</span> <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="n">run_sparql_query</span><span class="p">(</span><span class="n">get_slim_members_query</span><span class="p">(</span><span class="n">slim_name</span><span class="p">))</span>
+        <span class="p">]</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_ontology_list</span><span class="p">():</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">run_sparql_query</span><span class="p">(</span><span class="n">get_ontology_list_query</span><span class="p">())]</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Ugur Bayindir.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

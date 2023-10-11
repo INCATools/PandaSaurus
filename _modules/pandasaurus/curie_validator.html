@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pandasaurus.curie_validator &mdash; pandasaurus 0.3.5 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=ba50482b"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            pandasaurus
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../introduction.html">Pandasaurus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pandasaurus/index.html">Library documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">pandasaurus</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pandasaurus.curie_validator</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pandasaurus.curie_validator</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="kn">from</span> <span class="nn">pandasaurus.resources.term</span> <span class="kn">import</span> <span class="n">Term</span>
+<span class="kn">from</span> <span class="nn">pandasaurus.utils.pandasaurus_exceptions</span> <span class="kn">import</span> <span class="n">InvalidTerm</span><span class="p">,</span> <span class="n">ObsoletedTerm</span>
+<span class="kn">from</span> <span class="nn">pandasaurus.utils.query_utils</span> <span class="kn">import</span> <span class="n">run_sparql_query</span>
+<span class="kn">from</span> <span class="nn">pandasaurus.utils.sparql_queries</span> <span class="kn">import</span> <span class="n">get_label_query</span><span class="p">,</span> <span class="n">get_replaced_by_query</span>
+
+
+<div class="viewcode-block" id="CurieValidator">
+<a class="viewcode-back" href="../../pandasaurus/curie_validator.html#pandasaurus.curie_validator.CurieValidator">[docs]</a>
+<span class="k">class</span> <span class="nc">CurieValidator</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;CurieValidator is responsible for validating CURIE prefixes and CURIEs of slim terms. It also suggests</span>
+<span class="sd">    replacements for obsoleted slim terms.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="CurieValidator.validate_curie_prefixes">
+<a class="viewcode-back" href="../../pandasaurus/curie_validator.html#pandasaurus.curie_validator.CurieValidator.validate_curie_prefixes">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">validate_curie_prefixes</span><span class="p">(</span><span class="n">curie_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reports whether the CURIE prefixes are valid or not.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            curie_list: List of CURIEs</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True or False status of the prefix validation for each term</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Is there anyway to validate prefixes via Ubergraph or are we going to validate them via a config file? OAK?</span>
+        <span class="c1"># Do we still need this? https://github.com/INCATools/PandaSaurus/issues/1#issuecomment-1527753655</span>
+        <span class="c1"># TODO Add missing implementation</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+
+<div class="viewcode-block" id="CurieValidator.validate_curie_list">
+<a class="viewcode-back" href="../../pandasaurus/curie_validator.html#pandasaurus.curie_validator.CurieValidator.validate_curie_list">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">validate_curie_list</span><span class="p">(</span><span class="n">curie_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reports whether the CURIEs are valid or not.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            curie_list: List of CURIEs</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            | An example output that shows 2 valid and 1 invalid CURIEs:</span>
+<span class="sd">            | {&#39;CL:0002681&#39;: {&#39;label&#39;: &#39;kidney cortical cell&#39;, &#39;valid&#39;: True},</span>
+<span class="sd">            |  &#39;CL:0002518&#39;: {&#39;label&#39;: &#39;kidney epithelial cell&#39;, &#39;valid&#39;: True},</span>
+<span class="sd">            |  &#39;CL:1234567&#39;: {&#39;label&#39;: None, &#39;valid&#39;: False}}</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True or False status of the CURIE validation for each term</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">query_string</span> <span class="o">=</span> <span class="n">get_label_query</span><span class="p">(</span><span class="n">curie_list</span><span class="p">)</span>
+        <span class="n">result_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">([(</span><span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;term&quot;</span><span class="p">),</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">))</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">run_sparql_query</span><span class="p">(</span><span class="n">query_string</span><span class="p">)])</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="n">curie</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="n">result_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">curie</span><span class="p">)</span> <span class="k">if</span> <span class="n">curie</span> <span class="ow">in</span> <span class="n">result_dict</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s2">&quot;valid&quot;</span><span class="p">:</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">curie</span> <span class="ow">in</span> <span class="n">result_dict</span> <span class="k">else</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="p">}</span>
+            <span class="k">for</span> <span class="n">curie</span> <span class="ow">in</span> <span class="n">curie_list</span>
+        <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="CurieValidator.find_obsolete_terms">
+<a class="viewcode-back" href="../../pandasaurus/curie_validator.html#pandasaurus.curie_validator.CurieValidator.find_obsolete_terms">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">find_obsolete_terms</span><span class="p">(</span><span class="n">curie_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns obsoleted terms in the curie_list and label and IRI for of the term that is replaced the obsoleted</span>
+<span class="sd">        terms.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            curie_list: List of CURIEs</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            | An example output that shows 1 obsoleted CURIE:</span>
+<span class="sd">            | {&#39;CL:0011107&#39;: {&#39;term&#39;: &#39;CL:0011107&#39;, &#39;label&#39;: &#39;obsolete Muller cell&#39;, depr_status&#39;: &#39;true&#39;,</span>
+<span class="sd">            | &#39;new_term&#39;: &#39;CL:0000636&#39;, new_term_label&#39;: &#39;Mueller cell&#39;}</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True or False status of the term for each term</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">query_string</span> <span class="o">=</span> <span class="n">get_replaced_by_query</span><span class="p">(</span><span class="n">curie_list</span><span class="p">)</span>
+        <span class="n">result_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">([(</span><span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;term&quot;</span><span class="p">),</span> <span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">run_sparql_query</span><span class="p">(</span><span class="n">query_string</span><span class="p">)])</span>
+        <span class="k">return</span> <span class="n">result_dict</span></div>
+
+
+<div class="viewcode-block" id="CurieValidator.find_obsolete_term_replacement">
+<a class="viewcode-back" href="../../pandasaurus/curie_validator.html#pandasaurus.curie_validator.CurieValidator.find_obsolete_term_replacement">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">find_obsolete_term_replacement</span><span class="p">(</span><span class="n">curie_list</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Suggests terms for each obsoleted terms in the curie_list.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            curie_list: List of CURIEs</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List of suggested term</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO Add missing implementation</span>
+        <span class="c1"># We probably don&#39;t need this method</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+
+<div class="viewcode-block" id="CurieValidator.get_validation_report">
+<a class="viewcode-back" href="../../pandasaurus/curie_validator.html#pandasaurus.curie_validator.CurieValidator.get_validation_report">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_validation_report</span><span class="p">(</span><span class="n">term_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Term</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns validation report which includes invalid and obsoleted terms.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            term_list: A list of seed terms where each term is a Term object</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">invalid_terms</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Term</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">obsoleted_terms</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Term</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="n">term_list</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">term</span><span class="o">.</span><span class="n">get_is_valid</span><span class="p">():</span>
+                <span class="n">invalid_terms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">term</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">term</span><span class="o">.</span><span class="n">get_is_obsoleted</span><span class="p">():</span>
+                <span class="n">obsoleted_terms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">term</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">invalid_terms</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidTerm</span><span class="p">(</span><span class="n">invalid_terms</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">obsoleted_terms</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ObsoletedTerm</span><span class="p">(</span><span class="n">obsoleted_terms</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CurieValidator.construct_term_list">
+<a class="viewcode-back" href="../../pandasaurus/curie_validator.html#pandasaurus.curie_validator.CurieValidator.construct_term_list">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">construct_term_list</span><span class="p">(</span><span class="n">seed_list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Term</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns list of Term objects after running validate_curie_list and find_obsolete_terms methods.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            seed_list: A list of seed terms where each term is a CURIE string</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List of Term objects</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">term_validation</span> <span class="o">=</span> <span class="n">CurieValidator</span><span class="o">.</span><span class="n">validate_curie_list</span><span class="p">(</span><span class="n">seed_list</span><span class="p">)</span>
+        <span class="n">term_obsoletion</span> <span class="o">=</span> <span class="n">CurieValidator</span><span class="o">.</span><span class="n">find_obsolete_terms</span><span class="p">(</span><span class="n">seed_list</span><span class="p">)</span>
+        <span class="n">term_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Term</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">seed</span> <span class="ow">in</span> <span class="n">seed_list</span><span class="p">:</span>
+            <span class="n">term</span> <span class="o">=</span> <span class="n">Term</span><span class="p">(</span>
+                <span class="n">term_validation</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">),</span>
+                <span class="n">seed</span><span class="p">,</span>
+                <span class="n">term_validation</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;valid&quot;</span><span class="p">),</span>
+                <span class="n">term_obsoletion</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;new_term_label&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">seed</span> <span class="ow">in</span> <span class="n">term_obsoletion</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">term_obsoletion</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;new_term&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">seed</span> <span class="ow">in</span> <span class="n">term_obsoletion</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">term_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">term</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">term_list</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Ugur Bayindir.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

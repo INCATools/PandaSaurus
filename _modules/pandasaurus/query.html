@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pandasaurus.query &mdash; pandasaurus 0.3.5 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=ba50482b"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            pandasaurus
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../introduction.html">Pandasaurus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pandasaurus/index.html">Library documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">pandasaurus</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pandasaurus.query</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pandasaurus.query</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">rdflib</span> <span class="kn">import</span> <span class="n">Graph</span>
+
+<span class="kn">from</span> <span class="nn">pandasaurus.curie_validator</span> <span class="kn">import</span> <span class="n">CurieValidator</span>
+<span class="kn">from</span> <span class="nn">pandasaurus.graph.graph_generator</span> <span class="kn">import</span> <span class="n">GraphGenerator</span>
+<span class="kn">from</span> <span class="nn">pandasaurus.resources.term</span> <span class="kn">import</span> <span class="n">Term</span>
+<span class="kn">from</span> <span class="nn">pandasaurus.slim_manager</span> <span class="kn">import</span> <span class="n">SlimManager</span>
+<span class="kn">from</span> <span class="nn">pandasaurus.utils.pandasaurus_exceptions</span> <span class="kn">import</span> <span class="n">InvalidTerm</span><span class="p">,</span> <span class="n">ObsoletedTerm</span>
+<span class="kn">from</span> <span class="nn">pandasaurus.utils.query_utils</span> <span class="kn">import</span> <span class="n">chunks</span><span class="p">,</span> <span class="n">run_sparql_query</span>
+<span class="kn">from</span> <span class="nn">pandasaurus.utils.sparql_queries</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">get_ancestor_enrichment_query</span><span class="p">,</span>
+    <span class="n">get_contextual_enrichment_query</span><span class="p">,</span>
+    <span class="n">get_full_enrichment_query</span><span class="p">,</span>
+    <span class="n">get_most_specific_objects_query</span><span class="p">,</span>
+    <span class="n">get_most_specific_subjects_query</span><span class="p">,</span>
+    <span class="n">get_simple_enrichment_query</span><span class="p">,</span>
+    <span class="n">get_synonym_query</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="Query">
+<a class="viewcode-back" href="../../pandasaurus/query.html#pandasaurus.query.Query">[docs]</a>
+<span class="k">class</span> <span class="nc">Query</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Query class is responsible for generating a pandas DataFrame that enriches the seed list with synonyms and</span>
+<span class="sd">    all inferred subClassOf relationships between terms in the seed. It also allows queries over the DataFrame.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        enriched_df: DataFrame that is enriched with synonyms and inferred relationships between terms in</span>
+<span class="sd">        the seed. It will be used in further filtered queries.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">seed_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">enrichment_property_list</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">force_fail</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A Query object is initialised by passing a list of seed terms (where each term is a CURIE string,</span>
+<span class="sd">        e.g. CL:0000001; all OBO standard CURIESs are recognised). It generates a pandas DataFrame that enriches the</span>
+<span class="sd">        seed list with synonyms and all inferred subClassOf relationships by default, and it supports other</span>
+<span class="sd">        relationships between terms in the seed. Additional methods allow enrichment with terms outside the seed</span>
+<span class="sd">        from slims or specified by a semantic context.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            seed_list: A list of seed terms where each term is a CURIE string</span>
+<span class="sd">            enrichment_property_list: Optional list of property IRIs to extend enrichment queries.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Might be unnecessary</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_seed_list</span> <span class="o">=</span> <span class="n">seed_list</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_enrichment_property_list</span> <span class="o">=</span> <span class="n">enrichment_property_list</span> <span class="k">if</span> <span class="n">enrichment_property_list</span> <span class="k">else</span> <span class="p">[</span><span class="s2">&quot;rdfs:subClassOf&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_term_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Term</span><span class="p">]</span> <span class="o">=</span> <span class="n">CurieValidator</span><span class="o">.</span><span class="n">construct_term_list</span><span class="p">(</span><span class="n">seed_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enriched_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+        <span class="c1"># Validation and reporting</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">CurieValidator</span><span class="o">.</span><span class="n">get_validation_report</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_term_list</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">InvalidTerm</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">force_fail</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Check your seed list! It contains invalid terms&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">ObsoletedTerm</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">force_fail</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;Check your seed list! It contains obsoleted terms. Use update_obsoleted_terms &quot;</span>
+                    <span class="s2">&quot;method to update all obsoleted term&quot;</span>
+                <span class="p">)</span>
+
+<div class="viewcode-block" id="Query.simple_enrichment">
+<a class="viewcode-back" href="../../pandasaurus/query.html#pandasaurus.query.Query.simple_enrichment">[docs]</a>
+    <span class="k">def</span> <span class="nf">simple_enrichment</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a DataFrame that is enriched with synonyms and inferred relationships between terms in the seed.</span>
+<span class="sd">        Subject and object terms are members of the seed terms.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">             Enriched DataFrame</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">source_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">term</span><span class="o">.</span><span class="n">get_iri</span><span class="p">()</span> <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_list</span><span class="p">]</span>
+        <span class="n">object_list</span> <span class="o">=</span> <span class="n">source_list</span>
+        <span class="n">query_string</span> <span class="o">=</span> <span class="n">get_simple_enrichment_query</span><span class="p">(</span><span class="n">source_list</span><span class="p">,</span> <span class="n">object_list</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enrichment_property_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enriched_df</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">res</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">run_sparql_query</span><span class="p">(</span><span class="n">query_string</span><span class="p">)],</span>
+                <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;s_label&quot;</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;o_label&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;s&quot;</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_generate_enrichment_graph</span><span class="p">(</span><span class="n">object_list</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">enriched_df</span></div>
+
+
+<div class="viewcode-block" id="Query.minimal_slim_enrichment">
+<a class="viewcode-back" href="../../pandasaurus/query.html#pandasaurus.query.Query.minimal_slim_enrichment">[docs]</a>
+    <span class="k">def</span> <span class="nf">minimal_slim_enrichment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slim_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a DataFrame that is enriched with synonyms and inferred relationships between terms in the seed list</span>
+<span class="sd">        and in an extended seed list. The extended seed list consists of terms from the seed list and terms from</span>
+<span class="sd">        given slim lists, classes tagged with some specified ‘subset’ axiom.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            slim_list: List &#39;subset&#39; tags that consists of classes tagged with some specified ‘subset’ axiom</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Enriched DataFrame</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">source_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">term</span><span class="o">.</span><span class="n">get_iri</span><span class="p">()</span> <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_list</span><span class="p">]</span>
+        <span class="n">object_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">source_list</span> <span class="o">+</span> <span class="n">SlimManager</span><span class="o">.</span><span class="n">get_slim_members</span><span class="p">(</span><span class="n">slim_list</span><span class="p">)))</span>
+        <span class="n">s_result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">chunks</span><span class="p">(</span><span class="n">object_list</span><span class="p">,</span> <span class="mi">90</span><span class="p">):</span>
+            <span class="n">s_result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="n">res</span>
+                    <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">run_sparql_query</span><span class="p">(</span>
+                        <span class="n">get_simple_enrichment_query</span><span class="p">(</span><span class="n">source_list</span><span class="p">,</span> <span class="n">chunk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enrichment_property_list</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enriched_df</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">s_result</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;s_label&quot;</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;o_label&quot;</span><span class="p">])</span>
+            <span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;s&quot;</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_generate_enrichment_graph</span><span class="p">(</span><span class="n">object_list</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">enriched_df</span></div>
+
+
+<div class="viewcode-block" id="Query.full_slim_enrichment">
+<a class="viewcode-back" href="../../pandasaurus/query.html#pandasaurus.query.Query.full_slim_enrichment">[docs]</a>
+    <span class="k">def</span> <span class="nf">full_slim_enrichment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slim_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a DataFrame that is enriched with synonyms and inferred relationships between terms in the seed list</span>
+<span class="sd">        and in an extended seed list. The extended seed list consists of terms from the seed list and terms from</span>
+<span class="sd">        given slim lists, classes tagged with some specified ‘subset’ axiom, with inferred terms via transitive</span>
+<span class="sd">        subClassOf queries.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">             slim_list: List &#39;subset&#39; tags that consists of classes tagged with some specified ‘subset’ axiom</span>
+
+<span class="sd">         Returns:</span>
+<span class="sd">             Enriched DataFrame</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">source_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">term</span><span class="o">.</span><span class="n">get_iri</span><span class="p">()</span> <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_list</span><span class="p">]</span>
+        <span class="n">object_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">source_list</span> <span class="o">+</span> <span class="n">SlimManager</span><span class="o">.</span><span class="n">get_slim_members</span><span class="p">(</span><span class="n">slim_list</span><span class="p">)))</span>
+        <span class="n">s_result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">chunks</span><span class="p">(</span><span class="n">object_list</span><span class="p">,</span> <span class="mi">90</span><span class="p">):</span>
+            <span class="n">s_result</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">res</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">run_sparql_query</span><span class="p">(</span><span class="n">get_full_enrichment_query</span><span class="p">(</span><span class="n">source_list</span><span class="p">,</span> <span class="n">chunk</span><span class="p">))])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">enriched_df</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">s_result</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;s_label&quot;</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;x_label&quot;</span><span class="p">])</span>
+            <span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;x_label&quot;</span><span class="p">:</span> <span class="s2">&quot;o_label&quot;</span><span class="p">})</span>
+            <span class="o">.</span><span class="n">fillna</span><span class="p">({</span><span class="s2">&quot;p&quot;</span><span class="p">:</span> <span class="s2">&quot;rdfs:subClassOf&quot;</span><span class="p">})</span>
+            <span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;s&quot;</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_generate_enrichment_graph</span><span class="p">(</span><span class="n">object_list</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">enriched_df</span></div>
+
+
+<div class="viewcode-block" id="Query.contextual_slim_enrichment">
+<a class="viewcode-back" href="../../pandasaurus/query.html#pandasaurus.query.Query.contextual_slim_enrichment">[docs]</a>
+    <span class="k">def</span> <span class="nf">contextual_slim_enrichment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a DataFrame that is enriched with synonyms and inferred relationships between terms in the seed list</span>
+<span class="sd">        and in an extended seed list. The extended seed list consists of terms from the seed list and all terms</span>
+<span class="sd">        satisfied by some set of existential restrictions in the ubergraph (e.g. part_of some &#39;kidney&#39;).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            context: Organ/tissue/multicellular anatomical structure list to determine the redundant graph via</span>
+<span class="sd">            existential restrictions. It must be a valid CURIE.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Enriched DataFrame</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO add a curie checking mechanism for context list</span>
+        <span class="n">query_string</span> <span class="o">=</span> <span class="n">get_contextual_enrichment_query</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+        <span class="n">source_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">term</span><span class="o">.</span><span class="n">get_iri</span><span class="p">()</span> <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_list</span><span class="p">]</span>
+        <span class="n">object_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">source_list</span> <span class="o">+</span> <span class="p">[</span><span class="n">res</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;term&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">run_sparql_query</span><span class="p">(</span><span class="n">query_string</span><span class="p">)]))</span>
+        <span class="n">s_result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">chunks</span><span class="p">(</span><span class="n">object_list</span><span class="p">,</span> <span class="mi">90</span><span class="p">):</span>
+            <span class="n">s_result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="n">res</span>
+                    <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">run_sparql_query</span><span class="p">(</span>
+                        <span class="n">get_simple_enrichment_query</span><span class="p">(</span><span class="n">source_list</span><span class="p">,</span> <span class="n">chunk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enrichment_property_list</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">enriched_df</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">s_result</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;s_label&quot;</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;o_label&quot;</span><span class="p">])</span>
+            <span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;s&quot;</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_generate_enrichment_graph</span><span class="p">(</span><span class="n">object_list</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">enriched_df</span></div>
+
+
+<div class="viewcode-block" id="Query.ancestor_enrichment">
+<a class="viewcode-back" href="../../pandasaurus/query.html#pandasaurus.query.Query.ancestor_enrichment">[docs]</a>
+    <span class="k">def</span> <span class="nf">ancestor_enrichment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step_count</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform ancestor enrichment analysis with a specified number of hops.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            step_count (str): The number of hops to consider when enriching terms.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            pd.DataFrame: A DataFrame containing enriched terms and associated information.</span>
+
+<span class="sd">        This method conducts an ancestor enrichment analysis on a set of seed terms,</span>
+<span class="sd">        considering the specified number of hops in the ontology graph. The analysis</span>
+<span class="sd">        retrieves terms that are ancestors of the seed terms within the specified</span>
+<span class="sd">        number of hops and compiles the results into a DataFrame.</span>
+
+<span class="sd">        The `step_count` parameter controls the depth of the analysis. A smaller</span>
+<span class="sd">        `step_count` limits the analysis to immediate ancestors, while a larger value</span>
+<span class="sd">        includes more distant ancestors.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">source_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">term</span><span class="o">.</span><span class="n">get_iri</span><span class="p">()</span> <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_list</span><span class="p">]</span>
+        <span class="n">query_string</span> <span class="o">=</span> <span class="n">get_ancestor_enrichment_query</span><span class="p">(</span><span class="n">source_list</span><span class="p">,</span> <span class="n">step_count</span><span class="p">)</span>
+        <span class="n">object_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">uri</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">run_sparql_query</span><span class="p">(</span><span class="n">query_string</span><span class="p">)</span> <span class="k">for</span> <span class="n">uri</span> <span class="ow">in</span> <span class="n">res</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+        <span class="n">s_result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">chunks</span><span class="p">(</span><span class="n">object_list</span><span class="p">,</span> <span class="mi">90</span><span class="p">):</span>
+            <span class="n">s_result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="n">res</span>
+                    <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">run_sparql_query</span><span class="p">(</span>
+                        <span class="n">get_simple_enrichment_query</span><span class="p">(</span><span class="n">source_list</span><span class="p">,</span> <span class="n">chunk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enrichment_property_list</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">enriched_df</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">s_result</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;s_label&quot;</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;o_label&quot;</span><span class="p">])</span>
+            <span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;s&quot;</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_generate_enrichment_graph</span><span class="p">(</span><span class="n">object_list</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">enriched_df</span></div>
+
+
+<div class="viewcode-block" id="Query.parent_enrichment">
+<a class="viewcode-back" href="../../pandasaurus/query.html#pandasaurus.query.Query.parent_enrichment">[docs]</a>
+    <span class="k">def</span> <span class="nf">parent_enrichment</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform parent enrichment analysis.</span>
+
+<span class="sd">        This method is a convenience wrapper around the `ancestor_enrichment` method,</span>
+<span class="sd">        specifically designed to perform parent enrichment analysis. Parent enrichment</span>
+<span class="sd">        analysis considers only immediate parent terms of the seed terms in the ontology</span>
+<span class="sd">        graph (i.e., one-hop ancestors).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            pd.DataFrame: A DataFrame containing enriched parent terms and associated</span>
+<span class="sd">            information.</span>
+
+<span class="sd">        This method simplifies the process of conducting parent enrichment analysis by</span>
+<span class="sd">        calling the `ancestor_enrichment` method with a `step_count` of 1, which limits</span>
+<span class="sd">        the analysis to immediate parent terms of the seed terms.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ancestor_enrichment</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Query.synonym_lookup">
+<a class="viewcode-back" href="../../pandasaurus/query.html#pandasaurus.query.Query.synonym_lookup">[docs]</a>
+    <span class="k">def</span> <span class="nf">synonym_lookup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A DataFrame containing labels and synonyms of the terms from the seed list.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">label_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+            <span class="p">{</span><span class="n">term</span><span class="o">.</span><span class="n">get_iri</span><span class="p">():</span> <span class="n">term</span><span class="o">.</span><span class="n">get_label</span><span class="p">()</span> <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_list</span><span class="p">}</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">,</span> <span class="s2">&quot;label&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="n">synonym_query_results</span> <span class="o">=</span> <span class="n">run_sparql_query</span><span class="p">(</span><span class="n">get_synonym_query</span><span class="p">(</span><span class="n">label_df</span><span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()))</span>
+        <span class="n">synonym_df</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">res</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">synonym_query_results</span> <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="s2">&quot;synonym&quot;</span> <span class="ow">in</span> <span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">res</span><span class="o">.</span><span class="n">keys</span><span class="p">())])</span>
+            <span class="o">.</span><span class="n">melt</span><span class="p">(</span><span class="n">id_vars</span><span class="o">=</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="n">var_name</span><span class="o">=</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="n">value_name</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="s2">&quot;ID&quot;</span><span class="p">})</span>
+            <span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])[[</span><span class="s2">&quot;ID&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">]]</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Merging two df</span>
+        <span class="n">result_df</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">synonym_df</span><span class="p">,</span> <span class="n">label_df</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s2">&quot;ID&quot;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;ID&quot;</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)[[</span><span class="s2">&quot;ID&quot;</span><span class="p">,</span> <span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">]]</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result_df</span></div>
+
+
+<div class="viewcode-block" id="Query.get_most_specific_objects">
+<a class="viewcode-back" href="../../pandasaurus/query.html#pandasaurus.query.Query.get_most_specific_objects">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_most_specific_objects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ontology</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            predicate: Relationship that wanted to be explored</span>
+<span class="sd">            ontology: PURL of obo ontologies in Ubergraph.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Example Ontology PURLs:</span>
+<span class="sd">                - http://purl.obolibrary.org/obo/cl.owl \n</span>
+<span class="sd">                - http://purl.obolibrary.org/obo/uberon.owl</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">subject_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">term</span><span class="o">.</span><span class="n">get_iri</span><span class="p">()</span> <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_list</span><span class="p">]</span>
+        <span class="n">query_string</span> <span class="o">=</span> <span class="n">get_most_specific_objects_query</span><span class="p">(</span><span class="n">subject_list</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="n">ontology</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">res</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">run_sparql_query</span><span class="p">(</span><span class="n">query_string</span><span class="p">)],</span>
+                <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;s_label&quot;</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;o_label&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;s&quot;</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Query.get_most_specific_subjects">
+<a class="viewcode-back" href="../../pandasaurus/query.html#pandasaurus.query.Query.get_most_specific_subjects">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_most_specific_subjects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ontology</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            predicate: Relationship that wanted to be explored</span>
+<span class="sd">            ontology: PURL of obo ontologies in Ubergraph.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Example Ontology PURLs:</span>
+<span class="sd">                - http://purl.obolibrary.org/obo/cl.owl \n</span>
+<span class="sd">                - http://purl.obolibrary.org/obo/uberon.owl</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">object_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">term</span><span class="o">.</span><span class="n">get_iri</span><span class="p">()</span> <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_list</span><span class="p">]</span>
+        <span class="n">query_string</span> <span class="o">=</span> <span class="n">get_most_specific_subjects_query</span><span class="p">(</span><span class="n">object_list</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="n">ontology</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">res</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">run_sparql_query</span><span class="p">(</span><span class="n">query_string</span><span class="p">)],</span>
+                <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;s_label&quot;</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;o_label&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;s&quot;</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Query.query">
+<a class="viewcode-back" href="../../pandasaurus/query.html#pandasaurus.query.Query.query">[docs]</a>
+    <span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">query_term</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns filtered dataframe via join on column to subject of enriched_df, looking up of object name or</span>
+<span class="sd">        synonym via query of name_lookup.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            column_name: Column name</span>
+<span class="sd">            query_term: Object label or synonym</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Filtered DataFrame</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO Add missing implementation</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+
+<div class="viewcode-block" id="Query.update_obsoleted_terms">
+<a class="viewcode-back" href="../../pandasaurus/query.html#pandasaurus.query.Query.update_obsoleted_terms">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_obsoleted_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Replaces all obsoleted terms in the term list with the new term that obsoletes them.&quot;&quot;&quot;</span>
+        <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">term</span><span class="p">,</span> <span class="s2">&quot;update_obsoleted_term&quot;</span><span class="p">)()</span> <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_list</span><span class="p">]</span></div>
+
+
+    <span class="k">def</span> <span class="nf">mirror_enrichment_for_graph_generation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">term_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+        <span class="c1"># TODO definitely need a refactoring later on</span>
+        <span class="n">s_result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">s_chunk</span> <span class="ow">in</span> <span class="n">chunks</span><span class="p">(</span><span class="n">term_list</span><span class="p">,</span> <span class="mi">45</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">o_chunk</span> <span class="ow">in</span> <span class="n">chunks</span><span class="p">(</span><span class="n">term_list</span><span class="p">,</span> <span class="mi">45</span><span class="p">):</span>
+                <span class="n">s_result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                    <span class="p">[</span>
+                        <span class="n">res</span>
+                        <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">run_sparql_query</span><span class="p">(</span>
+                            <span class="n">get_simple_enrichment_query</span><span class="p">(</span><span class="n">s_chunk</span><span class="p">,</span> <span class="n">o_chunk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enrichment_property_list</span><span class="p">)</span>
+                        <span class="p">)</span>
+                    <span class="p">]</span>
+                <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph_df</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">s_result</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;s_label&quot;</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;o_label&quot;</span><span class="p">])</span>
+            <span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;s&quot;</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_generate_enrichment_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">object_list</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mirror_enrichment_for_graph_generation</span><span class="p">(</span><span class="n">object_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="n">GraphGenerator</span><span class="o">.</span><span class="n">generate_enrichment_graph</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph_df</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="n">GraphGenerator</span><span class="o">.</span><span class="n">apply_transitive_reduction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">enriched_df</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Ugur Bayindir.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

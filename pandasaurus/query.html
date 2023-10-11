@@ -48,7 +48,10 @@
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Library documentation</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="curie_validator.html">Curie Validator</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Query</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#documentation">Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#documentation">Documentation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pandasaurus.query.Query"><code class="docutils literal notranslate"><span class="pre">Query</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="slim_manager.html">Slim Manager</a></li>
@@ -88,6 +91,214 @@
 <h1>Query<a class="headerlink" href="#query" title="Link to this heading"></a></h1>
 <section id="documentation">
 <h2>Documentation<a class="headerlink" href="#documentation" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pandasaurus.query.Query">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pandasaurus.query.</span></span><span class="sig-name descname"><span class="pre">Query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enrichment_property_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_fail</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pandasaurus/query.html#Query"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pandasaurus.query.Query" title="Link to this definition"></a></dt>
+<dd><p>Query class is responsible for generating a pandas DataFrame that enriches the seed list with synonyms and
+all inferred subClassOf relationships between terms in the seed. It also allows queries over the DataFrame.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pandasaurus.query.Query.enriched_df">
+<span class="sig-name descname"><span class="pre">enriched_df</span></span><a class="headerlink" href="#pandasaurus.query.Query.enriched_df" title="Link to this definition"></a></dt>
+<dd><p>DataFrame that is enriched with synonyms and inferred relationships between terms in</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">the</span> <span class="pre">seed.</span> <span class="pre">It</span> <span class="pre">will</span> <span class="pre">be</span> <span class="pre">used</span> <span class="pre">in</span> <span class="pre">further</span> <span class="pre">filtered</span> <span class="pre">queries.</span></span></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pandasaurus.query.Query.ancestor_enrichment">
+<span class="sig-name descname"><span class="pre">ancestor_enrichment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">step_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/pandasaurus/query.html#Query.ancestor_enrichment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pandasaurus.query.Query.ancestor_enrichment" title="Link to this definition"></a></dt>
+<dd><p>Perform ancestor enrichment analysis with a specified number of hops.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>step_count</strong> (<em>str</em>) – The number of hops to consider when enriching terms.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A DataFrame containing enriched terms and associated information.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+<p>This method conducts an ancestor enrichment analysis on a set of seed terms,
+considering the specified number of hops in the ontology graph. The analysis
+retrieves terms that are ancestors of the seed terms within the specified
+number of hops and compiles the results into a DataFrame.</p>
+<p>The <cite>step_count</cite> parameter controls the depth of the analysis. A smaller
+<cite>step_count</cite> limits the analysis to immediate ancestors, while a larger value
+includes more distant ancestors.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pandasaurus.query.Query.contextual_slim_enrichment">
+<span class="sig-name descname"><span class="pre">contextual_slim_enrichment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/pandasaurus/query.html#Query.contextual_slim_enrichment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pandasaurus.query.Query.contextual_slim_enrichment" title="Link to this definition"></a></dt>
+<dd><p>Returns a DataFrame that is enriched with synonyms and inferred relationships between terms in the seed list
+and in an extended seed list. The extended seed list consists of terms from the seed list and all terms
+satisfied by some set of existential restrictions in the ubergraph (e.g. part_of some ‘kidney’).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>context</strong> – Organ/tissue/multicellular anatomical structure list to determine the redundant graph via</p></li>
+<li><p><strong>CURIE.</strong> (<em>existential restrictions. It must be a valid</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Enriched DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pandasaurus.query.Query.full_slim_enrichment">
+<span class="sig-name descname"><span class="pre">full_slim_enrichment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slim_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/pandasaurus/query.html#Query.full_slim_enrichment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pandasaurus.query.Query.full_slim_enrichment" title="Link to this definition"></a></dt>
+<dd><p>Returns a DataFrame that is enriched with synonyms and inferred relationships between terms in the seed list
+and in an extended seed list. The extended seed list consists of terms from the seed list and terms from
+given slim lists, classes tagged with some specified ‘subset’ axiom, with inferred terms via transitive
+subClassOf queries.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>slim_list</strong> – <p>List ‘subset’ tags that consists of classes tagged with some specified ‘subset’ axiom</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>Enriched DataFrame</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pandasaurus.query.Query.get_most_specific_objects">
+<span class="sig-name descname"><span class="pre">get_most_specific_objects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pandasaurus/query.html#Query.get_most_specific_objects"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pandasaurus.query.Query.get_most_specific_objects" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>predicate</strong> – Relationship that wanted to be explored</p></li>
+<li><p><strong>ontology</strong> – PURL of obo ontologies in Ubergraph.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<dl class="simple">
+<dt>Example Ontology PURLs:</dt><dd><ul class="simple">
+<li><p><a class="reference external" href="http://purl.obolibrary.org/obo/cl.owl">http://purl.obolibrary.org/obo/cl.owl</a></p></li>
+<li><p><a class="reference external" href="http://purl.obolibrary.org/obo/uberon.owl">http://purl.obolibrary.org/obo/uberon.owl</a></p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pandasaurus.query.Query.get_most_specific_subjects">
+<span class="sig-name descname"><span class="pre">get_most_specific_subjects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pandasaurus/query.html#Query.get_most_specific_subjects"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pandasaurus.query.Query.get_most_specific_subjects" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>predicate</strong> – Relationship that wanted to be explored</p></li>
+<li><p><strong>ontology</strong> – PURL of obo ontologies in Ubergraph.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<dl class="simple">
+<dt>Example Ontology PURLs:</dt><dd><ul class="simple">
+<li><p><a class="reference external" href="http://purl.obolibrary.org/obo/cl.owl">http://purl.obolibrary.org/obo/cl.owl</a></p></li>
+<li><p><a class="reference external" href="http://purl.obolibrary.org/obo/uberon.owl">http://purl.obolibrary.org/obo/uberon.owl</a></p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pandasaurus.query.Query.minimal_slim_enrichment">
+<span class="sig-name descname"><span class="pre">minimal_slim_enrichment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slim_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/pandasaurus/query.html#Query.minimal_slim_enrichment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pandasaurus.query.Query.minimal_slim_enrichment" title="Link to this definition"></a></dt>
+<dd><p>Returns a DataFrame that is enriched with synonyms and inferred relationships between terms in the seed list
+and in an extended seed list. The extended seed list consists of terms from the seed list and terms from
+given slim lists, classes tagged with some specified ‘subset’ axiom.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>slim_list</strong> – List ‘subset’ tags that consists of classes tagged with some specified ‘subset’ axiom</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Enriched DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pandasaurus.query.Query.parent_enrichment">
+<span class="sig-name descname"><span class="pre">parent_enrichment</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pandasaurus/query.html#Query.parent_enrichment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pandasaurus.query.Query.parent_enrichment" title="Link to this definition"></a></dt>
+<dd><p>Perform parent enrichment analysis.</p>
+<p>This method is a convenience wrapper around the <cite>ancestor_enrichment</cite> method,
+specifically designed to perform parent enrichment analysis. Parent enrichment
+analysis considers only immediate parent terms of the seed terms in the ontology
+graph (i.e., one-hop ancestors).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A DataFrame containing enriched parent terms and associated
+information.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pd.DataFrame</p>
+</dd>
+</dl>
+<p>This method simplifies the process of conducting parent enrichment analysis by
+calling the <cite>ancestor_enrichment</cite> method with a <cite>step_count</cite> of 1, which limits
+the analysis to immediate parent terms of the seed terms.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pandasaurus.query.Query.query">
+<span class="sig-name descname"><span class="pre">query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">column_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_term</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/pandasaurus/query.html#Query.query"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pandasaurus.query.Query.query" title="Link to this definition"></a></dt>
+<dd><p>Returns filtered dataframe via join on column to subject of enriched_df, looking up of object name or
+synonym via query of name_lookup.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>column_name</strong> – Column name</p></li>
+<li><p><strong>query_term</strong> – Object label or synonym</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Filtered DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pandasaurus.query.Query.simple_enrichment">
+<span class="sig-name descname"><span class="pre">simple_enrichment</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/pandasaurus/query.html#Query.simple_enrichment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pandasaurus.query.Query.simple_enrichment" title="Link to this definition"></a></dt>
+<dd><p>Returns a DataFrame that is enriched with synonyms and inferred relationships between terms in the seed.
+Subject and object terms are members of the seed terms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Enriched DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pandasaurus.query.Query.synonym_lookup">
+<span class="sig-name descname"><span class="pre">synonym_lookup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/pandasaurus/query.html#Query.synonym_lookup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pandasaurus.query.Query.synonym_lookup" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A DataFrame containing labels and synonyms of the terms from the seed list.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pandasaurus.query.Query.update_obsoleted_terms">
+<span class="sig-name descname"><span class="pre">update_obsoleted_terms</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pandasaurus/query.html#Query.update_obsoleted_terms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pandasaurus.query.Query.update_obsoleted_terms" title="Link to this definition"></a></dt>
+<dd><p>Replaces all obsoleted terms in the term list with the new term that obsoletes them.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 </section>
 

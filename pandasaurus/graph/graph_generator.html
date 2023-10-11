@@ -93,6 +93,67 @@
 <h1>Graph Generator<a class="headerlink" href="#graph-generator" title="Link to this heading"></a></h1>
 <section id="documentation">
 <h2>Documentation<a class="headerlink" href="#documentation" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pandasaurus.graph.graph_generator.GraphGenerator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pandasaurus.graph.graph_generator.</span></span><span class="sig-name descname"><span class="pre">GraphGenerator</span></span><a class="reference internal" href="../../_modules/pandasaurus/graph/graph_generator.html#GraphGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pandasaurus.graph.graph_generator.GraphGenerator" title="Link to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="pandasaurus.graph.graph_generator.GraphGenerator.apply_transitive_reduction">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">apply_transitive_reduction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predicate_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Graph</span></span></span><a class="reference internal" href="../../_modules/pandasaurus/graph/graph_generator.html#GraphGenerator.apply_transitive_reduction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pandasaurus.graph.graph_generator.GraphGenerator.apply_transitive_reduction" title="Link to this definition"></a></dt>
+<dd><p>Applies transitive reduction to a given RDF graph using specified predicates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>graph</strong> (<em>Graph</em>) – The RDF graph to which transitive reduction is applied.</p></li>
+<li><p><strong>predicate_list</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – A list of predicates (URIs or ‘rdfs:subClassOf’)
+to which transitive reduction will be applied.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The RDF graph after applying transitive reduction to the specified predicates.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Graph</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>The method applies transitive reduction to the specified predicates by adding only the necessary edges
+to create a directed acyclic graph.</p></li>
+<li><p>Redundant triples are removed from the graph using transitive reduction results.</p></li>
+<li><p>The ‘predicate_list’ should contain valid predicates existing in the graph.</p></li>
+<li><p>For ‘predicate_list’, you can use either full URIs or ‘rdfs:subClassOf’ for the RDF schema ‘subClassOf’
+relationship.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pandasaurus.graph.graph_generator.GraphGenerator.generate_enrichment_graph">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generate_enrichment_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enriched_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Graph</span></span></span><a class="reference internal" href="../../_modules/pandasaurus/graph/graph_generator.html#GraphGenerator.generate_enrichment_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pandasaurus.graph.graph_generator.GraphGenerator.generate_enrichment_graph" title="Link to this definition"></a></dt>
+<dd><p>Generates an RDF graph representing enrichment relationships from an enriched DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>enriched_df</strong> (<em>pd.DataFrame</em>) – A DataFrame containing enrichment relationships.
+It should have columns ‘s’, ‘s_label’, ‘o’, and ‘o_label’ representing subjects,
+subject labels, objects, and object labels respectively.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>An RDF graph representing the enrichment relationships.</dt><dd><p>Each subject is linked to its corresponding object using the ‘subClassOf’ relationship,
+and labels are associated with subjects and objects using the ‘label’ relationship.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Graph</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 </section>
 
