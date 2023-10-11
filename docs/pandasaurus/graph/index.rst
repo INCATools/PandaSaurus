@@ -1,4 +1,4 @@
-Library documentation
+Graph Module
 =======================
 
 .. toctree::
@@ -7,10 +7,3 @@ Library documentation
 
    graph_generator
    graph_generator_utils
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
