@@ -46,16 +46,11 @@ def get_redundant_expected_triples():
     return [
         (
             URIRef("http://purl.obolibrary.org/obo/CL_0000909"),
-            URIRef("http://www.w3.org/2000/01/rdf-schema#subClassOf"),
-            URIRef("http://purl.obolibrary.org/obo/CL_0000813"),
+            URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+            URIRef("http://www.w3.org/2002/07/owl#Class"),
         ),
         (
-            URIRef("http://purl.obolibrary.org/obo/CL_0000813"),
-            URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
-            Literal("memory T cell"),
-        ),
-        (
-            URIRef("http://purl.obolibrary.org/obo/CL_0000813"),
+            URIRef("http://purl.obolibrary.org/obo/CL_0000809"),
             URIRef("http://www.w3.org/2000/01/rdf-schema#subClassOf"),
             URIRef("http://purl.obolibrary.org/obo/CL_0000084"),
         ),
@@ -65,12 +60,32 @@ def get_redundant_expected_triples():
             Literal("CD4-positive, alpha-beta memory T cell"),
         ),
         (
-            URIRef("http://purl.obolibrary.org/obo/CL_0000897"),
+            URIRef("http://purl.obolibrary.org/obo/CL_0000809"),
+            URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+            URIRef("http://www.w3.org/2002/07/owl#Class"),
+        ),
+        (
+            URIRef("http://purl.obolibrary.org/obo/CL_0000813"),
             URIRef("http://www.w3.org/2000/01/rdf-schema#subClassOf"),
             URIRef("http://purl.obolibrary.org/obo/CL_0000084"),
         ),
         (
-            URIRef("http://purl.obolibrary.org/obo/CL_0000809"),
+            URIRef("http://purl.obolibrary.org/obo/CL_0000084"),
+            URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
+            Literal("T cell"),
+        ),
+        (
+            URIRef("http://purl.obolibrary.org/obo/CL_0000084"),
+            URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+            URIRef("http://www.w3.org/2002/07/owl#Class"),
+        ),
+        (
+            URIRef("http://purl.obolibrary.org/obo/CL_0000813"),
+            URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+            URIRef("http://www.w3.org/2002/07/owl#Class"),
+        ),
+        (
+            URIRef("http://purl.obolibrary.org/obo/CL_0000897"),
             URIRef("http://www.w3.org/2000/01/rdf-schema#subClassOf"),
             URIRef("http://purl.obolibrary.org/obo/CL_0000084"),
         ),
@@ -80,9 +95,9 @@ def get_redundant_expected_triples():
             URIRef("http://purl.obolibrary.org/obo/CL_0000813"),
         ),
         (
-            URIRef("http://purl.obolibrary.org/obo/CL_0000809"),
+            URIRef("http://purl.obolibrary.org/obo/CL_0000813"),
             URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
-            Literal("double-positive, alpha-beta thymocyte"),
+            Literal("memory T cell"),
         ),
         (
             URIRef("http://purl.obolibrary.org/obo/CL_0000909"),
@@ -90,14 +105,24 @@ def get_redundant_expected_triples():
             Literal("CD8-positive, alpha-beta memory T cell"),
         ),
         (
+            URIRef("http://purl.obolibrary.org/obo/CL_0000809"),
+            URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
+            Literal("double-positive, alpha-beta thymocyte"),
+        ),
+        (
+            URIRef("http://purl.obolibrary.org/obo/CL_0000897"),
+            URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+            URIRef("http://www.w3.org/2002/07/owl#Class"),
+        ),
+        (
             URIRef("http://purl.obolibrary.org/obo/CL_0000909"),
             URIRef("http://www.w3.org/2000/01/rdf-schema#subClassOf"),
             URIRef("http://purl.obolibrary.org/obo/CL_0000084"),
         ),
         (
-            URIRef("http://purl.obolibrary.org/obo/CL_0000084"),
-            URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
-            Literal("T cell"),
+            URIRef("http://purl.obolibrary.org/obo/CL_0000909"),
+            URIRef("http://www.w3.org/2000/01/rdf-schema#subClassOf"),
+            URIRef("http://purl.obolibrary.org/obo/CL_0000813"),
         ),
     ]
 
@@ -105,34 +130,14 @@ def get_redundant_expected_triples():
 def get_nonredundant_expected_triples():
     return [
         (
+            URIRef("http://purl.obolibrary.org/obo/CL_0000813"),
+            URIRef("http://www.w3.org/2000/01/rdf-schema#subClassOf"),
+            URIRef("http://purl.obolibrary.org/obo/CL_0000084"),
+        ),
+        (
             URIRef("http://purl.obolibrary.org/obo/CL_0000809"),
             URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
             Literal("double-positive, alpha-beta thymocyte"),
-        ),
-        (
-            URIRef("http://purl.obolibrary.org/obo/CL_0000809"),
-            URIRef("http://www.w3.org/2000/01/rdf-schema#subClassOf"),
-            URIRef("http://purl.obolibrary.org/obo/CL_0000084"),
-        ),
-        (
-            URIRef("http://purl.obolibrary.org/obo/CL_0000813"),
-            URIRef("http://www.w3.org/2000/01/rdf-schema#subClassOf"),
-            URIRef("http://purl.obolibrary.org/obo/CL_0000084"),
-        ),
-        (
-            URIRef("http://purl.obolibrary.org/obo/CL_0000909"),
-            URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
-            Literal("CD8-positive, alpha-beta memory T cell"),
-        ),
-        (
-            URIRef("http://purl.obolibrary.org/obo/CL_0000897"),
-            URIRef("http://www.w3.org/2000/01/rdf-schema#subClassOf"),
-            URIRef("http://purl.obolibrary.org/obo/CL_0000813"),
-        ),
-        (
-            URIRef("http://purl.obolibrary.org/obo/CL_0000084"),
-            URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
-            Literal("T cell"),
         ),
         (
             URIRef("http://purl.obolibrary.org/obo/CL_0000813"),
@@ -140,13 +145,58 @@ def get_nonredundant_expected_triples():
             Literal("memory T cell"),
         ),
         (
+            URIRef("http://purl.obolibrary.org/obo/CL_0000084"),
+            URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+            URIRef("http://www.w3.org/2002/07/owl#Class"),
+        ),
+        (
             URIRef("http://purl.obolibrary.org/obo/CL_0000909"),
+            URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
+            Literal("CD8-positive, alpha-beta memory T cell"),
+        ),
+        (
+            URIRef("http://purl.obolibrary.org/obo/CL_0000809"),
+            URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+            URIRef("http://www.w3.org/2002/07/owl#Class"),
+        ),
+        (
+            URIRef("http://purl.obolibrary.org/obo/CL_0000897"),
             URIRef("http://www.w3.org/2000/01/rdf-schema#subClassOf"),
             URIRef("http://purl.obolibrary.org/obo/CL_0000813"),
         ),
         (
             URIRef("http://purl.obolibrary.org/obo/CL_0000897"),
+            URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+            URIRef("http://www.w3.org/2002/07/owl#Class"),
+        ),
+        (
+            URIRef("http://purl.obolibrary.org/obo/CL_0000084"),
+            URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
+            Literal("T cell"),
+        ),
+        (
+            URIRef("http://purl.obolibrary.org/obo/CL_0000809"),
+            URIRef("http://www.w3.org/2000/01/rdf-schema#subClassOf"),
+            URIRef("http://purl.obolibrary.org/obo/CL_0000084"),
+        ),
+        (
+            URIRef("http://purl.obolibrary.org/obo/CL_0000897"),
             URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
             Literal("CD4-positive, alpha-beta memory T cell"),
+        ),
+        (
+            URIRef("http://purl.obolibrary.org/obo/CL_0000813"),
+            URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+            URIRef("http://www.w3.org/2002/07/owl#Class"),
+        ),
+        (
+            URIRef("http://purl.obolibrary.org/obo/CL_0000909"),
+            URIRef("http://www.w3.org/2000/01/rdf-schema#subClassOf"),
+            URIRef("http://purl.obolibrary.org/obo/CL_0000813"),
+        ),
+        (
+            URIRef("http://purl.obolibrary.org/obo/CL_0000909"),
+            URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+            URIRef("http://www.w3.org/2002/07/owl#Class"),
         ),
     ]
