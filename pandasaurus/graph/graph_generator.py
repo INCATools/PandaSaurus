@@ -2,7 +2,7 @@ from typing import List
 
 import networkx as nx
 import pandas as pd
-from rdflib import RDF, RDFS, Graph, Literal, Namespace, URIRef
+from rdflib import OWL, RDF, RDFS, Graph, Literal, Namespace, URIRef
 from rdflib.plugins.sparql import prepareQuery
 
 from pandasaurus.graph.graph_generator_utils import (
@@ -37,7 +37,9 @@ class GraphGenerator:
             s = cl_namespace[row["s"].split(":")[-1]]
             o = cl_namespace[row["o"].split(":")[-1]]
             graph.add((s, RDFS.label, Literal(row["s_label"])))
+            graph.add((s, RDF.type, OWL.Class))
             graph.add((o, RDFS.label, Literal(row["o_label"])))
+            graph.add((o, RDF.type, OWL.Class))
             graph.add((s, RDFS.subClassOf, o))
         return graph
 

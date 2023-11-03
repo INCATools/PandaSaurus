@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pandasaurus"
-version = "0.3.6"
+version = "0.3.7"
 description = "Supporting simple queries over ontology annotations in dataframes, using UberGraph queries."
 authors = ["Ismail Ugur Bayindir <ugur@ebi.ac.uk>"]
 license = "http://www.apache.org/licenses/LICENSE-2.0"
