@@ -9,7 +9,7 @@ packages = [{include = "pandasaurus"}]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-oaklib = "0.5.25"
+oaklib = "^0.6.23"
 pandas = "^2.0.1"
 rdflib = "^6.3.2"
 sphinx = { version = "^7.2.6", optional = true }
