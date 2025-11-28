@@ -1,5 +1,7 @@
 from test.data.query_data import get_blood_and_immune_test_data
 
+import pytest
+
 from pandasaurus.utils.sparql_queries import (
     get_ancestor_enrichment_query,
     get_contextual_enrichment_query,
@@ -94,6 +96,14 @@ def test_get_ancestor_enrichment_query():
     assert get_ancestor_enrichment_query(term_iri_list, 4) == expected_n4_query
     assert "o6" in get_ancestor_enrichment_query(term_iri_list, 7)
     assert "o7" not in get_ancestor_enrichment_query(term_iri_list, 7)
+
+
+def test_get_ancestor_enrichment_query_requires_positive_int():
+    term_iri_list = ["term1"]
+    with pytest.raises(TypeError):
+        get_ancestor_enrichment_query(term_iri_list, "3")
+    with pytest.raises(ValueError):
+        get_ancestor_enrichment_query(term_iri_list, 0)
 
 
 def test_get_synonym_query():

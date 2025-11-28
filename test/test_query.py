@@ -285,6 +285,32 @@ def test_ancestor_enrichment(mocker):
     assert expected_simple_df["o"].reset_index(drop=True).equals(df["o"].reset_index(drop=True))
 
 
+def test_ancestor_enrichment_requires_integer_step(mocker):
+    mocker.patch(
+        "pandasaurus.curie_validator.run_sparql_query",
+        side_effect=[
+            iter(get_enrichment_validate_curie_list_result()),
+            iter(get_enrichment_find_obsolete_terms_data()),
+        ],
+    )
+    q = Query(blood_and_immune_test_data)
+    with pytest.raises(TypeError):
+        q.ancestor_enrichment("2")
+
+
+def test_ancestor_enrichment_requires_positive_step(mocker):
+    mocker.patch(
+        "pandasaurus.curie_validator.run_sparql_query",
+        side_effect=[
+            iter(get_enrichment_validate_curie_list_result()),
+            iter(get_enrichment_find_obsolete_terms_data()),
+        ],
+    )
+    q = Query(blood_and_immune_test_data)
+    with pytest.raises(ValueError):
+        q.ancestor_enrichment(0)
+
+
 def test_synonym_lookup(mocker):
     q = Query(["CL:0000084", "CL:0000813", "CL:0000815", "CL:0000900"])
 
