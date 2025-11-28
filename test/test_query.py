@@ -27,8 +27,6 @@ import pandas as pd
 import pytest
 
 from pandasaurus.query import Query
-from pandasaurus.utils.query_utils import run_sparql_query
-from pandasaurus.utils.sparql_queries import get_contextual_enrichment_query
 
 blood_and_immune_test_data = get_blood_and_immune_test_data()
 
@@ -244,8 +242,8 @@ def test_contextual_slim_enrichment(mocker):
     )
     q = Query(kidney_test_data)
     df = q.contextual_slim_enrichment(context_list)
-    query_string = get_contextual_enrichment_query(context_list)
-    object_list = kidney_test_data + [res.get("term") for res in run_sparql_query(query_string)]
+    context_members = get_context_members_result()
+    object_list = kidney_test_data + [res.get("term") for res in context_members]
     assert df["s"].isin(kidney_test_data).any()
     assert df["o"].isin(object_list).any()
     assert expected_contextual_df["s"].reset_index(drop=True).equals(df["s"].reset_index(drop=True))
@@ -312,6 +310,13 @@ def test_ancestor_enrichment_requires_positive_step(mocker):
 
 
 def test_synonym_lookup(mocker):
+    mocker.patch(
+        "pandasaurus.curie_validator.run_sparql_query",
+        side_effect=[
+            iter(get_enrichment_validate_curie_list_result()),
+            iter(get_enrichment_find_obsolete_terms_data()),
+        ],
+    )
     q = Query(["CL:0000084", "CL:0000813", "CL:0000815", "CL:0000900"])
 
     mocker.patch(
@@ -330,12 +335,34 @@ def test_query():
     pass
 
 
-def test_update_obsoleted_terms():
+def test_update_obsoleted_terms(mocker):
     seed_list = ["CL:0000084", "CL:0011107"]
     expected_update_obsoleted_terms = [
         "IRI: CL:0000084, Label: T cell, Valid: True, Obsoleted: False",
         "IRI: CL:0000636, Label: Mueller cell, Valid: True, Obsoleted: False",
     ]
+    mocker.patch(
+        "pandasaurus.curie_validator.run_sparql_query",
+        side_effect=[
+            iter(
+                [
+                    {"label": "T cell", "term": "CL:0000084"},
+                    {"label": "obsolete Muller cell", "term": "CL:0011107"},
+                ]
+            ),
+            iter(
+                [
+                    {
+                        "depr_status": "true",
+                        "label": "obsolete Muller cell",
+                        "new_term": "CL:0000636",
+                        "new_term_label": "Mueller cell",
+                        "term": "CL:0011107",
+                    }
+                ]
+            ),
+        ],
+    )
     q = Query(seed_list)
     q.update_obsoleted_terms()
     assert [str(term) for term in q._term_list] == expected_update_obsoleted_terms
@@ -356,6 +383,21 @@ def test_get_most_specific_objects(mocker):
         "pandasaurus.query.run_sparql_query",
         side_effect=[
             iter(get_most_specific_objects_result()),
+        ],
+    )
+
+    mocker.patch(
+        "pandasaurus.curie_validator.run_sparql_query",
+        side_effect=[
+            iter(get_enrichment_validate_curie_list_result()),
+            iter(get_enrichment_find_obsolete_terms_data()),
+        ],
+    )
+    mocker.patch(
+        "pandasaurus.curie_validator.run_sparql_query",
+        side_effect=[
+            iter(get_enrichment_validate_curie_list_result()),
+            iter(get_enrichment_find_obsolete_terms_data()),
         ],
     )
 
@@ -384,6 +426,14 @@ def test_get_most_specific_subjects(mocker):
         ],
     )
 
+    mocker.patch(
+        "pandasaurus.curie_validator.run_sparql_query",
+        side_effect=[
+            iter(get_enrichment_validate_curie_list_result()),
+            iter(get_enrichment_find_obsolete_terms_data()),
+        ],
+    )
+
     q = Query(seed_list)
     result_df = q.get_most_specific_subjects("RO:0002215", "http://purl.obolibrary.org/obo/cl.owl")
 
@@ -392,11 +442,26 @@ def test_get_most_specific_subjects(mocker):
 
 
 @pytest.fixture
-def enrichment_instance():
+def enrichment_instance(mocker):
+    mocker.patch(
+        "pandasaurus.curie_validator.run_sparql_query",
+        side_effect=[
+            iter(get_enrichment_validate_curie_list_result()),
+            iter(get_enrichment_find_obsolete_terms_data()),
+        ],
+    )
     return Query(blood_and_immune_test_data)
 
 
 def test_parent_enrichment(enrichment_instance, mocker):
+    mocker.patch(
+        "pandasaurus.query.run_sparql_query",
+        side_effect=[
+            iter(get_ancestor_object_list()),
+            iter(get_ancestor_enrichment_result()),
+            iter(get_ancestor_enrichment_result()),
+        ],
+    )
     ancestor_enrichment_spy = mocker.spy(enrichment_instance, "ancestor_enrichment")
     enrichment_instance.parent_enrichment()
     ancestor_enrichment_spy.assert_called_once_with(1)
