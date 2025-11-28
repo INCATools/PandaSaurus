@@ -121,7 +121,14 @@
 
 
 
-<span class="k">def</span> <span class="nf">get_ancestor_enrichment_query</span><span class="p">(</span><span class="n">seed_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">step_count</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="get_ancestor_enrichment_query">
+<a class="viewcode-back" href="../../../pandasaurus/utils/sparql_queries.html#pandasaurus.utils.sparql_queries.get_ancestor_enrichment_query">[docs]</a>
+<span class="k">def</span> <span class="nf">get_ancestor_enrichment_query</span><span class="p">(</span><span class="n">seed_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">step_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a SPARQL query that walks up to `step_count` ancestors for the seeds.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">step_count</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;step_count must be an integer&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">step_count</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;step_count must be a positive integer&quot;</span><span class="p">)</span>
     <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT * WHERE { GRAPH &lt;http://reasoner.renci.org/nonredundant&gt; &quot;</span>
     <span class="n">query</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">{{</span><span class="s2"> VALUES ?s </span><span class="se">{{</span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">seed_list</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="se">}}</span><span class="s2"> &quot;</span>
     <span class="n">query</span> <span class="o">+=</span> <span class="s2">&quot;?s rdfs:subClassOf ?o0. &quot;</span>
@@ -140,7 +147,8 @@
     <span class="n">query</span> <span class="o">+=</span> <span class="n">defined_by</span>
     <span class="n">query</span> <span class="o">+=</span> <span class="s2">&quot;}} #LIMIT&quot;</span>
 
-    <span class="k">return</span> <span class="n">query</span>
+    <span class="k">return</span> <span class="n">query</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">get_synonym_query</span><span class="p">(</span><span class="n">term_iri_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
