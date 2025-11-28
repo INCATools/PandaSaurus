@@ -6,4 +6,3 @@ Graph Module
    :caption: Contents:
 
    graph_generator
-   graph_generator_utils
