@@ -129,3 +129,10 @@ dmypy.json
 .pyre/
 
 src/pandasaurus/main.py
+main.py
+.DS_Store
+.idea/
+docs/.DS_Store
+pandasaurus/.DS_Store
+test/.DS_Store
+test/data/.DS_Store
