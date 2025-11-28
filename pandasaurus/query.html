@@ -172,7 +172,8 @@ subClassOf queries.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pandasaurus.query.Query.get_most_specific_objects">
 <span class="sig-name descname"><span class="pre">get_most_specific_objects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pandasaurus/query.html#Query.get_most_specific_objects"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pandasaurus.query.Query.get_most_specific_objects" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Return the most specific objects associated with the given predicate.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>predicate</strong> – Relationship that wanted to be explored</p></li>
@@ -188,13 +189,18 @@ subClassOf queries.</p>
 </ul>
 </dd>
 </dl>
-<p>Returns:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DataFrame capturing subject, predicate, and object labels.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pandasaurus.query.Query.get_most_specific_subjects">
 <span class="sig-name descname"><span class="pre">get_most_specific_subjects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pandasaurus/query.html#Query.get_most_specific_subjects"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pandasaurus.query.Query.get_most_specific_subjects" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Return the most specific subjects associated with the given predicate.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>predicate</strong> – Relationship that wanted to be explored</p></li>
@@ -210,7 +216,11 @@ subClassOf queries.</p>
 </ul>
 </dd>
 </dl>
-<p>Returns:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DataFrame capturing subject, predicate, and object labels.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -227,6 +237,12 @@ given slim lists, classes tagged with some specified ‘subset’ axiom.</p>
 <dd class="field-even"><p>Enriched DataFrame</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pandasaurus.query.Query.mirror_enrichment_for_graph_generation">
+<span class="sig-name descname"><span class="pre">mirror_enrichment_for_graph_generation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/pandasaurus/query.html#Query.mirror_enrichment_for_graph_generation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pandasaurus.query.Query.mirror_enrichment_for_graph_generation" title="Link to this definition"></a></dt>
+<dd><p>Populate <cite>graph_df</cite> with all pairwise enrichment edges for graph output.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -284,7 +300,8 @@ Subject and object terms are members of the seed terms.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pandasaurus.query.Query.synonym_lookup">
 <span class="sig-name descname"><span class="pre">synonym_lookup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/pandasaurus/query.html#Query.synonym_lookup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pandasaurus.query.Query.synonym_lookup" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Return labels plus synonym rows for every seed term.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>A DataFrame containing labels and synonyms of the terms from the seed list.</p>
 </dd>

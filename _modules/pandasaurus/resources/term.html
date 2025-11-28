@@ -80,12 +80,21 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">label</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
         <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">is_valid</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
         <span class="n">new_label</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">new_iri</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a term instance.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            label: Human readable label; can be None for invalid CURIEs.</span>
+<span class="sd">            iri: The CURIE/IRI of the term.</span>
+<span class="sd">            is_valid: Whether the term exists in the ontology.</span>
+<span class="sd">            new_label: Replacement label for obsolete terms.</span>
+<span class="sd">            new_iri: Replacement IRI for obsolete terms.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__label</span> <span class="o">=</span> <span class="n">label</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__iri</span> <span class="o">=</span> <span class="n">iri</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__is_valid</span> <span class="o">=</span> <span class="n">is_valid</span>
@@ -95,7 +104,7 @@
 
 <div class="viewcode-block" id="Term.get_label">
 <a class="viewcode-back" href="../../../pandasaurus/resources/term.html#pandasaurus.resources.term.Term.get_label">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_label</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">get_label</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns term label.</span>
 
 <span class="sd">        Returns:</span>
@@ -131,7 +140,7 @@
 
 <div class="viewcode-block" id="Term.get_new_label">
 <a class="viewcode-back" href="../../../pandasaurus/resources/term.html#pandasaurus.resources.term.Term.get_new_label">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_new_label</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">get_new_label</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns new term label of obsoleted term.</span>
 
 <span class="sd">        Returns:</span>
@@ -143,7 +152,7 @@
 
 <div class="viewcode-block" id="Term.get_new_iri">
 <a class="viewcode-back" href="../../../pandasaurus/resources/term.html#pandasaurus.resources.term.Term.get_new_iri">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_new_iri</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">get_new_iri</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns new term IRI of obsoleted term.</span>
 
 <span class="sd">        Returns:</span>
@@ -155,7 +164,7 @@
 
 <div class="viewcode-block" id="Term.get_is_obsoleted">
 <a class="viewcode-back" href="../../../pandasaurus/resources/term.html#pandasaurus.resources.term.Term.get_is_obsoleted">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_is_obsoleted</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">get_is_obsoleted</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns term obsoletion status.</span>
 
 <span class="sd">        Returns:</span>

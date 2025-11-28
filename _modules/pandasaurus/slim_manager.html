@@ -132,7 +132,8 @@
 
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_get_ontology_list</span><span class="p">():</span>
+    <span class="k">def</span> <span class="nf">_get_ontology_list</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ontology titles available in Ubergraph.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">run_sparql_query</span><span class="p">(</span><span class="n">get_ontology_list_query</span><span class="p">())]</span></div>
 
 </pre></div>

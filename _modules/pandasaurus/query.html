@@ -350,7 +350,7 @@
 <div class="viewcode-block" id="Query.synonym_lookup">
 <a class="viewcode-back" href="../../pandasaurus/query.html#pandasaurus.query.Query.synonym_lookup">[docs]</a>
     <span class="k">def</span> <span class="nf">synonym_lookup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return labels plus synonym rows for every seed term.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            A DataFrame containing labels and synonyms of the terms from the seed list.</span>
@@ -381,7 +381,7 @@
 <div class="viewcode-block" id="Query.get_most_specific_objects">
 <a class="viewcode-back" href="../../pandasaurus/query.html#pandasaurus.query.Query.get_most_specific_objects">[docs]</a>
     <span class="k">def</span> <span class="nf">get_most_specific_objects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ontology</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the most specific objects associated with the given predicate.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            predicate: Relationship that wanted to be explored</span>
@@ -393,6 +393,7 @@
 <span class="sd">                - http://purl.obolibrary.org/obo/uberon.owl</span>
 
 <span class="sd">        Returns:</span>
+<span class="sd">            DataFrame capturing subject, predicate, and object labels.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">subject_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">term</span><span class="o">.</span><span class="n">get_iri</span><span class="p">()</span> <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_list</span><span class="p">]</span>
@@ -410,7 +411,7 @@
 <div class="viewcode-block" id="Query.get_most_specific_subjects">
 <a class="viewcode-back" href="../../pandasaurus/query.html#pandasaurus.query.Query.get_most_specific_subjects">[docs]</a>
     <span class="k">def</span> <span class="nf">get_most_specific_subjects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ontology</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the most specific subjects associated with the given predicate.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            predicate: Relationship that wanted to be explored</span>
@@ -422,6 +423,7 @@
 <span class="sd">                - http://purl.obolibrary.org/obo/uberon.owl</span>
 
 <span class="sd">        Returns:</span>
+<span class="sd">            DataFrame capturing subject, predicate, and object labels.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">object_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">term</span><span class="o">.</span><span class="n">get_iri</span><span class="p">()</span> <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_list</span><span class="p">]</span>
@@ -461,7 +463,10 @@
         <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">term</span><span class="p">,</span> <span class="s2">&quot;update_obsoleted_term&quot;</span><span class="p">)()</span> <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_list</span><span class="p">]</span></div>
 
 
-    <span class="k">def</span> <span class="nf">mirror_enrichment_for_graph_generation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">term_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+<div class="viewcode-block" id="Query.mirror_enrichment_for_graph_generation">
+<a class="viewcode-back" href="../../pandasaurus/query.html#pandasaurus.query.Query.mirror_enrichment_for_graph_generation">[docs]</a>
+    <span class="k">def</span> <span class="nf">mirror_enrichment_for_graph_generation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">term_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Populate `graph_df` with all pairwise enrichment edges for graph output.&quot;&quot;&quot;</span>
         <span class="c1"># TODO definitely need a refactoring later on</span>
         <span class="n">s_result</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">s_chunk</span> <span class="ow">in</span> <span class="n">chunks</span><span class="p">(</span><span class="n">term_list</span><span class="p">,</span> <span class="mi">45</span><span class="p">):</span>
@@ -478,9 +483,11 @@
             <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">s_result</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;s_label&quot;</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;o_label&quot;</span><span class="p">])</span>
             <span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;s&quot;</span><span class="p">)</span>
             <span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="p">)</span>
+        <span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_generate_enrichment_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">object_list</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">_generate_enrichment_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">object_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build the Graph representation backing the enrichment results.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mirror_enrichment_for_graph_generation</span><span class="p">(</span><span class="n">object_list</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="n">GraphGenerator</span><span class="o">.</span><span class="n">generate_enrichment_graph</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph_df</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="n">GraphGenerator</span><span class="o">.</span><span class="n">apply_transitive_reduction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">enriched_df</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span></div>
