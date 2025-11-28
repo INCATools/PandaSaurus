@@ -77,10 +77,6 @@
 <span class="kn">from</span> <span class="nn">rdflib</span> <span class="kn">import</span> <span class="n">OWL</span><span class="p">,</span> <span class="n">RDF</span><span class="p">,</span> <span class="n">RDFS</span><span class="p">,</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Namespace</span><span class="p">,</span> <span class="n">URIRef</span>
 <span class="kn">from</span> <span class="nn">rdflib.plugins.sparql</span> <span class="kn">import</span> <span class="n">prepareQuery</span>
 
-<span class="kn">from</span> <span class="nn">pandasaurus.graph.graph_generator_utils</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">add_edge</span><span class="p">,</span>
-    <span class="n">add_outgoing_edges_to_subgraph</span><span class="p">,</span>
-<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">pandasaurus.utils.logging_config</span> <span class="kn">import</span> <span class="n">configure_logger</span>
 
 <span class="c1"># Set up logger</span>
@@ -144,30 +140,16 @@
 <span class="sd">              relationship.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">invalid_predicates</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="c1"># TODO We need a better way to handle the queries, and decide the format we accept in the predicate list</span>
-        <span class="n">ask_query</span> <span class="o">=</span> <span class="n">prepareQuery</span><span class="p">(</span><span class="s2">&quot;SELECT ?s ?p WHERE { ?s ?p ?o }&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">predicate</span> <span class="ow">in</span> <span class="n">predicate_list</span><span class="p">:</span>
-            <span class="n">predicate_</span> <span class="o">=</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span> <span class="k">if</span> <span class="n">predicate</span> <span class="o">==</span> <span class="s2">&quot;rdfs:subClassOf&quot;</span> <span class="k">else</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">predicate</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">predicate</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">graph</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">ask_query</span><span class="p">,</span> <span class="n">initBindings</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;p&quot;</span><span class="p">:</span> <span class="n">predicate_</span><span class="p">},</span> <span class="n">initNs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;rdfs&quot;</span><span class="p">:</span> <span class="n">RDFS</span><span class="p">}):</span>
+            <span class="n">predicate_uri</span> <span class="o">=</span> <span class="n">GraphGenerator</span><span class="o">.</span><span class="n">_normalize_predicate</span><span class="p">(</span><span class="n">predicate</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">GraphGenerator</span><span class="o">.</span><span class="n">_predicate_exists</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">predicate_uri</span><span class="p">):</span>
                 <span class="n">invalid_predicates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">predicate</span><span class="p">)</span>
                 <span class="k">continue</span>
 
-            <span class="n">subgraph</span> <span class="o">=</span> <span class="n">add_outgoing_edges_to_subgraph</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">predicate_</span><span class="p">)</span>
-
-            <span class="n">nx_graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">subgraph</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">)</span> <span class="ow">and</span> <span class="n">p</span> <span class="o">!=</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">:</span>
-                    <span class="n">add_edge</span><span class="p">(</span><span class="n">nx_graph</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span>
-
-            <span class="c1"># Apply transitive reduction to remove redundancy</span>
-            <span class="n">transitive_reduction_graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">transitive_reduction</span><span class="p">(</span><span class="n">nx_graph</span><span class="p">)</span>
-            <span class="n">transitive_reduction_graph</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span>
-                <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">nx_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">])</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">transitive_reduction_graph</span><span class="o">.</span><span class="n">edges</span>
-            <span class="p">)</span>
-            <span class="c1"># Remove redundant triples using nx graph</span>
-            <span class="n">edge_diff</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">nx_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">transitive_reduction_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">))</span>
-            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edge_diff</span><span class="p">:</span>
-                <span class="n">graph</span><span class="o">.</span><span class="n">remove</span><span class="p">((</span><span class="n">URIRef</span><span class="p">(</span><span class="n">edge</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">predicate_</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">edge</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
+            <span class="n">subgraph</span> <span class="o">=</span> <span class="n">GraphGenerator</span><span class="o">.</span><span class="n">_add_outgoing_edges_to_subgraph</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">predicate_uri</span><span class="p">)</span>
+            <span class="n">nx_graph</span> <span class="o">=</span> <span class="n">GraphGenerator</span><span class="o">.</span><span class="n">_build_networkx_graph</span><span class="p">(</span><span class="n">subgraph</span><span class="p">,</span> <span class="n">predicate</span><span class="p">)</span>
+            <span class="n">redundant_edges</span> <span class="o">=</span> <span class="n">GraphGenerator</span><span class="o">.</span><span class="n">_compute_redundant_edges</span><span class="p">(</span><span class="n">nx_graph</span><span class="p">)</span>
+            <span class="n">GraphGenerator</span><span class="o">.</span><span class="n">_remove_redundant_triples</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">redundant_edges</span><span class="p">,</span> <span class="n">predicate_uri</span><span class="p">)</span>
             <span class="c1"># TODO Temporarily disabling this log message</span>
             <span class="c1"># logger.info(f&quot;Transitive reduction has been applied on {predicate} for graph generation.&quot;)</span>
 
@@ -180,7 +162,59 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">graph</span></div>
-</div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_normalize_predicate</span><span class="p">(</span><span class="n">predicate</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">URIRef</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the RDF predicate URI, handling the rdfs:subClassOf shortcut.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span> <span class="k">if</span> <span class="n">predicate</span> <span class="o">==</span> <span class="s2">&quot;rdfs:subClassOf&quot;</span> <span class="k">else</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">predicate</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_predicate_exists</span><span class="p">(</span><span class="n">graph</span><span class="p">:</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">predicate_uri</span><span class="p">:</span> <span class="n">URIRef</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check whether the predicate occurs in the graph before processing.&quot;&quot;&quot;</span>
+        <span class="n">ask_query</span> <span class="o">=</span> <span class="n">prepareQuery</span><span class="p">(</span><span class="s2">&quot;SELECT ?s ?p WHERE { ?s ?p ?o }&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">ask_query</span><span class="p">,</span> <span class="n">initBindings</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;p&quot;</span><span class="p">:</span> <span class="n">predicate_uri</span><span class="p">},</span> <span class="n">initNs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;rdfs&quot;</span><span class="p">:</span> <span class="n">RDFS</span><span class="p">}))</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_build_networkx_graph</span><span class="p">(</span><span class="n">subgraph</span><span class="p">:</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">predicate</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert the rdflib subgraph into a networkx DiGraph for reduction.&quot;&quot;&quot;</span>
+        <span class="n">nx_graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">subgraph</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">)</span> <span class="ow">and</span> <span class="n">p</span> <span class="o">!=</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">:</span>
+                <span class="n">GraphGenerator</span><span class="o">.</span><span class="n">_add_edge</span><span class="p">(</span><span class="n">nx_graph</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">nx_graph</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_compute_redundant_edges</span><span class="p">(</span><span class="n">nx_graph</span><span class="p">:</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the edges that should be removed after a transitive reduction.&quot;&quot;&quot;</span>
+        <span class="n">transitive_reduction_graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">transitive_reduction</span><span class="p">(</span><span class="n">nx_graph</span><span class="p">)</span>
+        <span class="n">transitive_reduction_graph</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">nx_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">])</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">transitive_reduction_graph</span><span class="o">.</span><span class="n">edges</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">nx_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">transitive_reduction_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">))</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_remove_redundant_triples</span><span class="p">(</span><span class="n">graph</span><span class="p">:</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">redundant_edges</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">tuple</span><span class="p">],</span> <span class="n">predicate_uri</span><span class="p">:</span> <span class="n">URIRef</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove redundant triples from the rdflib graph using the computed edge list.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">redundant_edges</span><span class="p">:</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">remove</span><span class="p">((</span><span class="n">URIRef</span><span class="p">(</span><span class="n">source</span><span class="p">),</span> <span class="n">predicate_uri</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">target</span><span class="p">)))</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_add_edge</span><span class="p">(</span><span class="n">nx_graph</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="n">edge_data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">predicate</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;#&quot;</span> <span class="ow">in</span> <span class="n">predicate</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">predicate</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]}</span>
+        <span class="n">nx_graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">subject</span><span class="p">),</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="p">),</span>
+            <span class="o">**</span><span class="n">edge_data</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_add_outgoing_edges_to_subgraph</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">predicate_uri</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">subgraph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">triples</span><span class="p">((</span><span class="kc">None</span><span class="p">,</span> <span class="n">predicate_uri</span><span class="p">,</span> <span class="kc">None</span><span class="p">)):</span>
+            <span class="n">subgraph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">subgraph</span></div>
 
 </pre></div>
 
