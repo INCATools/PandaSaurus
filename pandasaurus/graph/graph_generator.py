@@ -5,10 +5,6 @@ import pandas as pd
 from rdflib import OWL, RDF, RDFS, Graph, Literal, Namespace, URIRef
 from rdflib.plugins.sparql import prepareQuery
 
-from pandasaurus.graph.graph_generator_utils import (
-    add_edge,
-    add_outgoing_edges_to_subgraph,
-)
 from pandasaurus.utils.logging_config import configure_logger
 
 # Set up logger
@@ -65,30 +61,16 @@ class GraphGenerator:
               relationship.
         """
         invalid_predicates = []
-        # TODO We need a better way to handle the queries, and decide the format we accept in the predicate list
-        ask_query = prepareQuery("SELECT ?s ?p WHERE { ?s ?p ?o }")
         for predicate in predicate_list:
-            predicate_ = RDFS.subClassOf if predicate == "rdfs:subClassOf" else URIRef(predicate)
-            if predicate and not graph.query(ask_query, initBindings={"p": predicate_}, initNs={"rdfs": RDFS}):
+            predicate_uri = GraphGenerator._normalize_predicate(predicate)
+            if not GraphGenerator._predicate_exists(graph, predicate_uri):
                 invalid_predicates.append(predicate)
                 continue
 
-            subgraph = add_outgoing_edges_to_subgraph(graph, predicate_)
-
-            nx_graph = nx.DiGraph()
-            for s, p, o in subgraph:
-                if isinstance(o, URIRef) and p != RDF.type:
-                    add_edge(nx_graph, s, predicate, o)
-
-            # Apply transitive reduction to remove redundancy
-            transitive_reduction_graph = nx.transitive_reduction(nx_graph)
-            transitive_reduction_graph.add_edges_from(
-                (u, v, nx_graph.edges[u, v]) for u, v in transitive_reduction_graph.edges
-            )
-            # Remove redundant triples using nx graph
-            edge_diff = list(set(nx_graph.edges) - set(transitive_reduction_graph.edges))
-            for edge in edge_diff:
-                graph.remove((URIRef(edge[0]), predicate_, URIRef(edge[1])))
+            subgraph = GraphGenerator._add_outgoing_edges_to_subgraph(graph, predicate_uri)
+            nx_graph = GraphGenerator._build_networkx_graph(subgraph, predicate)
+            redundant_edges = GraphGenerator._compute_redundant_edges(nx_graph)
+            GraphGenerator._remove_redundant_triples(graph, redundant_edges, predicate_uri)
             # TODO Temporarily disabling this log message
             # logger.info(f"Transitive reduction has been applied on {predicate} for graph generation.")
 
@@ -101,3 +83,55 @@ class GraphGenerator:
             logger.error(error_msg)
 
         return graph
+
+    @staticmethod
+    def _normalize_predicate(predicate: str) -> URIRef:
+        """Return the RDF predicate URI, handling the rdfs:subClassOf shortcut."""
+        return RDFS.subClassOf if predicate == "rdfs:subClassOf" else URIRef(predicate)
+
+    @staticmethod
+    def _predicate_exists(graph: Graph, predicate_uri: URIRef) -> bool:
+        """Check whether the predicate occurs in the graph before processing."""
+        ask_query = prepareQuery("SELECT ?s ?p WHERE { ?s ?p ?o }")
+        return bool(graph.query(ask_query, initBindings={"p": predicate_uri}, initNs={"rdfs": RDFS}))
+
+    @staticmethod
+    def _build_networkx_graph(subgraph: Graph, predicate: str) -> nx.DiGraph:
+        """Convert the rdflib subgraph into a networkx DiGraph for reduction."""
+        nx_graph = nx.DiGraph()
+        for s, p, o in subgraph:
+            if isinstance(o, URIRef) and p != RDF.type:
+                GraphGenerator._add_edge(nx_graph, s, predicate, o)
+        return nx_graph
+
+    @staticmethod
+    def _compute_redundant_edges(nx_graph: nx.DiGraph) -> List[tuple]:
+        """Return the edges that should be removed after a transitive reduction."""
+        transitive_reduction_graph = nx.transitive_reduction(nx_graph)
+        transitive_reduction_graph.add_edges_from(
+            (u, v, nx_graph.edges[u, v]) for u, v in transitive_reduction_graph.edges
+        )
+        return list(set(nx_graph.edges) - set(transitive_reduction_graph.edges))
+
+    @staticmethod
+    def _remove_redundant_triples(graph: Graph, redundant_edges: List[tuple], predicate_uri: URIRef) -> None:
+        """Remove redundant triples from the rdflib graph using the computed edge list."""
+        for source, target in redundant_edges:
+            graph.remove((URIRef(source), predicate_uri, URIRef(target)))
+
+    @staticmethod
+    def _add_edge(nx_graph, subject, predicate, obj):
+        edge_data = {"label": str(predicate).split("#")[-1] if "#" in predicate else str(predicate).split("/")[-1]}
+        nx_graph.add_edge(
+            str(subject),
+            str(obj),
+            **edge_data,
+        )
+
+    @staticmethod
+    def _add_outgoing_edges_to_subgraph(graph, predicate_uri=None):
+        subgraph = Graph()
+        for s, p, o in graph.triples((None, predicate_uri, None)):
+            subgraph.add((s, p, o))
+
+        return subgraph
