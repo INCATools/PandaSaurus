@@ -1,9 +1,9 @@
 from abc import abstractmethod
-from typing import Dict, List
+from typing import Dict, List, Union, Any, Optional
 
 from pandasaurus.resources.term import Term
 from pandasaurus.utils.pandasaurus_exceptions import InvalidTerm, ObsoletedTerm
-from pandasaurus.utils.query_utils import run_sparql_query
+from pandasaurus.utils.query_utils import chunks, run_sparql_query
 from pandasaurus.utils.sparql_queries import get_label_query, get_replaced_by_query
 
 
@@ -11,6 +11,8 @@ class CurieValidator:
     """CurieValidator is responsible for validating CURIE prefixes and CURIEs of slim terms. It also suggests
     replacements for obsoleted slim terms.
     """
+
+    _CURIE_CHUNK_SIZE = 90
 
     @staticmethod
     @abstractmethod
@@ -30,7 +32,7 @@ class CurieValidator:
         raise NotImplementedError
 
     @staticmethod
-    def validate_curie_list(curie_list: List[str]) -> Dict[str, bool]:
+    def validate_curie_list(curie_list: List[str]) -> dict[str, dict[str, Union[Optional[bool], Any]]]:
         """Reports whether the CURIEs are valid or not.
 
         Args:
@@ -46,8 +48,14 @@ class CurieValidator:
             True or False status of the CURIE validation for each term
 
         """
-        query_string = get_label_query(curie_list)
-        result_dict = dict([(r.get("term"), r.get("label")) for r in run_sparql_query(query_string)])
+        result_dict: Dict[str, Optional[str]] = {}
+        for chunk in chunks(curie_list, CurieValidator._CURIE_CHUNK_SIZE):
+            # Large lists are split up to avoid massive VALUES blocks in SPARQL queries.
+            query_string = get_label_query(chunk)
+            for res in run_sparql_query(query_string):
+                term = res.get("term")
+                if term:
+                    result_dict[term] = res.get("label")
         return {
             curie: {
                 "label": result_dict.get(curie) if curie in result_dict else None,
@@ -73,8 +81,13 @@ class CurieValidator:
             True or False status of the term for each term
 
         """
-        query_string = get_replaced_by_query(curie_list)
-        result_dict = dict([(r.get("term"), r) for r in run_sparql_query(query_string)])
+        result_dict: Dict[str, Dict[str, Any]] = {}
+        for chunk in chunks(curie_list, CurieValidator._CURIE_CHUNK_SIZE):
+            query_string = get_replaced_by_query(chunk)
+            for res in run_sparql_query(query_string):
+                term = res.get("term")
+                if term:
+                    result_dict[term] = res
         return result_dict
 
     @staticmethod
