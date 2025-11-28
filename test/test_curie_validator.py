@@ -30,6 +30,33 @@ def test_validate_curie_list(mocker):
     assert CurieValidator.validate_curie_list(get_validate_curie_list_data()) == get_expected_validate_curie_list()
 
 
+def test_validate_curie_list_batches_requests(mocker):
+    mocker.patch.object(CurieValidator, "_CURIE_CHUNK_SIZE", 2)
+    run_query_mock = mocker.patch(
+        "pandasaurus.curie_validator.run_sparql_query",
+        side_effect=[
+            iter(
+                [
+                    {"label": "kidney epithelial cell", "term": "CL:0002518"},
+                    {"label": "kidney cortical cell", "term": "CL:0002681"},
+                ]
+            ),
+            iter([{"label": "kidney interstitial cell", "term": "CL:1000500"}]),
+        ],
+    )
+    curie_list = ["CL:0002518", "CL:0002681", "CL:1000500", "CL:1234567"]
+
+    result = CurieValidator.validate_curie_list(curie_list)
+
+    assert run_query_mock.call_count == 2
+    assert result == {
+        "CL:0002518": {"label": "kidney epithelial cell", "valid": True},
+        "CL:0002681": {"label": "kidney cortical cell", "valid": True},
+        "CL:1000500": {"label": "kidney interstitial cell", "valid": True},
+        "CL:1234567": {"label": None, "valid": False},
+    }
+
+
 def test_find_obsolete_terms(mocker):
     mocker.patch(
         "pandasaurus.curie_validator.run_sparql_query",
@@ -39,6 +66,41 @@ def test_find_obsolete_terms(mocker):
     )
 
     assert CurieValidator.find_obsolete_terms(get_find_obsolete_terms_data()) == get_expected_find_obsolete_terms()
+
+
+def test_find_obsolete_terms_batches_requests(mocker):
+    mocker.patch.object(CurieValidator, "_CURIE_CHUNK_SIZE", 2)
+    run_query_mock = mocker.patch(
+        "pandasaurus.curie_validator.run_sparql_query",
+        side_effect=[
+            iter(
+                [
+                    {
+                        "depr_status": "true",
+                        "label": "obsolete Muller cell",
+                        "new_term": "CL:0000636",
+                        "new_term_label": "Mueller cell",
+                        "term": "CL:0011107",
+                    }
+                ]
+            ),
+            iter([]),
+        ],
+    )
+    curie_list = ["CL:0011107", "CL:0000337", "CL:0002371"]
+
+    result = CurieValidator.find_obsolete_terms(curie_list)
+
+    assert run_query_mock.call_count == 2
+    assert result == {
+        "CL:0011107": {
+            "term": "CL:0011107",
+            "depr_status": "true",
+            "new_term": "CL:0000636",
+            "label": "obsolete Muller cell",
+            "new_term_label": "Mueller cell",
+        }
+    }
 
 
 def test_find_obsolete_term_replacement():

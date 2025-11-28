@@ -1,14 +1,18 @@
 import logging
 import sys
+from logging import Logger, LogRecord
 
 
-# Create a filter to exclude ERROR log records
 class NoErrorFilter(logging.Filter):
-    def filter(self, record):
+    """Filter that suppresses ERROR records, letting INFO/DEBUG through."""
+
+    def filter(self, record: LogRecord) -> bool:
+        """Return True when the log record is not an ERROR level entry."""
         return record.levelno != logging.ERROR
 
 
-def configure_logger():
+def configure_logger() -> Logger:
+    """Configure and return the shared pandasaurus logger."""
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.INFO)
     # logger.propagate = False

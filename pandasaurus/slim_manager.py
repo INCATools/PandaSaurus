@@ -52,5 +52,6 @@ class SlimManager:
         ]
 
     @staticmethod
-    def _get_ontology_list():
+    def _get_ontology_list() -> List[str]:
+        """Return ontology titles available in Ubergraph."""
         return [row.get("title") for row in run_sparql_query(get_ontology_list_query())]

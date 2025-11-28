@@ -1,0 +1,17 @@
+#!/bin/sh
+# Run Black and isort before each commit to keep formatting consistent.
+
+set -euo pipefail
+
+echo "[pre-commit] Running isort..."
+poetry run isort pandasaurus test
+
+echo "[pre-commit] Running black..."
+poetry run black pandasaurus test
+
+if ! git diff --quiet --exit-code; then
+  echo "[pre-commit] Formatting changes were applied. Please review and stage them."
+  exit 1
+fi
+
+echo "[pre-commit] Formatting OK."

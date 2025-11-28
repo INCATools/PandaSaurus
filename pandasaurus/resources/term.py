@@ -6,12 +6,21 @@ class Term:
 
     def __init__(
         self,
-        label: str,
+        label: Optional[str],
         iri: str,
         is_valid: bool,
         new_label: Optional[str] = None,
         new_iri: Optional[str] = None,
     ):
+        """Initialize a term instance.
+
+        Args:
+            label: Human readable label; can be None for invalid CURIEs.
+            iri: The CURIE/IRI of the term.
+            is_valid: Whether the term exists in the ontology.
+            new_label: Replacement label for obsolete terms.
+            new_iri: Replacement IRI for obsolete terms.
+        """
         self.__label = label
         self.__iri = iri
         self.__is_valid = is_valid
@@ -19,7 +28,7 @@ class Term:
         self.__new_iri = new_iri
         self.__is_obsolete: bool = True if new_label and new_iri else False
 
-    def get_label(self) -> str:
+    def get_label(self) -> Optional[str]:
         """Returns term label.
 
         Returns:
@@ -46,7 +55,7 @@ class Term:
         """
         return self.__is_valid
 
-    def get_new_label(self) -> str:
+    def get_new_label(self) -> Optional[str]:
         """Returns new term label of obsoleted term.
 
         Returns:
@@ -55,7 +64,7 @@ class Term:
         """
         return self.__new_label
 
-    def get_new_iri(self) -> str:
+    def get_new_iri(self) -> Optional[str]:
         """Returns new term IRI of obsoleted term.
 
         Returns:
@@ -64,7 +73,7 @@ class Term:
         """
         return self.__new_iri
 
-    def get_is_obsoleted(self) -> str:
+    def get_is_obsoleted(self) -> bool:
         """Returns term obsoletion status.
 
         Returns:
