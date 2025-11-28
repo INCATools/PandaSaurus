@@ -1,6 +1,12 @@
+import os
 from typing import Iterator
 
+import certifi
 from oaklib.implementations import UbergraphImplementation
+
+# Ensure HTTPS requests trust the certifi bundle; this avoids local certificate issues.
+os.environ.setdefault("SSL_CERT_FILE", certifi.where())
+os.environ.setdefault("REQUESTS_CA_BUNDLE", certifi.where())
 
 oi = UbergraphImplementation()
 

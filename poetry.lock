@@ -3563,4 +3563,4 @@ docs = ["sphinx", "sphinx-copybutton", "sphinx-rtd-theme"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.9"
-content-hash = "38f9242f00e535f55d1e54c5c4dcb32439cf6dd205de14cc702790be79cb07dd"
+content-hash = "34ee94248504dcd4b7a9913504aac2fbf493a539b0dcb364dde5fd1bb27859e0"
