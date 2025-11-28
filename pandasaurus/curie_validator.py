@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Dict, List, Union, Any, Optional
+from typing import Any, Dict, List, Optional, Union
 
 from pandasaurus.resources.term import Term
 from pandasaurus.utils.pandasaurus_exceptions import InvalidTerm, ObsoletedTerm

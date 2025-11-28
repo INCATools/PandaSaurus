@@ -1,6 +1,6 @@
 import logging
 import sys
-from logging import LogRecord, Logger
+from logging import Logger, LogRecord
 
 
 class NoErrorFilter(logging.Filter):
