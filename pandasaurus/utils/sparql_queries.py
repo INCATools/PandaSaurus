@@ -46,7 +46,12 @@ def get_label_query(term_iri_list: List[str]) -> str:
     )
 
 
-def get_ancestor_enrichment_query(seed_list: List[str], step_count) -> str:
+def get_ancestor_enrichment_query(seed_list: List[str], step_count: int) -> str:
+    """Build a SPARQL query that walks up to `step_count` ancestors for the seeds."""
+    if not isinstance(step_count, int):
+        raise TypeError("step_count must be an integer")
+    if step_count < 1:
+        raise ValueError("step_count must be a positive integer")
     query = "SELECT * WHERE { GRAPH <http://reasoner.renci.org/nonredundant> "
     query += f"{{ VALUES ?s {{{' '.join(seed_list)} }} "
     query += "?s rdfs:subClassOf ?o0. "

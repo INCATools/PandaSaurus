@@ -192,12 +192,12 @@ class Query:
 
         return self.enriched_df
 
-    def ancestor_enrichment(self, step_count: str) -> pd.DataFrame:
+    def ancestor_enrichment(self, step_count: int) -> pd.DataFrame:
         """
         Perform ancestor enrichment analysis with a specified number of hops.
 
         Args:
-            step_count (str): The number of hops to consider when enriching terms.
+            step_count (int): The number of hops to consider when enriching terms.
 
         Returns:
             pd.DataFrame: A DataFrame containing enriched terms and associated information.
@@ -212,6 +212,10 @@ class Query:
         includes more distant ancestors.
 
         """
+        if not isinstance(step_count, int):
+            raise TypeError("step_count must be an integer")
+        if step_count < 1:
+            raise ValueError("step_count must be a positive integer")
         source_list = [term.get_iri() for term in self._term_list]
         query_string = get_ancestor_enrichment_query(source_list, step_count)
         object_list = list(set(uri for res in run_sparql_query(query_string) for uri in res.values()))
