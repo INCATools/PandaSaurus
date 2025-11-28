@@ -256,7 +256,7 @@ class Query:
         self.ancestor_enrichment(1)
 
     def synonym_lookup(self) -> pd.DataFrame:
-        """
+        """Return labels plus synonym rows for every seed term.
 
         Returns:
             A DataFrame containing labels and synonyms of the terms from the seed list.
@@ -284,7 +284,7 @@ class Query:
         return result_df
 
     def get_most_specific_objects(self, predicate: str, ontology: str):
-        """
+        """Return the most specific objects associated with the given predicate.
 
         Args:
             predicate: Relationship that wanted to be explored
@@ -296,6 +296,7 @@ class Query:
                 - http://purl.obolibrary.org/obo/uberon.owl
 
         Returns:
+            DataFrame capturing subject, predicate, and object labels.
 
         """
         subject_list = [term.get_iri() for term in self._term_list]
@@ -310,7 +311,7 @@ class Query:
         )
 
     def get_most_specific_subjects(self, predicate: str, ontology: str):
-        """
+        """Return the most specific subjects associated with the given predicate.
 
         Args:
             predicate: Relationship that wanted to be explored
@@ -322,6 +323,7 @@ class Query:
                 - http://purl.obolibrary.org/obo/uberon.owl
 
         Returns:
+            DataFrame capturing subject, predicate, and object labels.
 
         """
         object_list = [term.get_iri() for term in self._term_list]
@@ -354,7 +356,8 @@ class Query:
         """Replaces all obsoleted terms in the term list with the new term that obsoletes them."""
         [getattr(term, "update_obsoleted_term")() for term in self._term_list]
 
-    def mirror_enrichment_for_graph_generation(self, term_list: List[str]):
+    def mirror_enrichment_for_graph_generation(self, term_list: List[str]) -> None:
+        """Populate `graph_df` with all pairwise enrichment edges for graph output."""
         # TODO definitely need a refactoring later on
         s_result = []
         for s_chunk in chunks(term_list, 45):
@@ -373,7 +376,8 @@ class Query:
             .reset_index(drop=True)
         )
 
-    def _generate_enrichment_graph(self, object_list):
+    def _generate_enrichment_graph(self, object_list: List[str]) -> None:
+        """Build the Graph representation backing the enrichment results."""
         self.mirror_enrichment_for_graph_generation(object_list)
         self.graph = GraphGenerator.generate_enrichment_graph(self.graph_df)
         self.graph = GraphGenerator.apply_transitive_reduction(self.graph, self.enriched_df["p"].unique().tolist())
