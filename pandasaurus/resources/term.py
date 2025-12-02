@@ -102,9 +102,12 @@ class Term:
         return False
 
     def __str__(self):
-        msg = f"IRI: {self.__iri}, Label: {self.__label}, Valid: {self.__is_valid}"
+        label = self.__label or "Unknown label"
+        msg = f"IRI: {self.__iri}, Label: {label}, Valid: {self.__is_valid}"
         if self.__is_valid:
             msg += f", Obsoleted: {self.__is_obsolete}"
         if self.__is_obsolete:
-            msg += f", New term label: {self.__new_label}, New term IRI: {self.__new_iri}"
+            new_label = self.__new_label or "Unknown label"
+            new_iri = self.__new_iri or "Unknown IRI"
+            msg += f", New term label: {new_label}, New term IRI: {new_iri}"
         return msg
