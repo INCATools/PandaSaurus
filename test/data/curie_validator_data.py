@@ -70,3 +70,20 @@ def get_expected_construct_term_list():
         Term("naive B cell", "CL:0000788", True),
         Term("gamma-delta T cell", "CL:0000798", True),
     ]
+
+
+def get_construct_term_list_missing_validation_data():
+    return ["CL:0000084", "CL:9999999"]
+
+
+def get_construct_term_list_missing_validation_result():
+    return [
+        {"label": "T cell", "term": "CL:0000084"},
+    ]
+
+
+def get_expected_construct_term_list_missing_validation():
+    return [
+        Term("T cell", "CL:0000084", True),
+        Term(None, "CL:9999999", False),
+    ]
