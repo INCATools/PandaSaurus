@@ -106,16 +106,10 @@ class Query:
         """
         source_list = [term.get_iri() for term in self._term_list]
         object_list = list(set(source_list + SlimManager.get_slim_members(slim_list)))
-        s_result = []
-        for chunk in chunks(object_list, 90):
-            s_result.extend(
-                [
-                    res
-                    for res in run_sparql_query(
-                        get_simple_enrichment_query(source_list, chunk, self._enrichment_property_list)
-                    )
-                ]
-            )
+        s_result = self._batched_enrichment_results(
+            object_list,
+            lambda chunk: get_simple_enrichment_query(source_list, chunk, self._enrichment_property_list),
+        )
         self.enriched_df = (
             pd.DataFrame(s_result, columns=["s", "s_label", "p", "o", "o_label"])
             .sort_values("s")
@@ -140,9 +134,10 @@ class Query:
         """
         source_list = [term.get_iri() for term in self._term_list]
         object_list = list(set(source_list + SlimManager.get_slim_members(slim_list)))
-        s_result = []
-        for chunk in chunks(object_list, 90):
-            s_result.extend([res for res in run_sparql_query(get_full_enrichment_query(source_list, chunk))])
+        s_result = self._batched_enrichment_results(
+            object_list,
+            lambda chunk: get_full_enrichment_query(source_list, chunk),
+        )
 
         self.enriched_df = (
             pd.DataFrame(s_result, columns=["s", "s_label", "p", "x", "x_label"])
@@ -172,16 +167,10 @@ class Query:
         query_string = get_contextual_enrichment_query(context)
         source_list = [term.get_iri() for term in self._term_list]
         object_list = list(set(source_list + [res.get("term") for res in run_sparql_query(query_string)]))
-        s_result = []
-        for chunk in chunks(object_list, 90):
-            s_result.extend(
-                [
-                    res
-                    for res in run_sparql_query(
-                        get_simple_enrichment_query(source_list, chunk, self._enrichment_property_list)
-                    )
-                ]
-            )
+        s_result = self._batched_enrichment_results(
+            object_list,
+            lambda chunk: get_simple_enrichment_query(source_list, chunk, self._enrichment_property_list),
+        )
 
         self.enriched_df = (
             pd.DataFrame(s_result, columns=["s", "s_label", "p", "o", "o_label"])
@@ -219,16 +208,10 @@ class Query:
         source_list = [term.get_iri() for term in self._term_list]
         query_string = get_ancestor_enrichment_query(source_list, step_count)
         object_list = list(set(uri for res in run_sparql_query(query_string) for uri in res.values()))
-        s_result = []
-        for chunk in chunks(object_list, 90):
-            s_result.extend(
-                [
-                    res
-                    for res in run_sparql_query(
-                        get_simple_enrichment_query(source_list, chunk, self._enrichment_property_list)
-                    )
-                ]
-            )
+        s_result = self._batched_enrichment_results(
+            object_list,
+            lambda chunk: get_simple_enrichment_query(source_list, chunk, self._enrichment_property_list),
+        )
 
         self.enriched_df = (
             pd.DataFrame(s_result, columns=["s", "s_label", "p", "o", "o_label"])
@@ -365,15 +348,13 @@ class Query:
         # TODO definitely need a refactoring later on
         s_result = []
         for s_chunk in chunks(term_list, 45):
-            for o_chunk in chunks(term_list, 45):
-                s_result.extend(
-                    [
-                        res
-                        for res in run_sparql_query(
-                            get_simple_enrichment_query(s_chunk, o_chunk, self._enrichment_property_list)
-                        )
-                    ]
+            s_result.extend(
+                self._batched_enrichment_results(
+                    term_list,
+                    lambda o_chunk: get_simple_enrichment_query(s_chunk, o_chunk, self._enrichment_property_list),
+                    chunk_size=45,
                 )
+            )
         self.graph_df = (
             pd.DataFrame(s_result, columns=["s", "s_label", "p", "o", "o_label"])
             .sort_values("s")
@@ -385,3 +366,16 @@ class Query:
         self.mirror_enrichment_for_graph_generation(object_list)
         self.graph = GraphGenerator.generate_enrichment_graph(self.graph_df)
         self.graph = GraphGenerator.apply_transitive_reduction(self.graph, self.enriched_df["p"].unique().tolist())
+
+    def _batched_enrichment_results(
+        self,
+        object_list: List[str],
+        query_builder,
+        chunk_size: int = 90,
+    ):
+        """Execute enrichment queries in batches to avoid oversized SPARQL VALUES blocks."""
+        results = []
+        for chunk in chunks(object_list, chunk_size):
+            query_string = query_builder(chunk)
+            results.extend([res for res in run_sparql_query(query_string)])
+        return results
