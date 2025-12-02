@@ -185,16 +185,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">source_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">term</span><span class="o">.</span><span class="n">get_iri</span><span class="p">()</span> <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_list</span><span class="p">]</span>
         <span class="n">object_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">source_list</span> <span class="o">+</span> <span class="n">SlimManager</span><span class="o">.</span><span class="n">get_slim_members</span><span class="p">(</span><span class="n">slim_list</span><span class="p">)))</span>
-        <span class="n">s_result</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">chunks</span><span class="p">(</span><span class="n">object_list</span><span class="p">,</span> <span class="mi">90</span><span class="p">):</span>
-            <span class="n">s_result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
-                <span class="p">[</span>
-                    <span class="n">res</span>
-                    <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">run_sparql_query</span><span class="p">(</span>
-                        <span class="n">get_simple_enrichment_query</span><span class="p">(</span><span class="n">source_list</span><span class="p">,</span> <span class="n">chunk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enrichment_property_list</span><span class="p">)</span>
-                    <span class="p">)</span>
-                <span class="p">]</span>
-            <span class="p">)</span>
+        <span class="n">s_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_batched_enrichment_results</span><span class="p">(</span>
+            <span class="n">object_list</span><span class="p">,</span>
+            <span class="k">lambda</span> <span class="n">chunk</span><span class="p">:</span> <span class="n">get_simple_enrichment_query</span><span class="p">(</span><span class="n">source_list</span><span class="p">,</span> <span class="n">chunk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enrichment_property_list</span><span class="p">),</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">enriched_df</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">s_result</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;s_label&quot;</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;o_label&quot;</span><span class="p">])</span>
             <span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;s&quot;</span><span class="p">)</span>
@@ -222,9 +216,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">source_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">term</span><span class="o">.</span><span class="n">get_iri</span><span class="p">()</span> <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_list</span><span class="p">]</span>
         <span class="n">object_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">source_list</span> <span class="o">+</span> <span class="n">SlimManager</span><span class="o">.</span><span class="n">get_slim_members</span><span class="p">(</span><span class="n">slim_list</span><span class="p">)))</span>
-        <span class="n">s_result</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">chunks</span><span class="p">(</span><span class="n">object_list</span><span class="p">,</span> <span class="mi">90</span><span class="p">):</span>
-            <span class="n">s_result</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">res</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">run_sparql_query</span><span class="p">(</span><span class="n">get_full_enrichment_query</span><span class="p">(</span><span class="n">source_list</span><span class="p">,</span> <span class="n">chunk</span><span class="p">))])</span>
+        <span class="n">s_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_batched_enrichment_results</span><span class="p">(</span>
+            <span class="n">object_list</span><span class="p">,</span>
+            <span class="k">lambda</span> <span class="n">chunk</span><span class="p">:</span> <span class="n">get_full_enrichment_query</span><span class="p">(</span><span class="n">source_list</span><span class="p">,</span> <span class="n">chunk</span><span class="p">),</span>
+        <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">enriched_df</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">s_result</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;s_label&quot;</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;x_label&quot;</span><span class="p">])</span>
@@ -257,16 +252,10 @@
         <span class="n">query_string</span> <span class="o">=</span> <span class="n">get_contextual_enrichment_query</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
         <span class="n">source_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">term</span><span class="o">.</span><span class="n">get_iri</span><span class="p">()</span> <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_list</span><span class="p">]</span>
         <span class="n">object_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">source_list</span> <span class="o">+</span> <span class="p">[</span><span class="n">res</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;term&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">run_sparql_query</span><span class="p">(</span><span class="n">query_string</span><span class="p">)]))</span>
-        <span class="n">s_result</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">chunks</span><span class="p">(</span><span class="n">object_list</span><span class="p">,</span> <span class="mi">90</span><span class="p">):</span>
-            <span class="n">s_result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
-                <span class="p">[</span>
-                    <span class="n">res</span>
-                    <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">run_sparql_query</span><span class="p">(</span>
-                        <span class="n">get_simple_enrichment_query</span><span class="p">(</span><span class="n">source_list</span><span class="p">,</span> <span class="n">chunk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enrichment_property_list</span><span class="p">)</span>
-                    <span class="p">)</span>
-                <span class="p">]</span>
-            <span class="p">)</span>
+        <span class="n">s_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_batched_enrichment_results</span><span class="p">(</span>
+            <span class="n">object_list</span><span class="p">,</span>
+            <span class="k">lambda</span> <span class="n">chunk</span><span class="p">:</span> <span class="n">get_simple_enrichment_query</span><span class="p">(</span><span class="n">source_list</span><span class="p">,</span> <span class="n">chunk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enrichment_property_list</span><span class="p">),</span>
+        <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">enriched_df</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">s_result</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;s_label&quot;</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;o_label&quot;</span><span class="p">])</span>
@@ -307,16 +296,10 @@
         <span class="n">source_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">term</span><span class="o">.</span><span class="n">get_iri</span><span class="p">()</span> <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_term_list</span><span class="p">]</span>
         <span class="n">query_string</span> <span class="o">=</span> <span class="n">get_ancestor_enrichment_query</span><span class="p">(</span><span class="n">source_list</span><span class="p">,</span> <span class="n">step_count</span><span class="p">)</span>
         <span class="n">object_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">uri</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">run_sparql_query</span><span class="p">(</span><span class="n">query_string</span><span class="p">)</span> <span class="k">for</span> <span class="n">uri</span> <span class="ow">in</span> <span class="n">res</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
-        <span class="n">s_result</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">chunks</span><span class="p">(</span><span class="n">object_list</span><span class="p">,</span> <span class="mi">90</span><span class="p">):</span>
-            <span class="n">s_result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
-                <span class="p">[</span>
-                    <span class="n">res</span>
-                    <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">run_sparql_query</span><span class="p">(</span>
-                        <span class="n">get_simple_enrichment_query</span><span class="p">(</span><span class="n">source_list</span><span class="p">,</span> <span class="n">chunk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enrichment_property_list</span><span class="p">)</span>
-                    <span class="p">)</span>
-                <span class="p">]</span>
-            <span class="p">)</span>
+        <span class="n">s_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_batched_enrichment_results</span><span class="p">(</span>
+            <span class="n">object_list</span><span class="p">,</span>
+            <span class="k">lambda</span> <span class="n">chunk</span><span class="p">:</span> <span class="n">get_simple_enrichment_query</span><span class="p">(</span><span class="n">source_list</span><span class="p">,</span> <span class="n">chunk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enrichment_property_list</span><span class="p">),</span>
+        <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">enriched_df</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">s_result</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;s_label&quot;</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;o_label&quot;</span><span class="p">])</span>
@@ -474,15 +457,13 @@
         <span class="c1"># TODO definitely need a refactoring later on</span>
         <span class="n">s_result</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">s_chunk</span> <span class="ow">in</span> <span class="n">chunks</span><span class="p">(</span><span class="n">term_list</span><span class="p">,</span> <span class="mi">45</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">o_chunk</span> <span class="ow">in</span> <span class="n">chunks</span><span class="p">(</span><span class="n">term_list</span><span class="p">,</span> <span class="mi">45</span><span class="p">):</span>
-                <span class="n">s_result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
-                    <span class="p">[</span>
-                        <span class="n">res</span>
-                        <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">run_sparql_query</span><span class="p">(</span>
-                            <span class="n">get_simple_enrichment_query</span><span class="p">(</span><span class="n">s_chunk</span><span class="p">,</span> <span class="n">o_chunk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enrichment_property_list</span><span class="p">)</span>
-                        <span class="p">)</span>
-                    <span class="p">]</span>
+            <span class="n">s_result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_batched_enrichment_results</span><span class="p">(</span>
+                    <span class="n">term_list</span><span class="p">,</span>
+                    <span class="k">lambda</span> <span class="n">o_chunk</span><span class="p">:</span> <span class="n">get_simple_enrichment_query</span><span class="p">(</span><span class="n">s_chunk</span><span class="p">,</span> <span class="n">o_chunk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enrichment_property_list</span><span class="p">),</span>
+                    <span class="n">chunk_size</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span>
                 <span class="p">)</span>
+            <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">graph_df</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">s_result</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;s_label&quot;</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;o_label&quot;</span><span class="p">])</span>
             <span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;s&quot;</span><span class="p">)</span>
@@ -494,7 +475,20 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Build the Graph representation backing the enrichment results.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mirror_enrichment_for_graph_generation</span><span class="p">(</span><span class="n">object_list</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="n">GraphGenerator</span><span class="o">.</span><span class="n">generate_enrichment_graph</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph_df</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="n">GraphGenerator</span><span class="o">.</span><span class="n">apply_transitive_reduction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">enriched_df</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="n">GraphGenerator</span><span class="o">.</span><span class="n">apply_transitive_reduction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">enriched_df</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">_batched_enrichment_results</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">object_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">query_builder</span><span class="p">,</span>
+        <span class="n">chunk_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">90</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute enrichment queries in batches to avoid oversized SPARQL VALUES blocks.&quot;&quot;&quot;</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">chunks</span><span class="p">(</span><span class="n">object_list</span><span class="p">,</span> <span class="n">chunk_size</span><span class="p">):</span>
+            <span class="n">query_string</span> <span class="o">=</span> <span class="n">query_builder</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">res</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">run_sparql_query</span><span class="p">(</span><span class="n">query_string</span><span class="p">)])</span>
+        <span class="k">return</span> <span class="n">results</span></div>
 
 </pre></div>
 
