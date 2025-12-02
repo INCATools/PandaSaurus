@@ -11,26 +11,33 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version: "3.11"
 
       - name: Install Poetry
-        run: |
-          curl -sSL https://install.python-poetry.org | python -
-          export PATH="$HOME/.poetry/bin:$PATH"
-          poetry --version
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
 
-      - name: Install Dependencies and Build Documentation
-        run: |
-          poetry install -E docs
-          cd docs
-          poetry run make html
-        env:
-          POETRY_VIRTUALENVS_IN_PROJECT: true
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v3
+        with:
+          path: .venv
+          key: docs-venv-${{ runner.os }}-${{ hashFiles('poetry.lock') }}
+
+      - name: Install Dependencies
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: poetry install -E docs --no-interaction --no-root
+
+      - name: Build Documentation
+        run: poetry run sphinx-build -b html docs docs/_build/html
 
       - name: Deploy documentation.
         if: ${{ github.event_name == 'push' }}
