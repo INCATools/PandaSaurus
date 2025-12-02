@@ -23,9 +23,16 @@ class ObsoletedTerm(Exception):
         Args:
             term_list (List[Term]): A list of obsoleted Term objects.
         """
+        obsolete_ids = [term.get_iri() for term in term_list]
+        replacement_descriptions = []
+        for term in term_list:
+            replacement = term.get_new_iri() or "unknown replacement"
+            replacement_descriptions.append(f"{term.get_iri()} -> {replacement}")
+
+        replacement_message = ", ".join(replacement_descriptions)
         self.message = (
-            f"The following terms are obsoleted: {', '.join([term.get_iri() for term in term_list])}, "
-            f"and replaced by following terms: {', '.join([term.get_new_iri() for term in term_list])}. "
+            f"The following terms are obsoleted: {', '.join(obsolete_ids)}. "
+            f"Replacement suggestions: {replacement_message}. "
             f"Please consider using the new terms"
         )
         super().__init__(self.message)

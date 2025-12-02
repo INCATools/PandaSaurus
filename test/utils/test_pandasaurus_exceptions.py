@@ -23,7 +23,21 @@ def test_obsoleted_term_exception():
         raise ObsoletedTerm(term_list)
 
     expected_message = (
-        "The following terms are obsoleted: CL:0011107, and replaced by following terms: CL:0000636. "
+        "The following terms are obsoleted: CL:0011107. "
+        "Replacement suggestions: CL:0011107 -> CL:0000636. "
+        "Please consider using the new terms"
+    )
+    assert str(exc_info.value) == expected_message
+
+
+def test_obsoleted_term_exception_with_missing_replacement():
+    term_list = [Term("obsolete Muller cell", "CL:0011107", True, None, None)]
+    with pytest.raises(ObsoletedTerm) as exc_info:
+        raise ObsoletedTerm(term_list)
+
+    expected_message = (
+        "The following terms are obsoleted: CL:0011107. "
+        "Replacement suggestions: CL:0011107 -> unknown replacement. "
         "Please consider using the new terms"
     )
     assert str(exc_info.value) == expected_message

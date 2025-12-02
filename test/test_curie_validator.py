@@ -126,7 +126,8 @@ def test_get_validation_report():
         CurieValidator.get_validation_report(term_list)
 
     expected_message = (
-        "The following terms are obsoleted: CL:0011107, and replaced by following terms: CL:0000636. "
+        "The following terms are obsoleted: CL:0011107. "
+        "Replacement suggestions: CL:0011107 -> CL:0000636. "
         "Please consider using the new terms"
     )
     assert str(exc_info.value) == expected_message
