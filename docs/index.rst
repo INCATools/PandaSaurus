@@ -10,6 +10,9 @@ pandasaurus's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   overview
+   quickstart
+   guides/index
    introduction
    pandasaurus/index
 
