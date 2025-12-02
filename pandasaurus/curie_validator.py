@@ -142,12 +142,14 @@ class CurieValidator:
         term_obsoletion = CurieValidator.find_obsolete_terms(seed_list)
         term_list: List[Term] = list()
         for seed in seed_list:
+            validation_entry = term_validation.get(seed, {"label": None, "valid": False})
+            obsoletion_entry = term_obsoletion.get(seed, {})
             term = Term(
-                term_validation.get(seed).get("label"),
+                validation_entry.get("label"),
                 seed,
-                term_validation.get(seed).get("valid"),
-                term_obsoletion.get(seed).get("new_term_label") if seed in term_obsoletion else None,
-                term_obsoletion.get(seed).get("new_term") if seed in term_obsoletion else None,
+                bool(validation_entry.get("valid")),
+                obsoletion_entry.get("new_term_label"),
+                obsoletion_entry.get("new_term"),
             )
             term_list.append(term)
         return term_list

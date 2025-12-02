@@ -1,7 +1,10 @@
 from test.data.curie_validator_data import (
     get_construct_term_list_data,
+    get_construct_term_list_missing_validation_data,
+    get_construct_term_list_missing_validation_result,
     get_construct_term_list_result,
     get_expected_construct_term_list,
+    get_expected_construct_term_list_missing_validation,
     get_expected_find_obsolete_terms,
     get_expected_validate_curie_list,
     get_find_obsolete_terms_data,
@@ -139,3 +142,18 @@ def test_construct_term_list(mocker):
     )
 
     assert CurieValidator.construct_term_list(get_construct_term_list_data()) == get_expected_construct_term_list()
+
+
+def test_construct_term_list_handles_missing_validation(mocker):
+    mocker.patch(
+        "pandasaurus.curie_validator.run_sparql_query",
+        side_effect=[
+            iter(get_construct_term_list_missing_validation_result()),
+            iter([]),
+        ],
+    )
+
+    assert (
+        CurieValidator.construct_term_list(get_construct_term_list_missing_validation_data())
+        == get_expected_construct_term_list_missing_validation()
+    )
