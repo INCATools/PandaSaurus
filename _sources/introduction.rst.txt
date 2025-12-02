@@ -4,9 +4,6 @@ Pandasaurus
 .. image:: https://user-images.githubusercontent.com/112839/227489878-d253c381-75fd-4e92-b851-2b36df0fc5ed.png
     :width: 100
 
-STATUS: BETA
-------------
-
 A python library supporting simple queries over ontology annotations in dataframes, using UberGraph queries.
 
 The aim for now is to keep this as a very simple independent Python lib avoiding any complex dependencies.

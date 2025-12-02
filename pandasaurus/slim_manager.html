@@ -44,12 +44,15 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/index.html">User and Developer Guides</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../introduction.html">Pandasaurus</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Library documentation</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="curie_validator.html">Curie Validator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="query.html">Query</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Slim Manager</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#documentation">Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#class-reference">Class Reference</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#pandasaurus.slim_manager.SlimManager"><code class="docutils literal notranslate"><span class="pre">SlimManager</span></code></a></li>
 </ul>
 </li>
@@ -89,8 +92,14 @@
              
   <section id="slim-manager">
 <h1>Slim Manager<a class="headerlink" href="#slim-manager" title="Link to this heading"></a></h1>
-<section id="documentation">
-<h2>Documentation<a class="headerlink" href="#documentation" title="Link to this heading"></a></h2>
+<p>Use <a class="reference internal" href="#pandasaurus.slim_manager.SlimManager" title="pandasaurus.slim_manager.SlimManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandasaurus.slim_manager.SlimManager</span></code></a> to explore ontology slims (subset tags) and retrieve the CURIEs they reference.</p>
+<p>Typical scenarios:</p>
+<ul class="simple">
+<li><p>Enumerate slims available in an ontology via <code class="xref py py-meth docutils literal notranslate"><span class="pre">get_slim_list()</span></code>.</p></li>
+<li><p>Expand your seed list with all members of one or more slims via <code class="xref py py-meth docutils literal notranslate"><span class="pre">get_slim_members()</span></code>.</p></li>
+</ul>
+<section id="class-reference">
+<h2>Class Reference<a class="headerlink" href="#class-reference" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="pandasaurus.slim_manager.SlimManager">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pandasaurus.slim_manager.</span></span><span class="sig-name descname"><span class="pre">SlimManager</span></span><a class="reference internal" href="../_modules/pandasaurus/slim_manager.html#SlimManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pandasaurus.slim_manager.SlimManager" title="Link to this definition"></a></dt>

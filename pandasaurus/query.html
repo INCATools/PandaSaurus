@@ -44,11 +44,16 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/index.html">User and Developer Guides</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../introduction.html">Pandasaurus</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Library documentation</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="curie_validator.html">Curie Validator</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Query</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#documentation">Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#key-attributes">Key Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-reference">Class Reference</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#pandasaurus.query.Query"><code class="docutils literal notranslate"><span class="pre">Query</span></code></a></li>
 </ul>
 </li>
@@ -89,8 +94,26 @@
              
   <section id="query">
 <h1>Query<a class="headerlink" href="#query" title="Link to this heading"></a></h1>
-<section id="documentation">
-<h2>Documentation<a class="headerlink" href="#documentation" title="Link to this heading"></a></h2>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Query</span></code> orchestrates CURIE validation, enrichment, and graph generation on top of Ubergraph.</p>
+<p>Typical workflow:</p>
+<ol class="arabic simple">
+<li><p>Construct with a seed list (list of CURIE strings).</p></li>
+<li><p>Call an enrichment method (<code class="docutils literal notranslate"><span class="pre">simple_enrichment</span></code>, <code class="docutils literal notranslate"><span class="pre">minimal_slim_enrichment</span></code>, <code class="docutils literal notranslate"><span class="pre">contextual_slim_enrichment</span></code>, etc.).</p></li>
+<li><p>Inspect the resulting DataFrame or export <code class="docutils literal notranslate"><span class="pre">graph_df</span></code>/<code class="docutils literal notranslate"><span class="pre">graph</span></code>.</p></li>
+</ol>
+</section>
+<section id="key-attributes">
+<h2>Key Attributes<a class="headerlink" href="#key-attributes" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">enriched_df</span></code> – latest enrichment results as a pandas DataFrame.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">graph_df</span></code> – edges suitable for plotting or exporting to external graph tooling.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">graph</span></code> – rdflib graph with transitive reduction applied.</p></li>
+</ul>
+</section>
+<section id="class-reference">
+<h2>Class Reference<a class="headerlink" href="#class-reference" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="pandasaurus.query.Query">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pandasaurus.query.</span></span><span class="sig-name descname"><span class="pre">Query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enrichment_property_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_fail</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pandasaurus/query.html#Query"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pandasaurus.query.Query" title="Link to this definition"></a></dt>

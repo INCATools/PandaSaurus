@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quick Start &mdash; pandasaurus 0.3.5 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=ba50482b"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="User and Developer Guides" href="guides/index.html" />
+    <link rel="prev" title="Overview" href="overview.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pandasaurus
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#validate-curies">Validate CURIEs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#handle-invalid-terms">Handle Invalid Terms</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#run-an-enrichment">Run an Enrichment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#review-obsoleted-terms">Review Obsoleted Terms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#generate-a-graph">Generate a Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#next-steps">Next Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guides/index.html">User and Developer Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Pandasaurus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pandasaurus/index.html">Library documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pandasaurus</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Quick Start</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/quickstart.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="quick-start">
+<h1>Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading"></a></h1>
+<p>This page walks through the most common workflow: validating a list of CURIEs, enriching them, and inspecting the results.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>For a high-level summary, read <a class="reference internal" href="overview.html"><span class="doc">Overview</span></a>.</p>
+</div>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h2>
+<p>Pandasaurus requires Python 3.9–3.11. Install with pip or Poetry:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>pandasaurus
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>add<span class="w"> </span>pandasaurus
+</pre></div>
+</div>
+</section>
+<section id="validate-curies">
+<h2>Validate CURIEs<a class="headerlink" href="#validate-curies" title="Link to this heading"></a></h2>
+<p>Use <a class="reference internal" href="pandasaurus/curie_validator.html#pandasaurus.curie_validator.CurieValidator" title="pandasaurus.curie_validator.CurieValidator"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandasaurus.curie_validator.CurieValidator</span></code></a> to confirm that your seed terms exist and aren’t obsoleted:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pandasaurus.curie_validator</span> <span class="kn">import</span> <span class="n">CurieValidator</span>
+
+<span class="n">seeds</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CL:0000084&quot;</span><span class="p">,</span> <span class="s2">&quot;CL:0000787&quot;</span><span class="p">,</span> <span class="s2">&quot;CL:0000636&quot;</span><span class="p">]</span>
+<span class="n">terms</span> <span class="o">=</span> <span class="n">CurieValidator</span><span class="o">.</span><span class="n">construct_term_list</span><span class="p">(</span><span class="n">seeds</span><span class="p">)</span>
+<span class="n">CurieValidator</span><span class="o">.</span><span class="n">get_validation_report</span><span class="p">(</span><span class="n">terms</span><span class="p">)</span>  <span class="c1"># raises if invalid or obsoleted</span>
+</pre></div>
+</div>
+<section id="handle-invalid-terms">
+<h3>Handle Invalid Terms<a class="headerlink" href="#handle-invalid-terms" title="Link to this heading"></a></h3>
+<p>If <a class="reference internal" href="pandasaurus/utils/pandasaurus_exceptions.html#pandasaurus.utils.pandasaurus_exceptions.InvalidTerm" title="pandasaurus.utils.pandasaurus_exceptions.InvalidTerm"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandasaurus.utils.pandasaurus_exceptions.InvalidTerm</span></code></a> is raised, inspect the invalid IRIs from the exception message, update your seed list, and rerun.</p>
+</section>
+</section>
+<section id="run-an-enrichment">
+<h2>Run an Enrichment<a class="headerlink" href="#run-an-enrichment" title="Link to this heading"></a></h2>
+<p>Instantiate <a class="reference internal" href="pandasaurus/query.html#pandasaurus.query.Query" title="pandasaurus.query.Query"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandasaurus.query.Query</span></code></a> with your validated CURIEs and call an enrichment method, e.g. <a class="reference internal" href="pandasaurus/query.html#pandasaurus.query.Query.simple_enrichment" title="pandasaurus.query.Query.simple_enrichment"><code class="xref py py-meth docutils literal notranslate"><span class="pre">simple_enrichment()</span></code></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pandasaurus.query</span> <span class="kn">import</span> <span class="n">Query</span>
+
+<span class="n">query</span> <span class="o">=</span> <span class="n">Query</span><span class="p">(</span><span class="n">seeds</span><span class="p">,</span> <span class="n">force_fail</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">simple_enrichment</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</pre></div>
+</div>
+<p><cite>force_fail=True</cite> ensures the constructor raises immediately on invalid or obsoleted terms.</p>
+</section>
+<section id="review-obsoleted-terms">
+<h2>Review Obsoleted Terms<a class="headerlink" href="#review-obsoleted-terms" title="Link to this heading"></a></h2>
+<p>If the seed list contains obsoleted CURIEs, use <a class="reference internal" href="pandasaurus/query.html#pandasaurus.query.Query.update_obsoleted_terms" title="pandasaurus.query.Query.update_obsoleted_terms"><code class="xref py py-meth docutils literal notranslate"><span class="pre">update_obsoleted_terms()</span></code></a> to replace them with their suggested alternatives:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span><span class="o">.</span><span class="n">update_obsoleted_terms</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="generate-a-graph">
+<h2>Generate a Graph<a class="headerlink" href="#generate-a-graph" title="Link to this heading"></a></h2>
+<p>Every enrichment populates <code class="xref py py-attr docutils literal notranslate"><span class="pre">pandasaurus.query.Query.graph_df</span></code>, which can be converted into a NetworkX-compatible graph:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">graph</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">graph</span>  <span class="c1"># rdflib.Graph after transitive reduction</span>
+<span class="c1"># or export query.graph_df for plotting</span>
+</pre></div>
+</div>
+</section>
+<section id="next-steps">
+<h2>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Explore advanced methods (<code class="docutils literal notranslate"><span class="pre">minimal_slim_enrichment</span></code>, <code class="docutils literal notranslate"><span class="pre">contextual_slim_enrichment</span></code>) in the <a class="reference internal" href="pandasaurus/query.html"><span class="doc">Query API</span></a>.</p></li>
+<li><p>See <a class="reference internal" href="guides/index.html"><span class="doc">User and Developer Guides</span></a> for task-focused recipes.</p></li>
+<li><p>Visit <a class="reference internal" href="guides/contributing.html"><span class="doc">Contributing &amp; Development</span></a> to learn how to run tests, linting, and documentation builds locally.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="overview.html" class="btn btn-neutral float-left" title="Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="guides/index.html" class="btn btn-neutral float-right" title="User and Developer Guides" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Ugur Bayindir.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
