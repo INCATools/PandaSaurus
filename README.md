@@ -47,9 +47,10 @@ See the [Quick Start guide](docs/quickstart.rst) for a step-by-step workflow.
 
 Full documentation (quick start, recipes, developer guide, and API reference) lives under `docs/` and is published from the `gh-pages` branch:
 
-- [Quick Start](docs/quickstart.rst)
-- [Guides](docs/guides/index.rst)
-- [API reference](docs/pandasaurus/index.rst)
+- [Hosted documentation](https://incatools.github.io/PandaSaurus/)
+- [Quick Start (source)](docs/quickstart.rst)
+- [Guides (source)](docs/guides/index.rst)
+- [API reference (source)](docs/pandasaurus/index.rst)
 
 To build docs locally:
 
